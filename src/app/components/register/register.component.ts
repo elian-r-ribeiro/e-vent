@@ -7,4 +7,9 @@ import { Router } from '@angular/router';
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
+  constructor(private router : Router){}
+
+  goToLoginPage(){
+    this.router.navigate(['/login']);
+  }
 }
