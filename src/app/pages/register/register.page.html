@@ -1,13 +1,22 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>register</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">register</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <form class="registerForm">
+    <img src="../../../assets/img/ev-point-station-icon.png">
+    <ion-item>
+      <ion-input type="text" placeholder="Nome de usuário"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input type="text" placeholder="E-mail"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input type="text" placeholder="Confirmar e-mail"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input type="password" placeholder="Senha"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input type="password" placeholder="Confirmar senha"></ion-input>
+    </ion-item>
+    <ion-button shape="round">Registrar</ion-button>
+    <p>Já tem uma conta? Faça login aqui</p>
+  </form>
 </ion-content>
