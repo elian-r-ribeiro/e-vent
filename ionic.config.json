@@ -1,0 +1,7 @@
+{
+  "name": "e-vent-mobile",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
