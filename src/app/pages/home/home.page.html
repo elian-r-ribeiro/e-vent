@@ -1,20 +1,21 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <div class="profile">
+    <img class="profilePicture" src="../../../assets/img/Screenshot_1.png">
+    <ion-label class="profileName">Elian Ribeiro</ion-label>
   </div>
+
+  <ion-label class="welcomeMessage"> Bem vindo ao E-vents, Elian.</ion-label>
+  <ion-label class="welcomeMessage2"> A seguir, os eventos disponíveis:</ion-label>
+  
+  <ion-list class="eventsList" [inset]="true">
+    <ion-item *ngFor="let pokemon of this.pokemonList; let i = index" class="eventItem">
+      <ion-label>{{pokemon}}</ion-label>
+      <p>Descrição básica do evento</p>
+    </ion-item>
+  </ion-list>
+
+  <ion-fab class="newEventButton" horizontal="end" vertical="bottom">
+    <ion-button shape="round">Novo evento</ion-button>
+  </ion-fab>
 </ion-content>

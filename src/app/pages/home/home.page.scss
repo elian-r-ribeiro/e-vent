@@ -1,27 +1,47 @@
-#container {
-  text-align: center;
-
+.profile{
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-left: 10px;
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+.welcomeMessage{
+  margin-top: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
+.welcomeMessage2{
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-#container a {
-  text-decoration: none;
+.profilePicture{
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+}
+
+.eventsList{
+  background: none;
+  margin-top: 20px;
+}
+
+.eventItem {
+  --ion-item-background: rgb(30, 30, 30);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  --min-height: 100px;
+
+  ion-label{
+    margin-top: -20px;
+  }
+}
+
+.newEventButton{
+  position: fixed;
 }

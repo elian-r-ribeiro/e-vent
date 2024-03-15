@@ -7,6 +7,12 @@ import { Component } from '@angular/core';
 })
 export class HomePage {
 
+  public pokemonList  = ['Pikachu', 'Charizard', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 
+  'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 
+  'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque'];
+
   constructor() {}
+
+
 
 }
