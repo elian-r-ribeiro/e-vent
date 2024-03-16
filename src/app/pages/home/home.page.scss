@@ -29,6 +29,7 @@
 .eventsList{
   background: none;
   margin-top: 20px;
+
 }
 
 .eventItem {
@@ -38,10 +39,19 @@
   --min-height: 100px;
 
   ion-label{
-    margin-top: -20px;
+    height: 60px;
+    overflow-y: hidden;
+    max-width: 150px;
   }
 }
 
 .newEventButton{
   position: fixed;
+}
+
+p{
+    height: 60px;
+    overflow-y: hidden;
+    max-width: 150px;
+    margin-left: 50px;
 }
