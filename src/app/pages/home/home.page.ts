@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { RoutingService } from 'src/app/services/routing.service';
 
 @Component({
   selector: 'app-home',
@@ -11,8 +13,17 @@ export class HomePage {
   'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 
   'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque'];
 
-  constructor() {}
+  constructor(private routingService : RoutingService) {}
 
+  goToNewEventPage(){
+    this.routingService.goToNewEventPage();
+  }
 
+  goToEventPage(){
+    this.routingService.goToEventPage();
+  }
 
+  goToProfilePage(){
+    this.routingService.goToProfilePage();
+  }
 }

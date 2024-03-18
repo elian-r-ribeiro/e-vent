@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { RoutingService } from 'src/app/services/routing.service';
+
 
 @Component({
   selector: 'app-login',
@@ -7,9 +9,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoginPage implements OnInit {
 
-  constructor() { }
+  constructor(private routingService : RoutingService) { }
 
   ngOnInit() {
   }
 
+  goToRegisterPage(){
+    this.routingService.goToRegisterPage();
+  }
 }
