@@ -26,4 +26,8 @@ export class HomePage {
   goToProfilePage(){
     this.routingService.goToProfilePage();
   }
+
+  goToMyEventsPage(){
+    this.routingService.goToMyEventsPage();
+  }
 }

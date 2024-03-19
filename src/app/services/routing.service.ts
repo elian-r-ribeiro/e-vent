@@ -31,4 +31,8 @@ export class RoutingService {
   goToMyEventsPage(){
     this.router.navigate(['/my-events'])
   }
+
+  goToHomePage(){
+    this.router.navigate(['/home'])
+  }
 }

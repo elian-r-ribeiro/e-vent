@@ -26,4 +26,8 @@ export class MyEventsPage implements OnInit {
   goToProfilePage(){
     this.routingService.goToProfilePage();
   }
+
+  goToHomePage(){
+    this.routingService.goToHomePage();
+  }
 }
