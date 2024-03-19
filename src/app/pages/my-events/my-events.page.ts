@@ -13,9 +13,7 @@ export class MyEventsPage implements OnInit {
   ngOnInit() {
   }
 
-  public pokemonList  = ['Pikachu', 'Charizard', 'Sei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 
-  'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 
-  'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque'];
+  public pokemonList  = ['Pikachu', 'Charizard', 'Sei lá mais oqueSei lá mais'];
 
   goToNewEventPage(){
     this.routingService.goToNewEventPage();

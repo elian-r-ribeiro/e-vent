@@ -27,4 +27,8 @@ export class RoutingService {
   goToProfilePage(){
     this.router.navigate(['/profile'])
   }
+
+  goToMyEventsPage(){
+    this.router.navigate(['/my-events'])
+  }
 }
