@@ -47,7 +47,7 @@ export class RegisterPage implements OnInit {
     if (!this.registerForm.valid) {
       console.log('Erro ao registrar');
     } else {
-      this.authService.registerUser(this.registerForm.value['email'], this.registerForm.value['password']);
+      this.authService.registerUser(this.registerForm.value['userName'], this.registerForm.value['email'], this.registerForm.value['phoneNumber'], this.registerForm.value['password']);
     }
   }
 
