@@ -10,35 +10,48 @@ import { RoutingService } from 'src/app/services/routing.service';
 })
 export class RegisterPage implements OnInit {
 
-  registerForm! : FormGroup;
+  registerForm!: FormGroup;
 
-  constructor(private routingService : RoutingService, private authService: AuthService, private builder: FormBuilder) { 
+  constructor(private routingService: RoutingService, private authService: AuthService, private builder: FormBuilder) {
     this.registerForm = new FormGroup({
+      userName: new FormControl(''),
       email: new FormControl(''),
-      password: new FormControl('')
+      phoneNumber: new FormControl(''),
+      password: new FormControl(''),
+      confirmPassword: new FormControl('')
     })
   }
 
   ngOnInit() {
     this.registerForm = this.builder.group({
+      userName: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
+      phoneNumber: ['', [Validators.required, this.validatePhoneNumber]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]]
+    })
   }
 
-  get errorControl(){
+  validatePhoneNumber(control: FormControl): { [s: string]: boolean } | null {
+    if (control.value && control.value.toString().trim().length !== 11) {
+      return { 'validatePhoneNumber': true };
+    }
+    return null;
+  }
+
+  get errorControl() {
     return this.registerForm.controls;
   }
 
-  submitForm(){
-    if(!this.registerForm.valid){
+  submitForm() {
+    if (!this.registerForm.valid) {
       console.log('Erro ao registrar');
-    }else{
+    } else {
       this.authService.registerUser(this.registerForm.value['email'], this.registerForm.value['password']);
     }
   }
 
-  goToLoginPage(){
+  goToLoginPage() {
     this.routingService.goToLoginPage();
   }
 }

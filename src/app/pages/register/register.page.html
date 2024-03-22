@@ -2,24 +2,31 @@
   <form [formGroup]="registerForm" (ngSubmit)="submitForm()" novalidate class="registerForm">
     <img src="../../../assets/img/ev-point-station-icon.png">
     <ion-item>
-      <ion-input type="text" placeholder="Nome de usuário"></ion-input>
+      <ion-input formControlName="userName" type="text" placeholder="Nome completo"></ion-input>
     </ion-item>
+    <span *ngIf="registerForm.get('userName')?.touched && registerForm.get('userName')?.errors?.['required']">Nome de usuário é obrigatório</span>
+    <span *ngIf="registerForm.get('userName')?.dirty && registerForm.get('userName')?.errors?.['minlength']">O nome de usuário deve ter no mínimo 4 caracteres</span>
+    <span *ngIf="registerForm.get('userName')?.dirty && registerForm.get('userName')?.errors?.['maxlength']">O nome de usuário deve ter no máximo 50 caracteres</span>
     <ion-item>
       <ion-input formControlName="email" type="text" placeholder="E-mail"></ion-input>
     </ion-item>
     <span *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['required']">Email é obrigatório</span>
     <span *ngIf="registerForm.get('email')?.dirty && registerForm.get('email')?.errors?.['email']">Formato de Email Inválido</span>
     <ion-item>
-      <ion-input type="number" placeholder="Número de celular"></ion-input>
+      <ion-input formControlName="phoneNumber" type="number" placeholder="Número de celular"></ion-input>
     </ion-item>
+    <span *ngIf="registerForm.get('phoneNumber')?.touched && registerForm.get('phoneNumber')?.errors?.['required']">Número de celular é obrigatório</span>
+    <span *ngIf="registerForm.get('phoneNumber')?.dirty && registerForm.get('phoneNumber')?.errors?.['validatePhoneNumber']">Formato de número de celular Inválido</span>
     <ion-item>
       <ion-input formControlName="password" type="password" placeholder="Senha"></ion-input>
     </ion-item>
     <span *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.errors?.['required']">Senha é obrigatória</span>
     <span *ngIf="registerForm.get('password')?.dirty && registerForm.get('password')?.errors?.['minlength']">A senha é de no mínimo 6 caracteres</span>
     <ion-item>
-      <ion-input type="password" placeholder="Confirmar senha"></ion-input>
+      <ion-input formControlName="confirmPassword" type="password" placeholder="Confirmar senha"></ion-input>
     </ion-item>
+    <span *ngIf="registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.errors?.['required']">A comfirmação de Senha é obrigatória</span>
+    <span *ngIf="registerForm.get('confirmPassword')?.dirty && registerForm.get('password')?.value != registerForm.get('confirmPassword')?.value">As senhas não coincidem</span>
     <ion-item>
       <ion-input type="file"></ion-input>
     </ion-item>
