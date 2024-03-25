@@ -30,4 +30,21 @@ ion-header{
         width: 300px;
         margin-top: 20px;
     }
+
+    .fileInputLabel {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 15px;
+        background: none;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      
+      .fileInput {
+        display: none;
+      }
 }

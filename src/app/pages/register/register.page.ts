@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AlertService } from 'src/app/common/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { FirebaseService } from 'src/app/services/firebase.service';
 import { RoutingService } from 'src/app/services/routing.service';
 
 @Component({
@@ -11,8 +13,9 @@ import { RoutingService } from 'src/app/services/routing.service';
 export class RegisterPage implements OnInit {
 
   registerForm!: FormGroup;
+  image: any;
 
-  constructor(private routingService: RoutingService, private authService: AuthService, private builder: FormBuilder) {
+  constructor(private firebaseService: FirebaseService, private routingService: RoutingService, private authService: AuthService, private builder: FormBuilder, private alertService: AlertService) {
     this.registerForm = new FormGroup({
       userName: new FormControl(''),
       email: new FormControl(''),
@@ -43,11 +46,18 @@ export class RegisterPage implements OnInit {
     return this.registerForm.controls;
   }
 
+  uploadFile(image: any){
+    this.image = image.files;
+  }
+
   submitForm() {
     if (!this.registerForm.valid) {
-      console.log('Erro ao registrar');
+      this.alertService.presentAlert('Erro ao cadastrar', 'Cheque todos os campos e tente novamente')
     } else {
+      this.alertService.presentAlert('Registro concluído com sucesso', 'Você será redirecionado para a página de login')
       this.authService.registerUser(this.registerForm.value['userName'], this.registerForm.value['email'], this.registerForm.value['phoneNumber'], this.registerForm.value['password']);
+      this.firebaseService.uploadImage(this.image);
+      this.routingService.goToLoginPage();
     }
   }
 
