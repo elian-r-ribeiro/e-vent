@@ -31,8 +31,16 @@ export class RegisterPage implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: ['', [Validators.required, this.validatePhoneNumber]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]]
+      confirmPassword: ['', [Validators.required]],
+      profileImage: [null, [this.validateImage]]
     })
+  }
+
+  validateImage(control: FormControl): { [s: string]: boolean } | null {
+    if (!control.value) {
+      return { 'required': true };
+    }
+    return null;
   }
 
   validatePhoneNumber(control: FormControl): { [s: string]: boolean } | null {
@@ -55,8 +63,7 @@ export class RegisterPage implements OnInit {
       this.alertService.presentAlert('Erro ao cadastrar', 'Cheque todos os campos e tente novamente')
     } else {
       this.alertService.presentAlert('Registro concluído com sucesso', 'Você será redirecionado para a página de login')
-      this.authService.registerUser(this.registerForm.value['userName'], this.registerForm.value['email'], this.registerForm.value['phoneNumber'], this.registerForm.value['password']);
-      this.firebaseService.uploadImage(this.image);
+      this.authService.registerUser(this.registerForm.value['userName'], this.registerForm.value['email'], this.registerForm.value['phoneNumber'], this.registerForm.value['password'], this.image);
       this.routingService.goToLoginPage();
     }
   }
