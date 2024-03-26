@@ -15,7 +15,7 @@ export class RegisterPage implements OnInit {
   registerForm!: FormGroup;
   image: any;
 
-  constructor(private firebaseService: FirebaseService, private routingService: RoutingService, private authService: AuthService, private builder: FormBuilder, private alertService: AlertService) {
+  constructor(private routingService: RoutingService, private authService: AuthService, private builder: FormBuilder, private alertService: AlertService) {
     this.registerForm = new FormGroup({
       userName: new FormControl(''),
       email: new FormControl(''),

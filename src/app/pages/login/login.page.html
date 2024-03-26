@@ -1,13 +1,17 @@
 <ion-content [fullscreen]="true">
-  <form class="registerForm">
+  <form (ngSubmit)="submitForm()" [formGroup]="loginForm" class="loginForm">
     <img src="../../../assets/img/ev-point-station-icon.png">
     <ion-item>
-      <ion-input type="text" placeholder="E-mail"></ion-input>
+      <ion-input formControlName="email" type="text" placeholder="E-mail"></ion-input>
     </ion-item>
+    <span *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.errors?.['required']">E-mail é obrigatório</span>
+    <span *ngIf="loginForm.get('email')?.dirty && loginForm.get('email')?.errors?.['email']">Formato de Email Inválido</span>
     <ion-item>
-      <ion-input type="password" placeholder="Senha"></ion-input>
+      <ion-input formControlName="password" type="password" placeholder="Senha"></ion-input>
     </ion-item>
-    <ion-button shape="round">Logar</ion-button>
+    <span *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['required']">Senha é obrigatória</span>
+    <span *ngIf="loginForm.get('password')?.dirty && loginForm.get('password')?.errors?.['minlength']">A senha é de no mínimo 6 caracteres</span>
+    <ion-button type="submit" shape="round">Logar</ion-button>
     <p>Esqueceu sua senha? Recupere ela aqui</p>
     <p (click)="goToRegisterPage()">Não tem uma conta? Registre uma aqui</p>
   </form>
