@@ -43,4 +43,9 @@ export class AuthService implements OnInit {
   userLogin(email: string, password: string) {
     this.auth.signInWithEmailAndPassword(email, password);
   }
+
+  getLoggedUser(){
+    const user : any = JSON.parse(localStorage.getItem('user') || 'null');
+    return (user !== null) ? user : null;
+  }
 }
