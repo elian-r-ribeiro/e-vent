@@ -3,6 +3,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { RoutingService } from './routing.service';
 import { FirebaseService } from './firebase.service';
+import { Observable, switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -34,8 +35,8 @@ export class AuthService implements OnInit {
     uploadTask?.then(async snapshot => {
       const imageURL = await snapshot.ref.getDownloadURL();
       const userData = await this.auth.createUserWithEmailAndPassword(email, password);
-      const userID = userData.user?.uid;
-      await this.firestore.collection(this.PATH).add({ userName, email, phoneNumber, imageURL, userID });
+      const uid = userData.user?.uid;
+      await this.firestore.collection(this.PATH).add({ userName, email, phoneNumber, imageURL, uid });
       this.routingService.goToLoginPage();
     })
   }

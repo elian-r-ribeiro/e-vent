@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AuthService } from 'src/app/services/auth.service';
 import { RoutingService } from 'src/app/services/routing.service';
 
 @Component({
@@ -9,30 +9,33 @@ import { RoutingService } from 'src/app/services/routing.service';
 })
 export class HomePage implements OnInit {
 
-  public pokemonList  = ['Pikachu', 'Charizard', 'Sei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 
-  'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 
-  'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque'];
+  public pokemonList = ['Pikachu', 'Charizard', 'Sei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque',
+    'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque',
+    'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque'];
 
-  constructor(private routingService : RoutingService) {
+  user: any;
+  userInfo: any;
+
+  constructor(private routingService: RoutingService, private authService: AuthService) {
   }
 
   ngOnInit() {
-
+    this.user = this.authService.getLoggedUser();
   }
 
-  goToNewEventPage(){
+  goToNewEventPage() {
     this.routingService.goToNewEventPage();
   }
 
-  goToEventPage(){
+  goToEventPage() {
     this.routingService.goToEventPage();
   }
 
-  goToProfilePage(){
+  goToProfilePage() {
     this.routingService.goToProfilePage();
   }
 
-  goToMyEventsPage(){
+  goToMyEventsPage() {
     this.routingService.goToMyEventsPage();
   }
 }
