@@ -33,8 +33,6 @@ export class LoginPage implements OnInit {
       this.alertService.presentAlert('Erro ao cadastrar', 'Cheque todos os campos e tente novamente');
     }else{
       this.authService.userLogin(this.loginForm.value['email'], this.loginForm.value['password']);
-      this.alertService.presentAlert('Login realizado com sucesso', 'Você será redirecionado para a Home')
-      this.routingService.goToHomePage();
     }
   }
 

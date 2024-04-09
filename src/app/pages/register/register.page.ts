@@ -62,9 +62,7 @@ export class RegisterPage implements OnInit {
     if (!this.registerForm.valid) {
       this.alertService.presentAlert('Erro ao cadastrar', 'Cheque todos os campos e tente novamente')
     } else {
-      this.alertService.presentAlert('Registro concluído com sucesso', 'Você será redirecionado para a página de login')
       this.authService.registerUser(this.registerForm.value['userName'], this.registerForm.value['email'], this.registerForm.value['phoneNumber'], this.registerForm.value['password'], this.image);
-      this.routingService.goToLoginPage();
     }
   }
 
