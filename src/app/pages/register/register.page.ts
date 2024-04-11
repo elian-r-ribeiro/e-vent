@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AlertService } from 'src/app/common/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { FirebaseService } from 'src/app/services/firebase.service';
 import { RoutingService } from 'src/app/services/routing.service';
 
 @Component({
@@ -16,13 +15,7 @@ export class RegisterPage implements OnInit {
   image: any;
 
   constructor(private routingService: RoutingService, private authService: AuthService, private builder: FormBuilder, private alertService: AlertService) {
-    this.registerForm = new FormGroup({
-      userName: new FormControl(''),
-      email: new FormControl(''),
-      phoneNumber: new FormControl(''),
-      password: new FormControl(''),
-      confirmPassword: new FormControl('')
-    })
+
   }
 
   ngOnInit() {

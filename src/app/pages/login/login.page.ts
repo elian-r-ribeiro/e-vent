@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertService } from 'src/app/common/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { RoutingService } from 'src/app/services/routing.service';
@@ -15,10 +15,7 @@ export class LoginPage implements OnInit {
   loginForm!: FormGroup;
 
   constructor(private authService: AuthService, private alertService: AlertService, private routingService : RoutingService, private builder: FormBuilder) {
-    this.loginForm = new FormGroup({
-      email: new FormControl(''),
-      password: new FormControl('')
-    });
+
    }
 
   ngOnInit() {
