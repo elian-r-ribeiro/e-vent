@@ -3,7 +3,6 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { RoutingService } from './routing.service';
 import { FirebaseService } from './firebase.service';
-import { Observable, switchMap } from 'rxjs';
 import { AlertService } from '../common/alert.service';
 
 @Injectable({
@@ -36,7 +35,7 @@ export class AuthService implements OnInit {
       this.alertService.presentAlert('Erro ao enviar foto de perfil', 'Tipo não suportado');
     } else {
         const userData = await this.auth.createUserWithEmailAndPassword(email, password).then(async (userData) => {
-          const uploadTask = this.firebaseService.uploadImage(image);
+          const uploadTask = this.firebaseService.uploadImage(image, 'profilePictures');
           uploadTask?.then(async snapshot => {
             const imageURL = await snapshot.ref.getDownloadURL();
             const uid = userData.user?.uid;

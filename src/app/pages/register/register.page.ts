@@ -29,6 +29,8 @@ export class RegisterPage implements OnInit {
     })
   }
 
+  
+
   validateImage(control: FormControl): { [s: string]: boolean } | null {
     if (!control.value) {
       return { 'required': true };
@@ -41,10 +43,6 @@ export class RegisterPage implements OnInit {
       return { 'validatePhoneNumber': true };
     }
     return null;
-  }
-
-  get errorControl() {
-    return this.registerForm.controls;
   }
 
   uploadFile(image: any){
