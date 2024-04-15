@@ -3,6 +3,7 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { AuthService } from './auth.service';
 import { AlertService } from '../common/alert.service';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { RoutingService } from './routing.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class FirebaseService {
 
   private PATH: string = "events";
 
-  constructor(private storage: AngularFireStorage, @Inject(Injector) private readonly injector: Injector, private alertService: AlertService, private firestore: AngularFirestore) { }
+  constructor(private routingService: RoutingService, private storage: AngularFireStorage, @Inject(Injector) private readonly injector: Injector, private alertService: AlertService, private firestore: AngularFirestore) { }
 
   private injectAuthService(){
     return this.injector.get(AuthService);
@@ -34,6 +35,8 @@ export class FirebaseService {
       uploadTask?.then(async snapshot => {
         const imageURL = await snapshot.ref.getDownloadURL();
         await this.firestore.collection(this.PATH).add({ eventTitle, eventDesc, maxParticipants, imageURL, ownerUid });
+        this.alertService.presentAlert('Evento registrado com sucesso', 'Você pode checar mais informações na aba "Meus eventos" e ele já está disponível para outras pessoas');
+        this.routingService.goToHomePage();
       })
     }
   }

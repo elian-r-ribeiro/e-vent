@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AlertService } from 'src/app/common/alert.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { FirebaseService } from 'src/app/services/firebase.service';
+import { RoutingService } from 'src/app/services/routing.service';
 
 @Component({
   selector: 'app-new-event',
@@ -13,11 +15,16 @@ export class NewEventPage implements OnInit {
   eventForm!: FormGroup;
   image: any;
 
-  constructor(private builder: FormBuilder, private alertService: AlertService, private firebaseService: FirebaseService) {
+  constructor(private builder: FormBuilder, private alertService: AlertService, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService) {
 
    }
 
   ngOnInit() {
+    if(this.authService.getLoggedUser() == null){
+      this.routingService.goToLoginPage();
+      this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
+    }
+
     this.eventForm = this.builder.group({
       eventTitle: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(50)]],
       eventDesc: ['', [Validators.required, Validators.minLength(50), Validators.maxLength(200)]],
