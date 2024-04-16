@@ -1,11 +1,11 @@
 <ion-content>
 
   <div class="profile">
-    <img (click)="goToProfilePage()" class="profilePicture" src="../../../assets/img/Screenshot_1.png">
-    <ion-label (click)="goToProfilePage()" class="profileName">Elian Ribeiro</ion-label>
+    <img *ngFor="let user of userInfo" (click)="goToProfilePage()" class="profilePicture" src={{user.imageURL}}>
+    <ion-label (click)="goToProfilePage()" *ngFor="let user of userInfo" class="profileName">{{user.userName}}</ion-label>
   </div>
 
-  <ion-label class="welcomeMessage"> Bem vindo ao E-vents, Elian.</ion-label>
+  <ion-label *ngFor="let user of userInfo" class="welcomeMessage"> Bem vindo ao E-vents, {{user.userName}}.</ion-label>
   <ion-label class="welcomeMessage2"> A seguir, os eventos disponíveis:</ion-label>
   
   <ion-list class="eventsList" [inset]="true">

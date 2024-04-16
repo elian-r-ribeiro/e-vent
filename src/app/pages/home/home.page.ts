@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AlertService } from 'src/app/common/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { RoutingService } from 'src/app/services/routing.service';
@@ -15,9 +16,13 @@ export class HomePage implements OnInit {
     'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque'];
 
   user: any;
+  userData: any;
   userInfo: any;
+  userName!: string;
+  imageURL!: string;
 
-  constructor(private routingService: RoutingService, private authService: AuthService, private alertService: AlertService) {
+  constructor(private routingService: RoutingService, private authService: AuthService, private alertService: AlertService, private auth: AngularFireAuth) {
+    
   }
 
   ngOnInit() {
@@ -26,8 +31,9 @@ export class HomePage implements OnInit {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
     }
-    this.authService.getUserInfo().subscribe(resp=>{
-      //TODO
+    this.authService.getUserInfo().subscribe(res=>{
+      this.userInfo = res.map(userInfo => 
+        {return{id:userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any} as any})
     })
   }
 

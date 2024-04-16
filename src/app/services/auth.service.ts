@@ -11,6 +11,7 @@ import { AlertService } from '../common/alert.service';
 export class AuthService implements OnInit {
 
   userData: any;
+  userInfo: any;
 
   constructor(private firebaseService: FirebaseService, private alertService: AlertService, private auth: AngularFireAuth, private firestore: AngularFirestore, private routingService: RoutingService) {
     this.auth.authState.subscribe(user => {
@@ -61,7 +62,15 @@ export class AuthService implements OnInit {
   userLogin(email: string, password: string) {
     this.auth.signInWithEmailAndPassword(email, password)
       .then(() => {
-        this.alertService.presentAlert('Login realizado com sucesso', 'Você será redirecionado para a Home')
+        this.alertService.presentAlert('Login realizado com sucesso', 'Você será redirecionado para a Home');
+        this.auth.authState.subscribe(user => {
+          if (user) {
+            this.userData = user;
+            localStorage.setItem('user', JSON.stringify(this.userData));
+          } else {
+            localStorage.setItem('user', 'null');
+          }
+        });
         this.routingService.goToHomePage();
       })
       .catch(error => {
@@ -86,6 +95,10 @@ export class AuthService implements OnInit {
   getUserInfo() {
     const uid = this.getLoggedUser().uid;
     return this.firestore.collection(this.PATH, ref => ref.where('uid', '==', uid)).snapshotChanges();
+  }
+
+  updateProfile(newUserName: string, newPhoneNumber: number, id: string){
+    return this.firestore.collection(this.PATH).doc(id).update({userName: newUserName, phoneNumber: newPhoneNumber});
   }
 
   logout(){
