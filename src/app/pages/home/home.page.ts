@@ -26,6 +26,9 @@ export class HomePage implements OnInit {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
     }
+    this.authService.getUserInfo().subscribe(resp=>{
+      //TODO
+    })
   }
 
   goToNewEventPage() {

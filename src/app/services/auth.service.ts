@@ -84,7 +84,8 @@ export class AuthService implements OnInit {
   }
 
   getUserInfo() {
-    return this.firestore.collection(this.PATH, ref => ref.where('uid', '==', this.getLoggedUser().uid)).snapshotChanges();
+    const uid = this.getLoggedUser().uid;
+    return this.firestore.collection(this.PATH, ref => ref.where('uid', '==', uid)).snapshotChanges();
   }
 
   logout(){
