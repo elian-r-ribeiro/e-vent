@@ -10,6 +10,8 @@ import { RoutingService } from 'src/app/services/routing.service';
 })
 export class MyEventsPage implements OnInit {
 
+  userInfo: any;
+
   constructor(private authService: AuthService, private routingService: RoutingService, private alertService: AlertService) { }
 
   ngOnInit() {
@@ -17,6 +19,10 @@ export class MyEventsPage implements OnInit {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
     }
+    this.authService.getUserInfo().subscribe(res=>{
+      this.userInfo = res.map(userInfo => 
+        {return{id:userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any} as any})
+    })
   }
 
   public pokemonList  = ['Pikachu', 'Charizard', 'Sei lá mais oqueSei lá mais'];
