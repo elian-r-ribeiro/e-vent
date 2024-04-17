@@ -1,4 +1,4 @@
-<ion-content [fullscreen]="true">
+<ion-content style="overflow: hidden;" [fullscreen]="true">
   <div class="imgContainer">
     <img *ngFor="let user of userInfo" src={{user.imageURL}}>
   </div>
@@ -14,6 +14,10 @@
     </ion-item>
     <span *ngIf="profileForm.get('phoneNumber')?.touched && profileForm.get('phoneNumber')?.errors?.['required']">Número de celular é obrigatório</span>
     <span *ngIf="profileForm.get('phoneNumber')?.dirty && profileForm.get('phoneNumber')?.errors?.['validatePhoneNumber']">Formato de número de celular inválido</span>
+    <ion-item>
+      <ion-input (change)="uploadFile($event.target)" type="file" formControlName="profileImage"></ion-input>
+    </ion-item>
+    <span *ngIf="profileForm.get('profileImage')?.errors?.['required']">A imagem de perfil é obrigatória</span>
 
     <ion-button class="confirmButton" shape="round" type="submit">Confirmar alterações</ion-button>
     <ion-button (click)="logout()" shape="round" color="danger">Sair dessa conta</ion-button>

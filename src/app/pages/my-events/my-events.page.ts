@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertService } from 'src/app/common/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { FirebaseService } from 'src/app/services/firebase.service';
 import { RoutingService } from 'src/app/services/routing.service';
 
 @Component({
@@ -11,8 +12,9 @@ import { RoutingService } from 'src/app/services/routing.service';
 export class MyEventsPage implements OnInit {
 
   userInfo: any;
+  userEvents: any;
 
-  constructor(private authService: AuthService, private routingService: RoutingService, private alertService: AlertService) { }
+  constructor(private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService) { }
 
   ngOnInit() {
     if(this.authService.getLoggedUser() == null){
@@ -22,6 +24,10 @@ export class MyEventsPage implements OnInit {
     this.authService.getUserInfo().subscribe(res=>{
       this.userInfo = res.map(userInfo => 
         {return{id:userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any} as any})
+    })
+    this.firebaseService.getUserEvents().subscribe(res=>{
+      this.userEvents = res.map(userEvents => 
+        {return{id:userEvents.payload.doc.id, ...userEvents.payload.doc.data() as any} as any})
     })
   }
 

@@ -35,26 +35,26 @@ export class AuthService implements OnInit {
     if (file.type.split('/')[0] !== 'image') {
       this.alertService.presentAlert('Erro ao enviar foto de perfil', 'Tipo não suportado');
     } else {
-        const userData = await this.auth.createUserWithEmailAndPassword(email, password).then(async (userData) => {
-          const uploadTask = this.firebaseService.uploadImage(image, 'profilePictures');
-          uploadTask?.then(async snapshot => {
-            const imageURL = await snapshot.ref.getDownloadURL();
-            const uid = userData.user?.uid;
-            await this.firestore.collection(this.PATH).add({ userName, email, phoneNumber, imageURL, uid });
-            await this.alertService.presentAlert('Registro realizado com sucesso', 'Você será redirecionado para a página de login');
-            this.routingService.goToLoginPage();
-          })
-        }).catch(error => {
-          let errorMessage: string;
-          switch (error.code) {
-            case 'auth/email-already-in-use':
-              errorMessage = 'O email informado já está em uso';
-              break;
-            default:
-              errorMessage = 'Erro ao efetuar registro, por favor, tente novamente mais tarde';
-              break;
-          }
-          this.alertService.presentAlert('Erro de Login', errorMessage);;
+      const userData = await this.auth.createUserWithEmailAndPassword(email, password).then(async (userData) => {
+        const uploadTask = this.firebaseService.uploadImage(image, 'profilePictures');
+        uploadTask?.then(async snapshot => {
+          const imageURL = await snapshot.ref.getDownloadURL();
+          const uid = userData.user?.uid;
+          await this.firestore.collection(this.PATH).add({ userName, email, phoneNumber, imageURL, uid });
+          await this.alertService.presentAlert('Registro realizado com sucesso', 'Você será redirecionado para a página de login');
+          this.routingService.goToLoginPage();
+        })
+      }).catch(error => {
+        let errorMessage: string;
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            errorMessage = 'O email informado já está em uso';
+            break;
+          default:
+            errorMessage = 'Erro ao efetuar registro, por favor, tente novamente mais tarde';
+            break;
+        }
+        this.alertService.presentAlert('Erro de Login', errorMessage);;
       })
     }
   }
@@ -93,15 +93,19 @@ export class AuthService implements OnInit {
   }
 
   getUserInfo() {
-    const uid = this.getLoggedUser().uid;
-    return this.firestore.collection(this.PATH, ref => ref.where('uid', '==', uid)).snapshotChanges();
+    const loggedUserUID = this.getLoggedUser().uid;
+    return this.firestore.collection(this.PATH, ref => ref.where('uid', '==', loggedUserUID)).snapshotChanges();
   }
 
-  updateProfile(newUserName: string, newPhoneNumber: number, id: string){
-    return this.firestore.collection(this.PATH).doc(id).update({userName: newUserName, phoneNumber: newPhoneNumber});
+  updateProfile(newUserName: string, newPhoneNumber: number, id: string) {
+    return this.firestore.collection(this.PATH).doc(id).update({ userName: newUserName, phoneNumber: newPhoneNumber });
   }
 
-  logout(){
+  updateProfilePicture(newImageURL: string, id: string) {
+    return this.firestore.collection(this.PATH).doc(id).update({ imageURL: newImageURL});
+  }
+
+  logout() {
     this.auth.signOut();
     localStorage.setItem('user', 'null');
     this.routingService.goToLoginPage();

@@ -40,4 +40,13 @@ export class FirebaseService {
       })
     }
   }
+
+  getAllEvents(){
+    return this.firestore.collection(this.PATH).snapshotChanges();
+  }
+
+  getUserEvents(){
+    const loggedUserUID = this.injectAuthService().getLoggedUser().uid;
+    return this.firestore.collection(this.PATH, ref => ref.where('ownerUid', '==', loggedUserUID)).snapshotChanges();
+  }
 }

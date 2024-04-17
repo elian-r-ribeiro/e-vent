@@ -9,9 +9,9 @@
   <ion-label class="welcomeMessage2"> A seguir, os eventos que você criou:</ion-label>
   
   <ion-list class="eventsList" [inset]="true">
-    <ion-item (click)="goToEventPage()" *ngFor="let pokemon of this.pokemonList; let i = index" class="eventItem">
-      <ion-label>{{pokemon}}</ion-label>
-      <p>Descrição básica do evento</p>
+    <ion-item (click)="goToEventPage()" *ngFor="let event of userEvents; let i = index" class="eventItem">
+      <ion-label>{{event.eventTitle}}</ion-label>
+      <p>{{event.eventDesc}}</p>
     </ion-item>
   </ion-list>
 

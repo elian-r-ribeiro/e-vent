@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AlertService } from 'src/app/common/alert.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { FirebaseService } from 'src/app/services/firebase.service';
 import { RoutingService } from 'src/app/services/routing.service';
 
 @Component({
@@ -16,25 +17,29 @@ export class HomePage implements OnInit {
     'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque'];
 
   user: any;
+  events: any;
   userData: any;
   userInfo: any;
   userName!: string;
   imageURL!: string;
 
-  constructor(private routingService: RoutingService, private authService: AuthService, private alertService: AlertService, private auth: AngularFireAuth) {
-    
+  constructor(private firebaseService: FirebaseService, private routingService: RoutingService, private authService: AuthService, private alertService: AlertService, private auth: AngularFireAuth) {
+
   }
 
   ngOnInit() {
     this.user = this.authService.getLoggedUser();
-    if(this.user == null){
+    if (this.user == null) {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
     }
-    this.authService.getUserInfo().subscribe(res=>{
-      this.userInfo = res.map(userInfo => 
-        {return{id:userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any} as any})
+    this.authService.getUserInfo().subscribe(res => {
+      this.userInfo = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any })
     })
+    this.firebaseService.getAllEvents().subscribe(res =>
+      this.events = res.map(events => { return { id: events.payload.doc.id, ...events.payload.doc.data() as any } as any }
+      )
+    )
   }
 
   goToNewEventPage() {
