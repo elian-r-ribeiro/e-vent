@@ -36,10 +36,11 @@ export class AuthService implements OnInit {
       this.alertService.presentAlert('Erro ao enviar foto de perfil', 'Tipo não suportado');
     } else {
       const userData = await this.auth.createUserWithEmailAndPassword(email, password).then(async (userData) => {
-        const uploadTask = this.firebaseService.uploadImage(image, 'profilePictures');
+        const uid = userData.user?.uid;
+        const uploadTask = this.firebaseService.uploadImage(image, 'profilePictures', uid);
         uploadTask?.then(async snapshot => {
           const imageURL = await snapshot.ref.getDownloadURL();
-          const uid = userData.user?.uid;
+          
           await this.firestore.collection(this.PATH).add({ userName, email, phoneNumber, imageURL, uid });
           await this.alertService.presentAlert('Registro realizado com sucesso', 'Você será redirecionado para a página de login');
           this.routingService.goToLoginPage();

@@ -58,7 +58,8 @@ export class ProfilePage implements OnInit {
         if (file.type.split('/')[0] !== 'image') {
           this.alertService.presentAlert('Erro ao enviar foto de perfil', 'Tipo não suportado');
         } else {
-          const uploadTask = this.firebaseService.uploadImage(this.image, 'profilePictures');
+          const uid = this.authService.getLoggedUser().uid;
+          const uploadTask = this.firebaseService.uploadImage(this.image, 'profilePictures', uid);
           uploadTask?.then(async snapshot => {
             const imageURL = await snapshot.ref.getDownloadURL();
             this.authService.updateProfilePicture(imageURL, firestoreProfileId);

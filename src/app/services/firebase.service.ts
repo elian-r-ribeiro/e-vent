@@ -18,9 +18,9 @@ export class FirebaseService {
     return this.injector.get(AuthService);
   }
 
-  uploadImage(image: any, PATH: string){
+  uploadImage(image: any, PATH: string, fileName: any){
     const file = image.item(0);
-    const path = `${PATH}/${file.name}`;
+    const path = `${PATH}/${fileName}`;
     let task = this.storage.upload(path, file);
     return task;
   }
@@ -31,7 +31,7 @@ export class FirebaseService {
     if (file.type.split('/')[0] !== 'image') {
       this.alertService.presentAlert('Erro ao enviar imagem do evento', 'Tipo não suportado');
     } else {
-      const uploadTask = this.uploadImage(image, 'eventImages');
+      const uploadTask = this.uploadImage(image, 'eventImages', 'temporaryName');
       uploadTask?.then(async snapshot => {
         const imageURL = await snapshot.ref.getDownloadURL();
         await this.firestore.collection(this.PATH).add({ eventTitle, eventDesc, maxParticipants, imageURL, ownerUid });
