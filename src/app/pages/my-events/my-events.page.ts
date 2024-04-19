@@ -37,8 +37,8 @@ export class MyEventsPage implements OnInit {
     this.routingService.goToNewEventPage();
   }
 
-  goToEventPage(){
-    this.routingService.goToEventPage();
+  goToEventPage(index: number){
+    this.routingService.goToEventPage(index);
   }
 
   goToProfilePage(){

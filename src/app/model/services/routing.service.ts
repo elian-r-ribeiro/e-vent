@@ -20,8 +20,8 @@ export class RoutingService {
     this.router.navigate(['/new-event'])
   }
 
-  goToEventPage(){
-    this.router.navigate(['/event'])
+  goToEventPage(index: number){
+    this.router.navigate(['/event', index])
   }
 
   goToProfilePage(){

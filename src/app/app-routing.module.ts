@@ -20,7 +20,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
   },
   {
-    path: 'event',
+    path: 'event/:index',
     loadChildren: () => import('./pages/event/event.module').then( m => m.EventPageModule)
   },
   {
@@ -30,7 +30,8 @@ const routes: Routes = [
   {
     path: 'new-event',
     loadChildren: () => import('./pages/new-event/new-event.module').then( m => m.NewEventPageModule)
-  },  {
+  },
+  {
     path: 'my-events',
     loadChildren: () => import('./pages/my-events/my-events.module').then( m => m.MyEventsPageModule)
   },
