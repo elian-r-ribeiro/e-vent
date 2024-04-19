@@ -1,17 +1,25 @@
 <ion-content>
     <ion-list class="eventInfo">
         <ion-item>
-            <ion-label class="title">Jogatina de CS:GO após a faculdade</ion-label>
+            <ion-label class="title">{{event?.eventTitle}}</ion-label>
         </ion-item>
         <ion-item>
-            <ion-label class="description">Jogatina de CS:GO após a faculdade  Jogatina de CS:GO após a faculdade  Jogatina de CS:GO após a faculdade  Jogatina de CS:GO após a faculdade  Jogatina de CS:GO após a faculdade  Jogatina Jogatina de</ion-label>
+            <ion-label class="description">{{event?.eventDesc}}</ion-label>
         </ion-item>
         <div class="imgContainer">
-            <img src="https://www.collinsdictionary.com/images/full/wolf_9162886.jpg">
+            <img src="{{event?.eventImg}}">
         </div>
     </ion-list>
 
-    <ion-label class="participantsTitle">Participantes confirmados (1 de 5): </ion-label>
+    <ion-label class="ownerTitle">Criador do evento:</ion-label>
+    <ion-list class="owner">
+        <ion-item>
+            <img src="{{event?.ownerImage}}">
+            <ion-label>{{event?.ownerName}}</ion-label>
+        </ion-item>
+    </ion-list>
+
+    <ion-label class="participantsTitle">Participantes confirmados (1 de {{selectedEvent?.maxParticipants}}): </ion-label>
     <ion-list class="participants">
         <ion-item>
             <img src="https://www.collinsdictionary.com/images/full/wolf_9162886.jpg">

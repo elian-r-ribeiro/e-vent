@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertService } from 'src/app/common/alert.service';
-import { AuthService } from 'src/app/services/auth.service';
-import { FirebaseService } from 'src/app/services/firebase.service';
-import { RoutingService } from 'src/app/services/routing.service';
+import { AuthService } from 'src/app/model/services/auth.service';
+import { FirebaseService } from 'src/app/model/services/firebase.service';
+import { RoutingService } from 'src/app/model/services/routing.service';
 
 @Component({
   selector: 'app-my-events',

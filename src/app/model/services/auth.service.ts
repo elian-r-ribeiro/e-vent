@@ -3,7 +3,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { RoutingService } from './routing.service';
 import { FirebaseService } from './firebase.service';
-import { AlertService } from '../common/alert.service';
+import { AlertService } from '../../common/alert.service';
 
 @Injectable({
   providedIn: 'root'
