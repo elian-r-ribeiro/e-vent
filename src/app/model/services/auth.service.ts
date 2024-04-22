@@ -106,8 +106,8 @@ export class AuthService implements OnInit {
     return this.firestore.collection(this.PATH).doc(id).update({ imageURL: newImageURL});
   }
 
-  resetPassword(){
-    this.auth.sendPasswordResetEmail('elianrodriguesribeiro@gmail.com');
+  resetPassword(email: string){
+    this.auth.sendPasswordResetEmail(email);
   }
 
   logout() {

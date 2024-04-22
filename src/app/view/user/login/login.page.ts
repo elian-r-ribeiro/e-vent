@@ -23,8 +23,6 @@ export class LoginPage implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     })
-
-    this.authService.resetPassword();
   }
 
   submitForm(){
@@ -37,5 +35,9 @@ export class LoginPage implements OnInit {
 
   goToRegisterPage(){
     this.routingService.goToRegisterPage();
+  }
+
+  goToPasswordResetPage(){
+    this.routingService.goToResetPasswordPage();
   }
 }

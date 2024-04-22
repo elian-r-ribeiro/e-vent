@@ -35,4 +35,8 @@ export class RoutingService {
   goToHomePage(){
     this.router.navigate(['/home'])
   }
+
+  goToResetPasswordPage(){
+    this.router.navigate(['/passwordreset']);
+  }
 }

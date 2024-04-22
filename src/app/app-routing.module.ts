@@ -34,7 +34,11 @@ const routes: Routes = [
   {
     path: 'my-events',
     loadChildren: () => import('./view/events/my-events/my-events.module').then( m => m.MyEventsPageModule)
+  },  {
+    path: 'passwordreset',
+    loadChildren: () => import('./view/user/passwordreset/passwordreset.module').then( m => m.PasswordresetPageModule)
   },
+
 
 ];
 
