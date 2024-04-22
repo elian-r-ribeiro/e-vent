@@ -32,7 +32,7 @@ export class FirebaseService {
     if (file.type.split('/')[0] !== 'image') {
       this.alertService.presentAlert('Erro ao enviar imagem do evento', 'Tipo não suportado');
     } else {
-      const uploadTask = this.uploadImage(image, 'eventImages', 'temporaryName');
+      const uploadTask = this.uploadImage(image, 'eventImages', file.fileName);
       uploadTask?.then(async snapshot => {
         const imageURL = await snapshot.ref.getDownloadURL();
         await this.firestore.collection(this.eventsPath).add({ eventTitle, eventDesc, maxParticipants, imageURL, ownerUid });
@@ -53,5 +53,13 @@ export class FirebaseService {
 
   getEventOwnerInfo(eventOwnerUID: string){
     return this.firestore.collection(this.usersPath, ref => ref.where('uid', '==', eventOwnerUID)).snapshotChanges();
+  }
+
+  isUserEventOwner(userId: string, ownerId: string){
+    if(userId == ownerId){
+      return true;
+    } else {
+      return false;
+    }
   }
 }

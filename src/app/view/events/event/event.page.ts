@@ -16,10 +16,12 @@ export class EventPage implements OnInit {
   constructor(private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private firebaseService: FirebaseService, private route: ActivatedRoute) { }
 
   event?: Event;
+  isUserEventOwner?: boolean = false;
   events: any;
   selectedEvent: any;
   eventOwner: any;
   owner: any;
+  loggedUserUID: string = this.authService.getLoggedUser().uid;
 
   ngOnInit() {
     if (this.authService.getLoggedUser() == null) {
@@ -41,6 +43,8 @@ export class EventPage implements OnInit {
           this.owner = this.eventOwner[0];
           this.event!.ownerName = this.owner.userName;
           this.event!.ownerImage = this.owner.imageURL;
+          this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
+          console.log(this.isUserEventOwner);
         });
       });
     })
