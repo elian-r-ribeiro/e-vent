@@ -19,6 +19,11 @@ export class RegisterPage implements OnInit {
   }
 
   ngOnInit() {
+    if (this.authService.getLoggedUser() != null) {
+      this.routingService.goToHomePage();
+      this.alertService.presentAlert('Login detectado', 'Você já está logado, você será redirecionado para a home');
+    };
+
     this.registerForm = this.builder.group({
       userName: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
       email: ['', [Validators.required, Validators.email]],

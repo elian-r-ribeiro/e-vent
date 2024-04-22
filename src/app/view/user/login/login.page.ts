@@ -19,10 +19,15 @@ export class LoginPage implements OnInit {
    }
 
   ngOnInit() {
+    if (this.authService.getLoggedUser() != null) {
+      this.routingService.goToHomePage();
+      this.alertService.presentAlert('Login detectado', 'Você já está logado, você será redirecionado para a home');
+    };
+
     this.loginForm = this.builder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
-    })
+    });
   }
 
   submitForm(){

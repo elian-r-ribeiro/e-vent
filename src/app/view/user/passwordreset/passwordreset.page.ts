@@ -16,6 +16,11 @@ export class PasswordresetPage implements OnInit {
   constructor(private builder: FormBuilder, private authService: AuthService, private alertService: AlertService, private routingService: RoutingService) { }
 
   ngOnInit() {
+    if (this.authService.getLoggedUser() != null) {
+      this.routingService.goToHomePage();
+      this.alertService.presentAlert('Login detectado', 'Você já está logado, você será redirecionado para a home');
+    };
+
     this.passwordResetForm = this.builder.group({
       email: ['', [Validators.required, Validators.email]]
     });
