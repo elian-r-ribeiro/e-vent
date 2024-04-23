@@ -20,7 +20,7 @@ const routes: Routes = [
     loadChildren: () => import('./view/user/login/login.module').then( m => m.LoginPageModule)
   },
   {
-    path: 'event/:index',
+    path: 'event/:index/:from',
     loadChildren: () => import('./view/events/event/event.module').then( m => m.EventPageModule)
   },
   {
@@ -34,7 +34,8 @@ const routes: Routes = [
   {
     path: 'my-events',
     loadChildren: () => import('./view/events/my-events/my-events.module').then( m => m.MyEventsPageModule)
-  },  {
+  },
+  {
     path: 'passwordreset',
     loadChildren: () => import('./view/user/passwordreset/passwordreset.module').then( m => m.PasswordresetPageModule)
   },

@@ -9,31 +9,31 @@ export class RoutingService {
   constructor(private router : Router) { }
 
   goToLoginPage(){
-    this.router.navigate(['/login'])
+    this.router.navigate(['/login']);
   }
 
   goToRegisterPage(){
-    this.router.navigate(['/register'])
+    this.router.navigate(['/register']);
   }
 
   goToNewEventPage(){
-    this.router.navigate(['/new-event'])
+    this.router.navigate(['/new-event']);
   }
 
-  goToEventPage(index: number){
-    this.router.navigate(['/event', index])
+  goToEventPage(index: number, from: string){
+    this.router.navigate(['/event', index, from]);
   }
 
   goToProfilePage(){
-    this.router.navigate(['/profile'])
+    this.router.navigate(['/profile']);
   }
 
   goToMyEventsPage(){
-    this.router.navigate(['/my-events'])
+    this.router.navigate(['/my-events']);
   }
 
   goToHomePage(){
-    this.router.navigate(['/home'])
+    this.router.navigate(['/home']);
   }
 
   goToResetPasswordPage(){

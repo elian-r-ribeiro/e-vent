@@ -31,22 +31,40 @@ export class EventPage implements OnInit {
 
     this.route.params.subscribe(params => {
       const eventIndex = +params['index'];
-      this.firebaseService.getAllEvents().subscribe(res => {
-        this.events = res.map(events => {
-          return { id: events.payload.doc.id, ...events.payload.doc.data() as any };
+      const cameFrom = params['from'];
+      if(cameFrom === 'home') {
+        this.firebaseService.getAllEvents().subscribe(res => {
+          this.events = res.map(events => {
+            return { id: events.payload.doc.id, ...events.payload.doc.data() as any };
+          });
+          this.selectedEvent = this.events[eventIndex];
+          this.event = new Event(this.selectedEvent.eventTitle, this.selectedEvent.eventDesc, this.selectedEvent.imageURL, this.selectedEvent.maxParticipants);
+    
+          this.firebaseService.getEventOwnerInfo(this.selectedEvent.ownerUid).subscribe(res => {
+            this.eventOwner = res.map(eventOwner => { return { id: eventOwner.payload.doc.id, ...eventOwner.payload.doc.data() as any } as any });
+            this.owner = this.eventOwner[0];
+            this.event!.ownerName = this.owner.userName;
+            this.event!.ownerImage = this.owner.imageURL;
+            this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
+          });
         });
-        this.selectedEvent = this.events[eventIndex];
-        this.event = new Event(this.selectedEvent.eventTitle, this.selectedEvent.eventDesc, this.selectedEvent.imageURL, this.selectedEvent.maxParticipants);
-  
-        this.firebaseService.getEventOwnerInfo(this.selectedEvent.ownerUid).subscribe(res => {
-          this.eventOwner = res.map(eventOwner => { return { id: eventOwner.payload.doc.id, ...eventOwner.payload.doc.data() as any } as any });
-          this.owner = this.eventOwner[0];
-          this.event!.ownerName = this.owner.userName;
-          this.event!.ownerImage = this.owner.imageURL;
-          this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
-          console.log(this.isUserEventOwner);
+      } else {
+        this.firebaseService.getUserEvents().subscribe(res => {
+          this.events = res.map(events => {
+            return { id: events.payload.doc.id, ...events.payload.doc.data() as any };
+          });
+          this.selectedEvent = this.events[eventIndex];
+          this.event = new Event(this.selectedEvent.eventTitle, this.selectedEvent.eventDesc, this.selectedEvent.imageURL, this.selectedEvent.maxParticipants);
+    
+          this.firebaseService.getEventOwnerInfo(this.selectedEvent.ownerUid).subscribe(res => {
+            this.eventOwner = res.map(eventOwner => { return { id: eventOwner.payload.doc.id, ...eventOwner.payload.doc.data() as any } as any });
+            this.owner = this.eventOwner[0];
+            this.event!.ownerName = this.owner.userName;
+            this.event!.ownerImage = this.owner.imageURL;
+            this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
+          });
         });
-      });
+      }
     })
   }
 }

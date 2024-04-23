@@ -47,7 +47,7 @@ export class HomePage implements OnInit {
   }
 
   goToEventPage(index: number) {
-    this.routingService.goToEventPage(index);
+    this.routingService.goToEventPage(index, 'home');
   }
 
   goToProfilePage() {
