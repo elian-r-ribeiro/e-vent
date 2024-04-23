@@ -44,12 +44,15 @@ export class NewEventPage implements OnInit {
     this.image = image.files;
   }
 
-  submitForm(){
+  showConfirmEventCreation(){
     if(!this.eventForm.valid){
       this.alertService.presentAlert('Erro ao registrar evento', 'Cheque todos os campos e tente novamente');
     }else{
-      this.firebaseService.registerEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], this.image);
+      this.alertService.presentConfirmAlert('Atenção', 'Tem certeza que deseja criar esse evento? Certifique-se de ter colocado local, horário e detalhes do evento', this.createEvent.bind(this));
     }
   }
 
+  createEvent(){
+    this.firebaseService.registerEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], this.image);
+  }
 }

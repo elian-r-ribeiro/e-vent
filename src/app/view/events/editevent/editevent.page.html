@@ -1,5 +1,5 @@
 <ion-content [fullscreen]="true">
-  <form [formGroup]="eventForm" class="editEventForm" (ngSubmit)="updateEvent()">
+  <form [formGroup]="eventForm" class="editEventForm" (ngSubmit)="showConfirmEventEdit()">
     <ion-item>
       <ion-input formControlName="eventTitle" type="text" placeholder="Título do evento (máx. 50)"></ion-input>
     </ion-item>

@@ -72,6 +72,10 @@ export class EventPage implements OnInit {
     })
   }
 
+  showConfirmDeleteEvent(){
+    this.alertService.presentConfirmAlert('Atenção', 'Tem certeza que deseja deletar esse evento? Essa ação não pode ser desfeita', this.deleteEvent.bind(this));
+  }
+
   async deleteEvent(){
     if(!this.isUserEventOwner){
       this.alertService.presentAlert('Erro', 'Você não pode deletar um evento que não é seu');

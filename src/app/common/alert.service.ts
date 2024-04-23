@@ -15,7 +15,21 @@ export class AlertService {
       message: message,
       buttons: ['OK'],
     });
+
+    await alert.present();
+  }
+
+  async presentConfirmAlert(subHeader: string, message: string, onConfirm: () => void){
+    const alert = await this.alertController.create({
+      header: 'E-vent',
+      subHeader: subHeader,
+      message: message,
+      buttons: [
+        {text: "Cancelar", role: 'cancelar', handler: ()=>{}},
+        {text: "Confirmar", role: 'confirmar', handler: ()=>{onConfirm()}}
+      ],
+    });
   
     await alert.present();
-    }
+  }
 }

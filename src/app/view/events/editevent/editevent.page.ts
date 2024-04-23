@@ -55,32 +55,35 @@ export class EditeventPage implements OnInit {
     this.image = image.files;
   }
 
-  async updateEvent() {
+  showConfirmEventEdit() {
     if (!this.eventForm.valid) {
       this.alertService.presentAlert('Erro ao registrar evento', 'Cheque todos os campos e tente novamente');
     } else {
-      const firestoreEventId = this.eventData.id;
-      if (this.image != null) {
-        const file = this.image.item(0);
-        if (file.type.split('/')[0] !== 'image') {
-          this.alertService.presentAlert('Erro ao enviar foto de perfil', 'Tipo não suportado');
-        } else {
-          const uploadTask = this.firebaseService.uploadImage(this.image, 'eventImages', firestoreEventId);
-          await uploadTask?.then(async snapshot => {
-            const imageURL = await snapshot.ref.getDownloadURL();
-            this.firebaseService.updateEventImage(imageURL, firestoreEventId);
-          })
-          await this.firebaseService.updateEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], firestoreEventId);
-          this.alertService.presentAlert('Sucesso', 'Informações do evento editadas com sucesso');
-          this.routingService.goBackToPreviousPage();
-        }
+      this.alertService.presentConfirmAlert('Atenção', 'Tem certeza que deseja editar esse evento? Essa ação não pode ser desfeita. Certifique-se de colocar local, horário e detalhes do evento', this.updateEvent.bind(this));
+    }
+  }
+
+  async updateEvent() {
+    const firestoreEventId = this.eventData.id;
+    if (this.image != null) {
+      const file = this.image.item(0);
+      if (file.type.split('/')[0] !== 'image') {
+        this.alertService.presentAlert('Erro ao enviar foto de perfil', 'Tipo não suportado');
       } else {
+        const uploadTask = this.firebaseService.uploadImage(this.image, 'eventImages', firestoreEventId);
+        await uploadTask?.then(async snapshot => {
+          const imageURL = await snapshot.ref.getDownloadURL();
+          this.firebaseService.updateEventImage(imageURL, firestoreEventId);
+        })
         await this.firebaseService.updateEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], firestoreEventId);
         this.alertService.presentAlert('Sucesso', 'Informações do evento editadas com sucesso');
         this.routingService.goBackToPreviousPage();
       }
-
+    } else {
+      await this.firebaseService.updateEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], firestoreEventId);
+      this.alertService.presentAlert('Sucesso', 'Informações do evento editadas com sucesso');
+      this.routingService.goBackToPreviousPage();
     }
-  }
 
+  }
 }

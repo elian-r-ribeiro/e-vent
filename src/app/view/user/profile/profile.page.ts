@@ -48,36 +48,42 @@ export class ProfilePage implements OnInit {
     this.image = image.files;
   }
 
-  async updateProfile() {
+  showConfirmProfileEdit() {
     if (!this.profileForm.valid) {
       this.alertService.presentAlert('Erro ao atualizar perfil', 'Cheque os campos e tente novamente');
     } else {
-      const firestoreProfileId = this.userInfo[0].id;
-      if (this.image != null) {
-        const file = this.image.item(0);
-        if (file.type.split('/')[0] !== 'image') {
-          this.alertService.presentAlert('Erro ao enviar foto de perfil', 'Tipo não suportado');
-        } else {
-          const uid = this.authService.getLoggedUser().uid;
-          const uploadTask = this.firebaseService.uploadImage(this.image, 'profilePictures', uid);
-          await uploadTask?.then(async snapshot => {
-            const imageURL = await snapshot.ref.getDownloadURL();
-            this.authService.updateProfilePicture(imageURL, firestoreProfileId);
-          })
-          await this.authService.updateProfile(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId);
-          this.alertService.presentAlert('Perfil atualizado com sucesso', 'Suas informações foram atualizas');
-        }
-      } else{
+      this.alertService.presentConfirmAlert('Atenção', 'Tem certeza que deseja editar seu perfil? Essa ação não pode ser desfeita', this.updateProfile.bind(this));
+    }
+  }
+
+  showConfirmLogout(){
+    this.alertService.presentConfirmAlert('Atenção', 'Tem certeza que deseja sair dessa conta?', this.logout.bind(this));
+  }
+
+  async updateProfile() {
+    const firestoreProfileId = this.userInfo[0].id;
+    if (this.image != null) {
+      const file = this.image.item(0);
+      if (file.type.split('/')[0] !== 'image') {
+        this.alertService.presentAlert('Erro ao enviar foto de perfil', 'Tipo não suportado');
+      } else {
+        const uid = this.authService.getLoggedUser().uid;
+        const uploadTask = this.firebaseService.uploadImage(this.image, 'profilePictures', uid);
+        await uploadTask?.then(async snapshot => {
+          const imageURL = await snapshot.ref.getDownloadURL();
+          this.authService.updateProfilePicture(imageURL, firestoreProfileId);
+        })
         await this.authService.updateProfile(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId);
         this.alertService.presentAlert('Perfil atualizado com sucesso', 'Suas informações foram atualizas');
       }
-
-      
+    } else {
+      await this.authService.updateProfile(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId);
+      this.alertService.presentAlert('Perfil atualizado com sucesso', 'Suas informações foram atualizas');
     }
+
   }
 
   logout() {
     this.authService.logout();
   }
-
 }
