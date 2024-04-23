@@ -39,6 +39,11 @@ const routes: Routes = [
     path: 'passwordreset',
     loadChildren: () => import('./view/user/passwordreset/passwordreset.module').then( m => m.PasswordresetPageModule)
   },
+  {
+    path: 'editevent/:eventid',
+    loadChildren: () => import('./view/events/editevent/editevent.module').then( m => m.EditeventPageModule)
+  },
+
 
 
 ];

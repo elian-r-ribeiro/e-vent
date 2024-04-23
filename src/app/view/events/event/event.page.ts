@@ -22,6 +22,7 @@ export class EventPage implements OnInit {
   eventOwner: any;
   owner: any;
   loggedUserUID: string = this.authService.getLoggedUser().uid;
+  eventId?: string;
 
   ngOnInit() {
     if (this.authService.getLoggedUser() == null) {
@@ -32,14 +33,15 @@ export class EventPage implements OnInit {
     this.route.params.subscribe(params => {
       const eventIndex = +params['index'];
       const cameFrom = params['from'];
-      if(cameFrom === 'home') {
+      if (cameFrom === 'home') {
         this.firebaseService.getAllEvents().subscribe(res => {
           this.events = res.map(events => {
             return { id: events.payload.doc.id, ...events.payload.doc.data() as any };
           });
           this.selectedEvent = this.events[eventIndex];
+          this.eventId = this.selectedEvent.id;
           this.event = new Event(this.selectedEvent.eventTitle, this.selectedEvent.eventDesc, this.selectedEvent.imageURL, this.selectedEvent.maxParticipants);
-    
+
           this.firebaseService.getEventOwnerInfo(this.selectedEvent.ownerUid).subscribe(res => {
             this.eventOwner = res.map(eventOwner => { return { id: eventOwner.payload.doc.id, ...eventOwner.payload.doc.data() as any } as any });
             this.owner = this.eventOwner[0];
@@ -54,17 +56,23 @@ export class EventPage implements OnInit {
             return { id: events.payload.doc.id, ...events.payload.doc.data() as any };
           });
           this.selectedEvent = this.events[eventIndex];
+          this.eventId = this.selectedEvent.id;
           this.event = new Event(this.selectedEvent.eventTitle, this.selectedEvent.eventDesc, this.selectedEvent.imageURL, this.selectedEvent.maxParticipants);
-    
+
           this.firebaseService.getEventOwnerInfo(this.selectedEvent.ownerUid).subscribe(res => {
             this.eventOwner = res.map(eventOwner => { return { id: eventOwner.payload.doc.id, ...eventOwner.payload.doc.data() as any } as any });
             this.owner = this.eventOwner[0];
             this.event!.ownerName = this.owner.userName;
             this.event!.ownerImage = this.owner.imageURL;
             this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
+
           });
         });
       }
     })
+  }
+
+  goToEditEvent() {
+    this.routingService.goToEditEventPage(this.eventId);
   }
 }

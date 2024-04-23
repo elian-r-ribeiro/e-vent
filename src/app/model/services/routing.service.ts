@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoutingService {
 
-  constructor(private router : Router) { }
+  constructor(private router : Router, private location: Location) { }
 
   goToLoginPage(){
     this.router.navigate(['/login']);
@@ -24,6 +25,10 @@ export class RoutingService {
     this.router.navigate(['/event', index, from]);
   }
 
+  goToEditEventPage(eventid?: string){
+    this.router.navigate(['/editevent', eventid]);
+  }
+
   goToProfilePage(){
     this.router.navigate(['/profile']);
   }
@@ -38,5 +43,9 @@ export class RoutingService {
 
   goToResetPasswordPage(){
     this.router.navigate(['/passwordreset']);
+  }
+
+  goBackToPreviousPage(){
+    this.location.back();
   }
 }

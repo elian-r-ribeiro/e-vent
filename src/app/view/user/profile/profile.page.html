@@ -17,8 +17,6 @@
     <ion-item>
       <ion-input (change)="uploadFile($event.target)" type="file" formControlName="profileImage"></ion-input>
     </ion-item>
-    <span *ngIf="profileForm.get('profileImage')?.errors?.['required']">A imagem de perfil é obrigatória</span>
-
     <ion-button class="confirmButton" shape="round" type="submit">Confirmar alterações</ion-button>
     <ion-button (click)="logout()" shape="round" color="danger">Sair dessa conta</ion-button>
   </form>

@@ -48,7 +48,7 @@ export class ProfilePage implements OnInit {
     this.image = image.files;
   }
 
-  updateProfile() {
+  async updateProfile() {
     if (!this.profileForm.valid) {
       this.alertService.presentAlert('Erro ao atualizar perfil', 'Cheque os campos e tente novamente');
     } else {
@@ -60,15 +60,15 @@ export class ProfilePage implements OnInit {
         } else {
           const uid = this.authService.getLoggedUser().uid;
           const uploadTask = this.firebaseService.uploadImage(this.image, 'profilePictures', uid);
-          uploadTask?.then(async snapshot => {
+          await uploadTask?.then(async snapshot => {
             const imageURL = await snapshot.ref.getDownloadURL();
             this.authService.updateProfilePicture(imageURL, firestoreProfileId);
           })
-          this.authService.updateProfile(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId);
+          await this.authService.updateProfile(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId);
           this.alertService.presentAlert('Perfil atualizado com sucesso', 'Suas informações foram atualizas');
         }
       } else{
-        this.authService.updateProfile(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId);
+        await this.authService.updateProfile(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId);
         this.alertService.presentAlert('Perfil atualizado com sucesso', 'Suas informações foram atualizas');
       }
 

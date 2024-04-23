@@ -52,8 +52,20 @@ export class FirebaseService {
     return this.firestore.collection(this.eventsPath, ref => ref.where('ownerUid', '==', loggedUserUID)).snapshotChanges();
   }
 
+  getEventInfoById(eventId: string){
+    return this.firestore.collection(this.eventsPath).doc(eventId).get();
+  }
+
   getEventOwnerInfo(eventOwnerUID: string){
     return this.firestore.collection(this.usersPath, ref => ref.where('uid', '==', eventOwnerUID)).snapshotChanges();
+  }
+
+  updateEvent(newEventTitle: string, newEventDesc: string, newMaxParticipants: number, eventId: string){
+    return this.firestore.collection(this.eventsPath).doc(eventId).update({eventTitle: newEventTitle, eventDesc: newEventDesc, maxParticipants: newMaxParticipants});
+  }
+
+  updateEventImage(newImageURL: string, eventId: string){
+    return this.firestore.collection(this.eventsPath).doc(eventId).update({imageURL: newImageURL});
   }
 
   isUserEventOwner(userId: string, ownerId: string){
