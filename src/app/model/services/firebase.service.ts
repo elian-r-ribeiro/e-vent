@@ -26,16 +26,17 @@ export class FirebaseService {
     return task;
   }
 
-  registerEvent(eventTitle: string, eventDesc: string, maxParticipants: number, image: any){
+  async registerEvent(eventTitle: string, eventDesc: string, maxParticipants: number, image: any){
     const ownerUid = this.injectAuthService().getLoggedUser().uid;
     const file = image.item(0);
     if (file.type.split('/')[0] !== 'image') {
       this.alertService.presentAlert('Erro ao enviar imagem do evento', 'Tipo não suportado');
     } else {
-      const uploadTask = this.uploadImage(image, 'eventImages', file.fileName);
+      const eventDocRef = await this.firestore.collection(this.eventsPath).add({ eventTitle, eventDesc, maxParticipants, ownerUid });
+      const uploadTask = this.uploadImage(image, 'eventImages', eventDocRef.id);
       uploadTask?.then(async snapshot => {
         const imageURL = await snapshot.ref.getDownloadURL();
-        await this.firestore.collection(this.eventsPath).add({ eventTitle, eventDesc, maxParticipants, imageURL, ownerUid });
+        await eventDocRef.update({imageURL});
         this.alertService.presentAlert('Evento registrado com sucesso', 'Você pode checar mais informações na aba "Meus eventos" e ele já está disponível para outras pessoas');
         this.routingService.goToHomePage();
       })
