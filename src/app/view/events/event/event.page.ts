@@ -22,7 +22,7 @@ export class EventPage implements OnInit {
   eventOwner: any;
   owner: any;
   loggedUserUID: string = this.authService.getLoggedUser().uid;
-  eventId?: string;
+  eventId!: string;
 
   ngOnInit() {
     if (this.authService.getLoggedUser() == null) {
@@ -70,6 +70,15 @@ export class EventPage implements OnInit {
         });
       }
     })
+  }
+
+  async deleteEvent(){
+    if(!this.isUserEventOwner){
+      this.alertService.presentAlert('Erro', 'Você não pode deletar um evento que não é seu');
+    } else {
+      await this.firebaseService.deleteEventAndEventImage(this.eventId);
+      this.routingService.goBackToPreviousPage();
+    }
   }
 
   goToEditEvent() {

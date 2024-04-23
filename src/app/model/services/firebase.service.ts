@@ -26,6 +26,12 @@ export class FirebaseService {
     return task;
   }
 
+  deleteEventAndEventImage(eventId: string){
+    const completePath = `eventImages/${eventId}`;
+    this.storage.ref(completePath).delete();
+    return this.firestore.collection(this.eventsPath).doc(eventId).delete();
+  }
+
   async registerEvent(eventTitle: string, eventDesc: string, maxParticipants: number, image: any){
     const ownerUid = this.injectAuthService().getLoggedUser().uid;
     const file = image.item(0);
