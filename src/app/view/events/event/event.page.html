@@ -19,11 +19,11 @@
         </ion-item>
     </ion-list>
 
-    <ion-label class="participantsTitle">Participantes confirmados (1 de {{selectedEvent?.maxParticipants}}): </ion-label>
+    <ion-label class="participantsTitle">Participantes confirmados ({{currentParticipantsNumber}} de {{selectedEvent?.maxParticipants}}): </ion-label>
     <ion-list class="participants">
-        <ion-item>
-            <img src="https://www.collinsdictionary.com/images/full/wolf_9162886.jpg">
-            <ion-label>Elian Rodrigues Ribeiro</ion-label>
+        <ion-item *ngFor="let participant of eventParticipants">
+            <img src="{{participant.participantProfileImage}}">
+            <ion-label>{{participant.participantName}}</ion-label>
         </ion-item>
     </ion-list>
 
@@ -33,7 +33,10 @@
     <ion-fab *ngIf="isUserEventOwner" class="editEventButton" horizontal="end" vertical="bottom">
         <ion-button (click)="goToEditEvent()" shape="round" color="warning">Editar evento</ion-button>
     </ion-fab>
-    <ion-fab class="confirmEventButton" horizontal="end" vertical="bottom">
-        <ion-button shape="round" (click)="addEventParticipation()">Confirmar paticipação</ion-button>
+    <ion-fab *ngIf="!isUserAlreadyEventParticipant" class="confirmEventButton" horizontal="end" vertical="bottom">
+        <ion-button shape="round" (click)="showConfirmEventParticipation()">Confirmar paticipação</ion-button>
+    </ion-fab>
+    <ion-fab *ngIf="isUserAlreadyEventParticipant" class="confirmEventButton" horizontal="end" vertical="bottom">
+        <ion-button shape="round" (click)="showConfirmEventCancelParticipation()">Cancelar paticipação</ion-button>
     </ion-fab>
 </ion-content>

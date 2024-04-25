@@ -75,16 +75,20 @@ export class FirebaseService {
     return this.firestore.collection(this.eventsPath).doc(eventId).update({imageURL: newImageURL});
   }
 
-  addEventParticipation(eventId: string){
-    const loggedUserInfo = this.injectAuthService().getUserInfo().subscribe(async res => {
-      const userInfo = res.map(userInfo => {return {id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any} as any});
-      const userInfoAlreadySelected = userInfo[0];
-      return this.firestore.collection(this.participationsPath).add({eventId: eventId, participantId: userInfoAlreadySelected.uid, participantName: userInfoAlreadySelected.userName, participantPhoneNumber: userInfoAlreadySelected.phoneNumber, participantEmail: userInfoAlreadySelected.email, participantProfileImage: userInfoAlreadySelected.imageURL});
-    });
+  addEventParticipation(eventId: string, participantId: string, participantName: string, participantPhoneNumber: number, participantEmail: string, participantProfilePicture: string){
+    return this.firestore.collection(this.participationsPath).add({eventId: eventId, participantId: participantId, participantName: participantName, participantPhoneNumber: participantPhoneNumber, participantEmail: participantEmail, participantProfileImage: participantProfilePicture});
+  }
+
+  removeEventParticipation(participationId: string){
+    return this.firestore.collection(this.participationsPath).doc(participationId).delete();
   }
 
   getEventParticipants(eventId: string){
     return this.firestore.collection(this.participationsPath, ref => ref.where('eventId', '==', eventId)).snapshotChanges();
+  }
+
+  getUserAlreadyParticipatingOnEvent(eventId: string, userId: string){
+    return this.firestore.collection(this.participationsPath, ref => ref.where('eventId', '==', eventId).where('participantId', '==', userId)).snapshotChanges();
   }
 
   isUserEventOwner(userId: string, ownerId: string){

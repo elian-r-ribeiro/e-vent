@@ -27,6 +27,11 @@ export class EventPage implements OnInit, OnDestroy {
   loggedUserUID: string = this.authService.getLoggedUser().uid;
   eventId!: string;
   participantsInfo: any;
+  loggedUserInfoReadyToUse: any;
+  eventParticipants: any;
+  isUserAlreadyEventParticipant?: boolean;
+  userParticipationOnEventId: string = "";
+  currentParticipantsNumber?: number;
 
   ngOnInit() {
     if (this.authService.getLoggedUser() == null) {
@@ -39,8 +44,7 @@ export class EventPage implements OnInit, OnDestroy {
       const cameFrom = params['from'];
       if (cameFrom === 'home') {
         const allEventsSubscription = this.firebaseService.getAllEvents().subscribe(res => {
-          this.events = res.map(events => { return { id: events.payload.doc.id, ...events.payload.doc.data() as any }});
-          console.log("Teste");
+          this.events = res.map(events => { return { id: events.payload.doc.id, ...events.payload.doc.data() as any } });
           this.selectedEvent = this.events[eventIndex];
           this.eventId = this.selectedEvent.id;
           this.event = new Event(this.selectedEvent.eventTitle, this.selectedEvent.eventDesc, this.selectedEvent.imageURL, this.selectedEvent.maxParticipants);
@@ -51,14 +55,36 @@ export class EventPage implements OnInit, OnDestroy {
             this.event!.ownerName = this.owner.userName;
             this.event!.ownerImage = this.owner.imageURL;
             this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
+
+            const loggedUserInfoSubscription = this.authService.getUserInfo().subscribe(res => {
+              const loggedUserInfoResponse = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
+              this.loggedUserInfoReadyToUse = loggedUserInfoResponse[0];
+
+              const eventParticipantsSubscription = this.firebaseService.getEventParticipants(this.eventId).subscribe(res => {
+                this.currentParticipantsNumber = res.length;
+                this.eventParticipants = res.map(eventParticipants => { return { id: eventParticipants.payload.doc.id, ...eventParticipants.payload.doc.data() as any } as any })
+                
+                const getUserAlreadyParticipatingOnEventSubscription = this.firebaseService.getUserAlreadyParticipatingOnEvent(this.eventId, this.loggedUserUID).subscribe(res => {
+                  if(res.length > 0){
+                    this.isUserAlreadyEventParticipant = true;
+                    const getUserAlreadyParticipatingOnEventResponse = res.map(participationInfo => {return { id: participationInfo.payload.doc.id, ...participationInfo.payload.doc.data() as any} as any});
+                    this.userParticipationOnEventId = getUserAlreadyParticipatingOnEventResponse[0].id;
+                  } else {
+                    this.isUserAlreadyEventParticipant = false;
+                  }
+                })
+                this.subscriptions.push(getUserAlreadyParticipatingOnEventSubscription);
+              })
+              this.subscriptions.push(eventParticipantsSubscription);
+            })
+            this.subscriptions.push(loggedUserInfoSubscription);
           });
           this.subscriptions.push(eventOwnerInfoSubscription);
         });
         this.subscriptions.push(allEventsSubscription);
       } else {
         const userEventsSubscription = this.firebaseService.getUserEvents().subscribe(res => {
-          this.events = res.map(events => { return { id: events.payload.doc.id, ...events.payload.doc.data() as any }});
-          console.log("Teste");
+          this.events = res.map(events => { return { id: events.payload.doc.id, ...events.payload.doc.data() as any } });
           this.selectedEvent = this.events[eventIndex];
           this.eventId = this.selectedEvent.id;
           this.event = new Event(this.selectedEvent.eventTitle, this.selectedEvent.eventDesc, this.selectedEvent.imageURL, this.selectedEvent.maxParticipants);
@@ -69,6 +95,29 @@ export class EventPage implements OnInit, OnDestroy {
             this.event!.ownerName = this.owner.userName;
             this.event!.ownerImage = this.owner.imageURL;
             this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
+
+            const loggedUserInfoSubscription = this.authService.getUserInfo().subscribe(res => {
+              const loggedUserInfoResponse = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
+              this.loggedUserInfoReadyToUse = loggedUserInfoResponse[0];
+
+              const eventParticipantsSubscription = this.firebaseService.getEventParticipants(this.eventId).subscribe(res => {
+                this.currentParticipantsNumber = res.length;
+                this.eventParticipants = res.map(eventParticipants => { return { id: eventParticipants.payload.doc.id, ...eventParticipants.payload.doc.data() as any } as any })
+                
+                const getUserAlreadyParticipatingOnEventSubscription = this.firebaseService.getUserAlreadyParticipatingOnEvent(this.eventId, this.loggedUserUID).subscribe(res => {
+                  if(res.length > 0){
+                    this.isUserAlreadyEventParticipant = true;
+                    const getUserAlreadyParticipatingOnEventResponse = res.map(participationInfo => {return { id: participationInfo.payload.doc.id, ...participationInfo.payload.doc.data() as any} as any});
+                    this.userParticipationOnEventId = getUserAlreadyParticipatingOnEventResponse[0].id;
+                  } else {
+                    this.isUserAlreadyEventParticipant = false;
+                  }
+                })
+                this.subscriptions.push(getUserAlreadyParticipatingOnEventSubscription);
+              })
+              this.subscriptions.push(eventParticipantsSubscription);
+            })
+            this.subscriptions.push(loggedUserInfoSubscription);
           });
           this.subscriptions.push(eventOwnerInfoSubscription);
         });
@@ -99,8 +148,32 @@ export class EventPage implements OnInit, OnDestroy {
     }
   }
 
-  addEventParticipation() {
-    this.firebaseService.addEventParticipation(this.eventId);
+  showConfirmEventParticipation() {
+    this.alertService.presentConfirmAlert("Atenção", "Tem certeza que deseja confirmar participação nesse evento?", this.addEventParticipation.bind(this));
+  }
+
+  showConfirmEventCancelParticipation(){
+    this.alertService.presentConfirmAlert("Atenção", "Tem certeza que deseja cancelar a particição nesse evento?", this.removeEventParticipation.bind(this));
+  }
+
+  async addEventParticipation() {
+    if(this.isUserAlreadyEventParticipant){
+      this.alertService.presentAlert("Erro", "Você já está inscrito nesse evento");
+    } else if(this.currentParticipantsNumber == this.selectedEvent.maxParticipants) {
+      this.alertService.presentAlert("Erro", "Número máximo de participantes do evento atingido");
+    } else {
+      await this.firebaseService.addEventParticipation(this.eventId, this.loggedUserInfoReadyToUse.uid, this.loggedUserInfoReadyToUse.userName, this.loggedUserInfoReadyToUse.phoneNumber, this.loggedUserInfoReadyToUse.email, this.loggedUserInfoReadyToUse.imageURL);
+      this.alertService.presentAlert("Sucesso", "Participação no evento confirmada com sucesso");
+    }
+  }
+
+  async removeEventParticipation(){
+    if(!this.isUserAlreadyEventParticipant){
+      this.alertService.presentAlert("Erro", "Você não está inscrito nesse evento");
+    } else {
+      await this.firebaseService.removeEventParticipation(this.userParticipationOnEventId);
+      this.alertService.presentAlert("Sucesso", "Inscrição no evento cancelada com sucesso");
+    }
   }
 
   goToEditEvent() {
