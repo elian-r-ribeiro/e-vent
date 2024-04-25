@@ -12,6 +12,7 @@ export class FirebaseService {
 
   private eventsPath: string = "events";
   private usersPath: string = "users";
+  private participationsPath: string = "participations";
 
   constructor(private routingService: RoutingService, private storage: AngularFireStorage, @Inject(Injector) private readonly injector: Injector, private alertService: AlertService, private firestore: AngularFirestore) { }
 
@@ -72,6 +73,18 @@ export class FirebaseService {
 
   updateEventImage(newImageURL: string, eventId: string){
     return this.firestore.collection(this.eventsPath).doc(eventId).update({imageURL: newImageURL});
+  }
+
+  addEventParticipation(eventId: string){
+    const loggedUserInfo = this.injectAuthService().getUserInfo().subscribe(async res => {
+      const userInfo = res.map(userInfo => {return {id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any} as any});
+      const userInfoAlreadySelected = userInfo[0];
+      return this.firestore.collection(this.participationsPath).add({eventId: eventId, participantId: userInfoAlreadySelected.uid, participantName: userInfoAlreadySelected.userName, participantPhoneNumber: userInfoAlreadySelected.phoneNumber, participantEmail: userInfoAlreadySelected.email, participantProfileImage: userInfoAlreadySelected.imageURL});
+    });
+  }
+
+  getEventParticipants(eventId: string){
+    return this.firestore.collection(this.participationsPath, ref => ref.where('eventId', '==', eventId)).snapshotChanges();
   }
 
   isUserEventOwner(userId: string, ownerId: string){

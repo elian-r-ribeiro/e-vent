@@ -23,6 +23,7 @@ export class EventPage implements OnInit {
   owner: any;
   loggedUserUID: string = this.authService.getLoggedUser().uid;
   eventId!: string;
+  participantsInfo: any;
 
   ngOnInit() {
     if (this.authService.getLoggedUser() == null) {
@@ -48,6 +49,10 @@ export class EventPage implements OnInit {
             this.event!.ownerName = this.owner.userName;
             this.event!.ownerImage = this.owner.imageURL;
             this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
+
+            this.firebaseService.getEventParticipants(this.eventId).subscribe(res => {
+              this.participantsInfo = res.map(particicipantsInfo => { return { id: particicipantsInfo.payload.doc.id, ...particicipantsInfo.payload.doc.data() as any } as any });
+            })
           });
         });
       } else {
@@ -72,17 +77,21 @@ export class EventPage implements OnInit {
     })
   }
 
-  showConfirmDeleteEvent(){
+  showConfirmDeleteEvent() {
     this.alertService.presentConfirmAlert('Atenção', 'Tem certeza que deseja deletar esse evento? Essa ação não pode ser desfeita', this.deleteEvent.bind(this));
   }
 
-  async deleteEvent(){
-    if(!this.isUserEventOwner){
+  async deleteEvent() {
+    if (!this.isUserEventOwner) {
       this.alertService.presentAlert('Erro', 'Você não pode deletar um evento que não é seu');
     } else {
       await this.firebaseService.deleteEventAndEventImage(this.eventId);
       this.routingService.goBackToPreviousPage();
     }
+  }
+
+  addEventParticipation() {
+    this.firebaseService.addEventParticipation(this.eventId);
   }
 
   goToEditEvent() {
