@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
@@ -11,18 +12,20 @@ import { RoutingService } from 'src/app/model/services/routing.service';
   templateUrl: './editevent.page.html',
   styleUrls: ['./editevent.page.scss'],
 })
-export class EditeventPage implements OnInit {
+export class EditeventPage implements OnInit, OnDestroy {
   eventForm!: FormGroup;
   eventData: any;
   image: any;
 
+  private subscriptions: Subscription[] = [];
+
   constructor(private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private builder: FormBuilder, private route: ActivatedRoute) { }
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
+    const routeSubscription = this.route.params.subscribe(params => {
       const userId = this.authService.getLoggedUser().uid;
       const eventId = params['eventid'];
-      this.firebaseService.getEventInfoById(eventId).subscribe(docSnapshot => {
+      const getEventInfoByIdSubscription = this.firebaseService.getEventInfoById(eventId).subscribe(docSnapshot => {
         this.eventData = { id: docSnapshot.id, ...docSnapshot.data() as any };
         const ownerId = this.eventData.ownerUid;
         const isUserEventOwner = this.firebaseService.isUserEventOwner(userId, ownerId);
@@ -35,7 +38,9 @@ export class EditeventPage implements OnInit {
           this.eventForm.get('maxParticipants')?.setValue(this.eventData.maxParticipants);
         }
       })
+      this.subscriptions.push(getEventInfoByIdSubscription);
     })
+    this.subscriptions.push(routeSubscription);
 
 
     if (this.authService.getLoggedUser() == null) {
@@ -49,6 +54,14 @@ export class EditeventPage implements OnInit {
       maxParticipants: [null, [Validators.required, Validators.min(2)]],
       eventImage: [null]
     })
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => {
+      if(subscription){
+        subscription.unsubscribe();
+      }
+    });
   }
 
   uploadFile(image: any) {

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
@@ -9,7 +10,9 @@ import { RoutingService } from 'src/app/model/services/routing.service';
   templateUrl: './my-events.page.html',
   styleUrls: ['./my-events.page.scss'],
 })
-export class MyEventsPage implements OnInit {
+export class MyEventsPage implements OnInit, OnDestroy {
+
+  private subscriptions: Subscription[] = [];
 
   userInfo: any;
   userEvents: any;
@@ -21,13 +24,23 @@ export class MyEventsPage implements OnInit {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
     }
-    this.authService.getUserInfo().subscribe(res=>{
+    const getUserInfoSubscription = this.authService.getUserInfo().subscribe(res=>{
       this.userInfo = res.map(userInfo => 
         {return{id:userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any} as any})
     })
-    this.firebaseService.getUserEvents().subscribe(res=>{
+    this.subscriptions.push(getUserInfoSubscription);
+    const getUserEventsSubscription = this.firebaseService.getUserEvents().subscribe(res=>{
       this.userEvents = res.map(userEvents => 
         {return{id:userEvents.payload.doc.id, ...userEvents.payload.doc.data() as any} as any})
+    })
+    this.subscriptions.push(getUserEventsSubscription);
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => {
+      if(subscription){
+        subscription.unsubscribe();
+      }
     })
   }
 

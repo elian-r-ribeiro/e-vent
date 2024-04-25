@@ -13,10 +13,6 @@ import { RoutingService } from 'src/app/model/services/routing.service';
 })
 export class HomePage implements OnInit, OnDestroy {
 
-  public pokemonList = ['Pikachu', 'Charizard', 'Sei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque',
-    'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque',
-    'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque'];
-
   user: any;
   events: any;
   userData: any;

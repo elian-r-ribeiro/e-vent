@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
@@ -10,7 +11,9 @@ import { RoutingService } from 'src/app/model/services/routing.service';
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
 })
-export class ProfilePage implements OnInit {
+export class ProfilePage implements OnInit, OnDestroy {
+
+  private subscriptions : Subscription[] = [];
 
   constructor(private firebaseService: FirebaseService, private builder: FormBuilder, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService) { }
 
@@ -28,13 +31,22 @@ export class ProfilePage implements OnInit {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
     };
-    this.authService.getUserInfo().subscribe(res => {
+    const getUserInfoSubscription = this.authService.getUserInfo().subscribe(res => {
       this.userInfo = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
       if (this.userInfo.length > 0) {
         this.profileForm.get('userName')?.setValue(this.userInfo[0].userName);
         this.profileForm.get('phoneNumber')?.setValue(this.userInfo[0].phoneNumber);
       };
     });
+    this.subscriptions.push(getUserInfoSubscription);
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => {
+      if(subscription){
+        subscription.unsubscribe();
+      }
+    })
   }
 
   validatePhoneNumber(control: FormControl): { [s: string]: boolean } | null {

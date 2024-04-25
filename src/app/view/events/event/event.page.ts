@@ -34,7 +34,7 @@ export class EventPage implements OnInit, OnDestroy {
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
     }
 
-    this.route.params.subscribe(params => {
+    const routeSubscription = this.route.params.subscribe(params => {
       const eventIndex = +params['index'];
       const cameFrom = params['from'];
       if (cameFrom === 'home') {
@@ -56,25 +56,26 @@ export class EventPage implements OnInit, OnDestroy {
         });
         this.subscriptions.push(allEventsSubscription);
       } else {
-        this.firebaseService.getUserEvents().subscribe(res => {
-          this.events = res.map(events => {
-            return { id: events.payload.doc.id, ...events.payload.doc.data() as any };
-          });
+        const userEventsSubscription = this.firebaseService.getUserEvents().subscribe(res => {
+          this.events = res.map(events => { return { id: events.payload.doc.id, ...events.payload.doc.data() as any }});
+          console.log("Teste");
           this.selectedEvent = this.events[eventIndex];
           this.eventId = this.selectedEvent.id;
           this.event = new Event(this.selectedEvent.eventTitle, this.selectedEvent.eventDesc, this.selectedEvent.imageURL, this.selectedEvent.maxParticipants);
 
-          this.firebaseService.getEventOwnerInfo(this.selectedEvent.ownerUid).subscribe(res => {
+          const eventOwnerInfoSubscription = this.firebaseService.getEventOwnerInfo(this.selectedEvent.ownerUid).subscribe(res => {
             this.eventOwner = res.map(eventOwner => { return { id: eventOwner.payload.doc.id, ...eventOwner.payload.doc.data() as any } as any });
             this.owner = this.eventOwner[0];
             this.event!.ownerName = this.owner.userName;
             this.event!.ownerImage = this.owner.imageURL;
             this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
-
           });
+          this.subscriptions.push(eventOwnerInfoSubscription);
         });
+        this.subscriptions.push(userEventsSubscription);
       }
     })
+    this.subscriptions.push(routeSubscription);
   }
 
   ngOnDestroy() {
