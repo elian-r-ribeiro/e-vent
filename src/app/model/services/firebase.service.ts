@@ -87,6 +87,19 @@ export class FirebaseService {
     return this.firestore.collection(this.participationsPath, ref => ref.where('eventId', '==', eventId)).snapshotChanges();
   }
 
+  async updateParticipantNameAndPhoneNumber(newParticipantName: string, newParticipantPhoneNumber: string, participantId: string): Promise<void> {
+    const query = this.firestore.collection(this.participationsPath, ref => ref.where('participantId', '==', participantId));
+
+    const querySnapshot = await query.get().toPromise();
+
+    for (const document of querySnapshot!.docs) {
+        await document.ref.update({
+            participantName: newParticipantName,
+            participantPhoneNumber: newParticipantPhoneNumber
+        });
+    }
+}
+
   getUserAlreadyParticipatingOnEvent(eventId: string, userId: string){
     return this.firestore.collection(this.participationsPath, ref => ref.where('eventId', '==', eventId).where('participantId', '==', userId)).snapshotChanges();
   }
