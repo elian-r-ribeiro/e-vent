@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
@@ -10,7 +11,7 @@ import { RoutingService } from 'src/app/model/services/routing.service';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
 
   public pokemonList = ['Pikachu', 'Charizard', 'Sei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oqueSei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque',
     'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque', 'Sei lá mais oque',
@@ -27,19 +28,29 @@ export class HomePage implements OnInit {
 
   }
 
+  private subscriptions: Subscription[] = [];
+
   ngOnInit() {
     this.user = this.authService.getLoggedUser();
     if (this.user == null) {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
     }
-    this.authService.getUserInfo().subscribe(res => {
+    const userInfoSubscription = this.authService.getUserInfo().subscribe(res => {
       this.userInfo = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any })
+    });
+    this.subscriptions.push(userInfoSubscription);
+    const eventsSubscription = this.firebaseService.getAllEvents().subscribe(res =>
+      this.events = res.map(events => { return { id: events.payload.doc.id, ...events.payload.doc.data() as any } as any }));
+    this.subscriptions.push(eventsSubscription);
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     })
-    this.firebaseService.getAllEvents().subscribe(res =>
-      this.events = res.map(events => { return { id: events.payload.doc.id, ...events.payload.doc.data() as any } as any }
-      )
-    )
   }
 
   goToNewEventPage() {

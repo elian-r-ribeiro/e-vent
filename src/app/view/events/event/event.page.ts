@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
 import { Event } from 'src/app/model/entities/event';
 import { AuthService } from 'src/app/model/services/auth.service';
@@ -11,7 +12,9 @@ import { RoutingService } from 'src/app/model/services/routing.service';
   templateUrl: './event.page.html',
   styleUrls: ['./event.page.scss'],
 })
-export class EventPage implements OnInit {
+export class EventPage implements OnInit, OnDestroy {
+
+  private subscriptions: Subscription[] = [];
 
   constructor(private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private firebaseService: FirebaseService, private route: ActivatedRoute) { }
 
@@ -35,26 +38,23 @@ export class EventPage implements OnInit {
       const eventIndex = +params['index'];
       const cameFrom = params['from'];
       if (cameFrom === 'home') {
-        this.firebaseService.getAllEvents().subscribe(res => {
-          this.events = res.map(events => {
-            return { id: events.payload.doc.id, ...events.payload.doc.data() as any };
-          });
+        const allEventsSubscription = this.firebaseService.getAllEvents().subscribe(res => {
+          this.events = res.map(events => { return { id: events.payload.doc.id, ...events.payload.doc.data() as any }});
+          console.log("Teste");
           this.selectedEvent = this.events[eventIndex];
           this.eventId = this.selectedEvent.id;
           this.event = new Event(this.selectedEvent.eventTitle, this.selectedEvent.eventDesc, this.selectedEvent.imageURL, this.selectedEvent.maxParticipants);
 
-          this.firebaseService.getEventOwnerInfo(this.selectedEvent.ownerUid).subscribe(res => {
+          const eventOwnerInfoSubscription = this.firebaseService.getEventOwnerInfo(this.selectedEvent.ownerUid).subscribe(res => {
             this.eventOwner = res.map(eventOwner => { return { id: eventOwner.payload.doc.id, ...eventOwner.payload.doc.data() as any } as any });
             this.owner = this.eventOwner[0];
             this.event!.ownerName = this.owner.userName;
             this.event!.ownerImage = this.owner.imageURL;
             this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
-
-            this.firebaseService.getEventParticipants(this.eventId).subscribe(res => {
-              this.participantsInfo = res.map(particicipantsInfo => { return { id: particicipantsInfo.payload.doc.id, ...particicipantsInfo.payload.doc.data() as any } as any });
-            })
           });
+          this.subscriptions.push(eventOwnerInfoSubscription);
         });
+        this.subscriptions.push(allEventsSubscription);
       } else {
         this.firebaseService.getUserEvents().subscribe(res => {
           this.events = res.map(events => {
@@ -73,6 +73,14 @@ export class EventPage implements OnInit {
 
           });
         });
+      }
+    })
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => {
+      if (subscription) {
+        subscription.unsubscribe();
       }
     })
   }
