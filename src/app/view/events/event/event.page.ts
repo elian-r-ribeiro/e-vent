@@ -113,6 +113,14 @@ export class EventPage implements OnInit, OnDestroy {
     }
   }
 
+  async showConfirmRemoveParticipant(index: number){
+    const participationId = this.eventParticipants[index].id;
+    await this.alertService.presentConfirmAlert("Atenção", "Tem certeza que deseja remover esse participante desse evento?", async () => {
+      await this.firebaseService.removeEventParticipation(participationId)
+      this.alertService.presentAlert("Sucesso", "Participante removido com sucesso");
+    });
+  }
+
   showConfirmEventParticipation() {
     this.alertService.presentConfirmAlert("Atenção", "Tem certeza que deseja confirmar participação nesse evento?", this.addEventParticipation.bind(this));
   }
