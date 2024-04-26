@@ -22,7 +22,7 @@ export class RoutingService {
   }
 
   goToEventPage(index: number, from: string){
-    this.router.navigate(['/event', index, from]);
+    this.router.navigate([from, 'event', index]);
   }
 
   goToEditEventPage(eventid?: string){

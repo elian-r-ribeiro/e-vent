@@ -20,7 +20,7 @@ const routes: Routes = [
     loadChildren: () => import('./view/user/login/login.module').then( m => m.LoginPageModule)
   },
   {
-    path: 'event/:index/:from',
+    path: ':from/event/:index',
     loadChildren: () => import('./view/events/event/event.module').then( m => m.EventPageModule)
   },
   {

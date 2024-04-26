@@ -16,24 +16,30 @@ export class FirebaseService {
 
   constructor(private routingService: RoutingService, private storage: AngularFireStorage, @Inject(Injector) private readonly injector: Injector, private alertService: AlertService, private firestore: AngularFirestore) { }
 
-  private injectAuthService(){
+  private injectAuthService() {
     return this.injector.get(AuthService);
   }
 
-  uploadImage(image: any, PATH: string, fileName: any){
+  uploadImage(image: any, PATH: string, fileName: any) {
     const file = image.item(0);
     const path = `${PATH}/${fileName}`;
     let task = this.storage.upload(path, file);
     return task;
   }
 
-  deleteEventAndEventImage(eventId: string){
+  async deleteEventAndEventImageAndEventParticipations(eventId: string) {
     const completePath = `eventImages/${eventId}`;
     this.storage.ref(completePath).delete();
-    return this.firestore.collection(this.eventsPath).doc(eventId).delete();
+    await this.firestore.collection(this.eventsPath).doc(eventId).delete();
+    const participationsSnapshot = this.firestore.collection(this.participationsPath, ref => ref.where('eventId', '==', eventId));
+    const querySnapshot = await participationsSnapshot.get().toPromise();
+
+    for(const doc of querySnapshot!.docs){
+      await this.firestore.collection(this.participationsPath).doc(doc.id).delete();
+    }
   }
 
-  async registerEvent(eventTitle: string, eventDesc: string, maxParticipants: number, image: any){
+  async registerEvent(eventTitle: string, eventDesc: string, maxParticipants: number, image: any) {
     const ownerUid = this.injectAuthService().getLoggedUser().uid;
     const file = image.item(0);
     if (file.type.split('/')[0] !== 'image') {
@@ -43,69 +49,69 @@ export class FirebaseService {
       const uploadTask = this.uploadImage(image, 'eventImages', eventDocRef.id);
       uploadTask?.then(async snapshot => {
         const imageURL = await snapshot.ref.getDownloadURL();
-        await eventDocRef.update({imageURL});
+        await eventDocRef.update({ imageURL });
         this.alertService.presentAlert('Evento registrado com sucesso', 'Você pode checar mais informações na aba "Meus eventos" e ele já está disponível para outras pessoas');
         this.routingService.goToHomePage();
       })
     }
   }
 
-  getAllEvents(){
+  getAllEvents() {
     return this.firestore.collection(this.eventsPath).snapshotChanges();
   }
 
-  getUserEvents(){
+  getUserEvents() {
     const loggedUserUID = this.injectAuthService().getLoggedUser().uid;
     return this.firestore.collection(this.eventsPath, ref => ref.where('ownerUid', '==', loggedUserUID)).snapshotChanges();
   }
 
-  getEventInfoById(eventId: string){
+  getEventInfoById(eventId: string) {
     return this.firestore.collection(this.eventsPath).doc(eventId).get();
   }
 
-  getEventOwnerInfo(eventOwnerUID: string){
+  getEventOwnerInfo(eventOwnerUID: string) {
     return this.firestore.collection(this.usersPath, ref => ref.where('uid', '==', eventOwnerUID)).snapshotChanges();
   }
 
-  updateEvent(newEventTitle: string, newEventDesc: string, newMaxParticipants: number, eventId: string){
-    return this.firestore.collection(this.eventsPath).doc(eventId).update({eventTitle: newEventTitle, eventDesc: newEventDesc, maxParticipants: newMaxParticipants});
+  updateEvent(newEventTitle: string, newEventDesc: string, newMaxParticipants: number, eventId: string) {
+    return this.firestore.collection(this.eventsPath).doc(eventId).update({ eventTitle: newEventTitle, eventDesc: newEventDesc, maxParticipants: newMaxParticipants });
   }
 
-  updateEventImage(newImageURL: string, eventId: string){
-    return this.firestore.collection(this.eventsPath).doc(eventId).update({imageURL: newImageURL});
+  updateEventImage(newImageURL: string, eventId: string) {
+    return this.firestore.collection(this.eventsPath).doc(eventId).update({ imageURL: newImageURL });
   }
 
-  addEventParticipation(eventId: string, participantId: string, participantName: string, participantPhoneNumber: number, participantEmail: string, participantProfilePicture: string){
-    return this.firestore.collection(this.participationsPath).add({eventId: eventId, participantId: participantId, participantName: participantName, participantPhoneNumber: participantPhoneNumber, participantEmail: participantEmail, participantProfileImage: participantProfilePicture});
+  addEventParticipation(eventId: string, participantId: string, participantName: string, participantPhoneNumber: number, participantEmail: string, participantProfilePicture: string) {
+    return this.firestore.collection(this.participationsPath).add({ eventId: eventId, participantId: participantId, participantName: participantName, participantPhoneNumber: participantPhoneNumber, participantEmail: participantEmail, participantProfileImage: participantProfilePicture });
   }
 
-  removeEventParticipation(participationId: string){
+  removeEventParticipation(participationId: string) {
     return this.firestore.collection(this.participationsPath).doc(participationId).delete();
   }
 
-  getEventParticipants(eventId: string){
+  getEventParticipants(eventId: string) {
     return this.firestore.collection(this.participationsPath, ref => ref.where('eventId', '==', eventId)).snapshotChanges();
   }
 
-  async updateParticipantNameAndPhoneNumber(newParticipantName: string, newParticipantPhoneNumber: string, participantId: string): Promise<void> {
+  async updateParticipantNameAndPhoneNumber(newParticipantName: string, newParticipantPhoneNumber: string, participantId: string) {
     const query = this.firestore.collection(this.participationsPath, ref => ref.where('participantId', '==', participantId));
 
     const querySnapshot = await query.get().toPromise();
 
     for (const document of querySnapshot!.docs) {
-        await document.ref.update({
-            participantName: newParticipantName,
-            participantPhoneNumber: newParticipantPhoneNumber
-        });
+      await document.ref.update({
+        participantName: newParticipantName,
+        participantPhoneNumber: newParticipantPhoneNumber
+      });
     }
-}
+  }
 
-  getUserAlreadyParticipatingOnEvent(eventId: string, userId: string){
+  getUserAlreadyParticipatingOnEvent(eventId: string, userId: string) {
     return this.firestore.collection(this.participationsPath, ref => ref.where('eventId', '==', eventId).where('participantId', '==', userId)).snapshotChanges();
   }
 
-  isUserEventOwner(userId: string, ownerId: string){
-    if(userId == ownerId){
+  isUserEventOwner(userId: string, ownerId: string) {
+    if (userId == ownerId) {
       return true;
     } else {
       return false;

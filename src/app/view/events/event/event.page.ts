@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { DocumentChangeAction } from '@angular/fire/compat/firestore';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
 import { Event } from 'src/app/model/entities/event';
 import { AuthService } from 'src/app/model/services/auth.service';
@@ -43,85 +44,9 @@ export class EventPage implements OnInit, OnDestroy {
       const eventIndex = +params['index'];
       const cameFrom = params['from'];
       if (cameFrom === 'home') {
-        const allEventsSubscription = this.firebaseService.getAllEvents().subscribe(res => {
-          this.events = res.map(events => { return { id: events.payload.doc.id, ...events.payload.doc.data() as any } });
-          this.selectedEvent = this.events[eventIndex];
-          this.eventId = this.selectedEvent.id;
-          this.event = new Event(this.selectedEvent.eventTitle, this.selectedEvent.eventDesc, this.selectedEvent.imageURL, this.selectedEvent.maxParticipants);
-
-          const eventOwnerInfoSubscription = this.firebaseService.getEventOwnerInfo(this.selectedEvent.ownerUid).subscribe(res => {
-            this.eventOwner = res.map(eventOwner => { return { id: eventOwner.payload.doc.id, ...eventOwner.payload.doc.data() as any } as any });
-            this.owner = this.eventOwner[0];
-            this.event!.ownerName = this.owner.userName;
-            this.event!.ownerImage = this.owner.imageURL;
-            this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
-
-            const loggedUserInfoSubscription = this.authService.getUserInfo().subscribe(res => {
-              const loggedUserInfoResponse = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
-              this.loggedUserInfoReadyToUse = loggedUserInfoResponse[0];
-
-              const eventParticipantsSubscription = this.firebaseService.getEventParticipants(this.eventId).subscribe(res => {
-                this.currentParticipantsNumber = res.length;
-                this.eventParticipants = res.map(eventParticipants => { return { id: eventParticipants.payload.doc.id, ...eventParticipants.payload.doc.data() as any } as any })
-                
-                const getUserAlreadyParticipatingOnEventSubscription = this.firebaseService.getUserAlreadyParticipatingOnEvent(this.eventId, this.loggedUserUID).subscribe(res => {
-                  if(res.length > 0){
-                    this.isUserAlreadyEventParticipant = true;
-                    const getUserAlreadyParticipatingOnEventResponse = res.map(participationInfo => {return { id: participationInfo.payload.doc.id, ...participationInfo.payload.doc.data() as any} as any});
-                    this.userParticipationOnEventId = getUserAlreadyParticipatingOnEventResponse[0].id;
-                  } else {
-                    this.isUserAlreadyEventParticipant = false;
-                  }
-                })
-                this.subscriptions.push(getUserAlreadyParticipatingOnEventSubscription);
-              })
-              this.subscriptions.push(eventParticipantsSubscription);
-            })
-            this.subscriptions.push(loggedUserInfoSubscription);
-          });
-          this.subscriptions.push(eventOwnerInfoSubscription);
-        });
-        this.subscriptions.push(allEventsSubscription);
+        this.processEvents(this.firebaseService.getAllEvents(), eventIndex);
       } else {
-        const userEventsSubscription = this.firebaseService.getUserEvents().subscribe(res => {
-          this.events = res.map(events => { return { id: events.payload.doc.id, ...events.payload.doc.data() as any } });
-          this.selectedEvent = this.events[eventIndex];
-          this.eventId = this.selectedEvent.id;
-          this.event = new Event(this.selectedEvent.eventTitle, this.selectedEvent.eventDesc, this.selectedEvent.imageURL, this.selectedEvent.maxParticipants);
-
-          const eventOwnerInfoSubscription = this.firebaseService.getEventOwnerInfo(this.selectedEvent.ownerUid).subscribe(res => {
-            this.eventOwner = res.map(eventOwner => { return { id: eventOwner.payload.doc.id, ...eventOwner.payload.doc.data() as any } as any });
-            this.owner = this.eventOwner[0];
-            this.event!.ownerName = this.owner.userName;
-            this.event!.ownerImage = this.owner.imageURL;
-            this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
-
-            const loggedUserInfoSubscription = this.authService.getUserInfo().subscribe(res => {
-              const loggedUserInfoResponse = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
-              this.loggedUserInfoReadyToUse = loggedUserInfoResponse[0];
-
-              const eventParticipantsSubscription = this.firebaseService.getEventParticipants(this.eventId).subscribe(res => {
-                this.currentParticipantsNumber = res.length;
-                this.eventParticipants = res.map(eventParticipants => { return { id: eventParticipants.payload.doc.id, ...eventParticipants.payload.doc.data() as any } as any })
-                
-                const getUserAlreadyParticipatingOnEventSubscription = this.firebaseService.getUserAlreadyParticipatingOnEvent(this.eventId, this.loggedUserUID).subscribe(res => {
-                  if(res.length > 0){
-                    this.isUserAlreadyEventParticipant = true;
-                    const getUserAlreadyParticipatingOnEventResponse = res.map(participationInfo => {return { id: participationInfo.payload.doc.id, ...participationInfo.payload.doc.data() as any} as any});
-                    this.userParticipationOnEventId = getUserAlreadyParticipatingOnEventResponse[0].id;
-                  } else {
-                    this.isUserAlreadyEventParticipant = false;
-                  }
-                })
-                this.subscriptions.push(getUserAlreadyParticipatingOnEventSubscription);
-              })
-              this.subscriptions.push(eventParticipantsSubscription);
-            })
-            this.subscriptions.push(loggedUserInfoSubscription);
-          });
-          this.subscriptions.push(eventOwnerInfoSubscription);
-        });
-        this.subscriptions.push(userEventsSubscription);
+        this.processEvents(this.firebaseService.getUserEvents(), eventIndex);
       }
     })
     this.subscriptions.push(routeSubscription);
@@ -135,6 +60,46 @@ export class EventPage implements OnInit, OnDestroy {
     })
   }
 
+  async processEvents(getEventsFn: Observable<DocumentChangeAction<unknown>[]>, eventIndex: number) {
+    const eventsSubscription = getEventsFn.subscribe((res: any[]) => {
+        this.events = res.map(events => { return { id: events.payload.doc.id, ...events.payload.doc.data() as any } });
+        this.selectedEvent = this.events[eventIndex];
+        this.eventId = this.selectedEvent.id;
+
+        const eventOwnerInfoSubscription = this.firebaseService.getEventOwnerInfo(this.selectedEvent.ownerUid).subscribe(res => {
+            this.eventOwner = res.map(eventOwner => { return { id: eventOwner.payload.doc.id, ...eventOwner.payload.doc.data() as any } as any });
+            this.owner = this.eventOwner[0];
+            this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
+
+            const loggedUserInfoSubscription = this.authService.getUserInfo().subscribe(res => {
+                const loggedUserInfoResponse = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
+                this.loggedUserInfoReadyToUse = loggedUserInfoResponse[0];
+
+                const eventParticipantsSubscription = this.firebaseService.getEventParticipants(this.eventId).subscribe(res => {
+                    this.currentParticipantsNumber = res.length;
+                    this.eventParticipants = res.map(eventParticipants => { return { id: eventParticipants.payload.doc.id, ...eventParticipants.payload.doc.data() as any } as any });
+
+                    const getUserAlreadyParticipatingOnEventSubscription = this.firebaseService.getUserAlreadyParticipatingOnEvent(this.eventId, this.loggedUserUID).subscribe(res => {
+                        if(res.length > 0){
+                            this.isUserAlreadyEventParticipant = true;
+                            const getUserAlreadyParticipatingOnEventResponse = res.map(participationInfo => { return { id: participationInfo.payload.doc.id, ...participationInfo.payload.doc.data() as any } as any });
+                            this.userParticipationOnEventId = getUserAlreadyParticipatingOnEventResponse[0].id;
+                        } else {
+                            this.isUserAlreadyEventParticipant = false;
+                        }
+                    });
+                    this.subscriptions.push(getUserAlreadyParticipatingOnEventSubscription);
+                });
+                this.subscriptions.push(eventParticipantsSubscription);
+            });
+            this.subscriptions.push(loggedUserInfoSubscription);
+        });
+        this.subscriptions.push(eventOwnerInfoSubscription);
+    });
+    this.subscriptions.push(eventsSubscription);
+}
+
+
   showConfirmDeleteEvent() {
     this.alertService.presentConfirmAlert('Atenção', 'Tem certeza que deseja deletar esse evento? Essa ação não pode ser desfeita', this.deleteEvent.bind(this));
   }
@@ -143,7 +108,7 @@ export class EventPage implements OnInit, OnDestroy {
     if (!this.isUserEventOwner) {
       this.alertService.presentAlert('Erro', 'Você não pode deletar um evento que não é seu');
     } else {
-      await this.firebaseService.deleteEventAndEventImage(this.eventId);
+      await this.firebaseService.deleteEventAndEventImageAndEventParticipations(this.eventId);
       this.routingService.goBackToPreviousPage();
     }
   }
