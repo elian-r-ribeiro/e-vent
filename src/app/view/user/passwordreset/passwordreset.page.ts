@@ -31,7 +31,7 @@ export class PasswordresetPage implements OnInit {
       this.alertService.presentAlert('Erro ao enviar e-mail', 'Cheque o campo e tente novamente');
     } else {
       this.authService.resetPassword(this.passwordResetForm.value['email']);
-      this.alertService.presentAlert('Sucesso', 'E-mail para resetar senha enviado com sucesso');
+      this.alertService.presentAlert('Sucesso', 'E-mail para resetar senha enviado com sucesso, caso não apareça, cheque a caixa de spam. Se não foi enviado, não há uma conta associada a esse email');
       this.routingService.goToLoginPage();
     }
   }

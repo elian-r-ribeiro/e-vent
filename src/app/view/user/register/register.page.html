@@ -1,5 +1,5 @@
 <ion-content [fullscreen]="true">
-  <form [formGroup]="registerForm" (ngSubmit)="submitForm()" novalidate class="registerForm">
+  <form [formGroup]="registerForm" (ngSubmit)="showConfirmAccountRegister()" novalidate class="registerForm">
     <img src="../../../assets/img/ev-point-station-icon.png">
     <ion-item>
       <ion-input formControlName="userName" type="text" placeholder="Nome completo"></ion-input>

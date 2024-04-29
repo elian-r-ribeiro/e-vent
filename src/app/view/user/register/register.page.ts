@@ -54,6 +54,10 @@ export class RegisterPage implements OnInit {
     this.image = image.files;
   }
 
+  showConfirmAccountRegister(){
+    this.alertService.presentConfirmAlert("Atenção", "Tem certeza que deseja criar essa conta? Certifique-se de estar usando seu nome real e número e email reais, assim como uma foto de perfil sua (não utilize foto de anime ou qualquer coisa do gênero). Contas irregulares serão deletadas sem aviso prévio", this.submitForm.bind(this));
+  }
+
   submitForm() {
     if (!this.registerForm.valid) {
       this.alertService.presentAlert('Erro ao cadastrar', 'Cheque todos os campos e tente novamente')
