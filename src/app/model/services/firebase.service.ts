@@ -82,7 +82,7 @@ export class FirebaseService {
   }
 
   addEventParticipation(eventId: string, participantId: string, participantName: string, participantPhoneNumber: number, participantEmail: string, participantProfilePicture: string) {
-    return this.firestore.collection(this.participationsPath).add({ eventId: eventId, participantId: participantId, participantName: participantName, participantPhoneNumber: participantPhoneNumber, participantEmail: participantEmail, participantProfileImage: participantProfilePicture });
+    return this.firestore.collection(this.participationsPath).add({ eventId: eventId, participantId: participantId, participantName: participantName, participantPhoneNumber: participantPhoneNumber, participantEmail: participantEmail, participantProfileImage: participantProfilePicture, didParticipantWentToEvent: false });
   }
 
   removeEventParticipation(participationId: string) {
@@ -104,6 +104,14 @@ export class FirebaseService {
         participantPhoneNumber: newParticipantPhoneNumber
       });
     }
+  }
+
+  updateDidParticipantWentToEventToYes(participationId: string){
+    return this.firestore.collection(this.participationsPath).doc(participationId).update({didParticipantWentToEvent: true});
+  }
+
+  updateDidParticipantWentToEventToNo(participationId: string){
+    return this.firestore.collection(this.participationsPath).doc(participationId).update({didParticipantWentToEvent: false});
   }
 
   getUserAlreadyParticipatingOnEvent(eventId: string, userId: string) {

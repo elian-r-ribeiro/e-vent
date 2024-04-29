@@ -35,6 +35,7 @@ export class EventPage implements OnInit, OnDestroy {
   currentParticipantsNumber?: number;
   eventIndex!: number;
   cameFrom!: string;
+  shouldShowOwnerButtons: boolean = false;
 
   ngOnInit() {
     if (this.authService.getLoggedUser() == null) {
@@ -110,6 +111,14 @@ export class EventPage implements OnInit, OnDestroy {
     } else {
       await this.firebaseService.deleteEventAndEventImageAndEventParticipations(this.eventId);
       this.routingService.goBackToPreviousPage();
+    }
+  }
+
+  toggleOwnerButtons(){
+    if(this.shouldShowOwnerButtons == false){
+      this.shouldShowOwnerButtons = true;
+    } else {
+      this.shouldShowOwnerButtons = false;
     }
   }
 

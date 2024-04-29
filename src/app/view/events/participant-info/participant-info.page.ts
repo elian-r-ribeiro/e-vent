@@ -17,6 +17,7 @@ export class ParticipantInfoPage implements OnInit, OnDestroy {
   eventId!: string;
   participantIndex!: number;
   participant: any;
+  didParticipantWentToEvent!: string;
 
 
   constructor(private route: ActivatedRoute, private firebaseService: FirebaseService) { }
@@ -50,6 +51,11 @@ export class ParticipantInfoPage implements OnInit, OnDestroy {
       const participantsSubscription = this.firebaseService.getEventParticipants(this.eventId).subscribe(res => {
         const participant = res.map(participant => { return { id: participant.payload.doc.id, ...participant.payload.doc.data() as any } as any });
         this.participant = participant[this.participantIndex];
+        if(this.participant.didParticipantWentToEvent == true){
+          this.didParticipantWentToEvent = "Sim";
+        } else {
+          this.didParticipantWentToEvent = "Não";
+        }
       });
       this.subscriptions.push(participantsSubscription);
     })

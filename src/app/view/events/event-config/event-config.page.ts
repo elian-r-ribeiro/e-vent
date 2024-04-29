@@ -89,24 +89,52 @@ export class EventConfigPage implements OnInit, OnDestroy {
     });
   }
 
+  async showConfirmChangeParticipationStatus(index: number){
+    const participationId = this.participants[index].id;
+    if(this.participants[index].didParticipantWentToEvent == false){
+      await this.alertService.presentConfirmAlert("Atenção", "Essa opção irá alterar o status do participante para 'participou do evento', tem certeza que deseja fazer isso?", async () => {
+        this.firebaseService.updateDidParticipantWentToEventToYes(participationId);
+      });
+    } else {
+      await this.alertService.presentConfirmAlert("Atenção", "Essa opção irá alterar o status do participante para 'não participou do evento', tem certeza que deseja fazer isso?", async () => {
+        this.firebaseService.updateDidParticipantWentToEventToNo(participationId);
+      });
+    }
+    
+  }
+
   downloadPDFWithData() {
     const doc = new jsPDF();
 
     let currentYPosition = 10;
+    const maxPageHight = 240;
 
     doc.text(this.eventInfo.eventTitle, 10, currentYPosition);
+    currentYPosition += 10;
 
     for (let i = 0; i < this.currentParticipantsNumber; i++) {
       const participantsNames = String(this.participantsNamesArray[i]);
       const participantsPhoneNumbers = String(this.participantsPhoneNumbersArray[i]);
       const participantsEmails = String(this.participantsEmailsArray[i]);
 
-      doc.text("===========================", 10, currentYPosition + 10)
-      doc.text(participantsNames, 10, currentYPosition + 20);
-      doc.text(participantsPhoneNumbers, 10, currentYPosition + 30);
-      doc.text(participantsEmails, 10, currentYPosition + 40);
+      doc.text("===========================", 10, currentYPosition);
+      currentYPosition += 10;
 
-      currentYPosition += 50;
+      doc.text(participantsNames, 10, currentYPosition);
+      doc.text(participantsPhoneNumbers, 10, currentYPosition + 10);
+      doc.text(participantsEmails, 10, currentYPosition + 20);
+      if(this.participants[i].didParticipantWentToEvent){
+        doc.text("Participou? Sim", 10, currentYPosition + 30);
+      } else {
+        doc.text("Participou? Não", 10, currentYPosition + 30);
+      }
+
+      currentYPosition += 40;
+
+      if(currentYPosition > maxPageHight) {
+        doc.addPage();
+        currentYPosition = 10;
+      }
     }
 
     doc.save(this.eventInfo.eventTitle + ".pdf");
