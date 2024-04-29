@@ -33,6 +33,8 @@ export class EventPage implements OnInit, OnDestroy {
   isUserAlreadyEventParticipant?: boolean;
   userParticipationOnEventId: string = "";
   currentParticipantsNumber?: number;
+  eventIndex!: number;
+  cameFrom!: string;
 
   ngOnInit() {
     if (this.authService.getLoggedUser() == null) {
@@ -41,12 +43,12 @@ export class EventPage implements OnInit, OnDestroy {
     }
 
     const routeSubscription = this.route.params.subscribe(params => {
-      const eventIndex = +params['index'];
-      const cameFrom = params['from'];
-      if (cameFrom === 'home') {
-        this.processEvents(this.firebaseService.getAllEvents(), eventIndex);
+      this.eventIndex = +params['index'];
+      this.cameFrom = params['from'];
+      if (this.cameFrom === 'home') {
+        this.processEvents(this.firebaseService.getAllEvents(), this.eventIndex);
       } else {
-        this.processEvents(this.firebaseService.getUserEvents(), eventIndex);
+        this.processEvents(this.firebaseService.getUserEvents(), this.eventIndex);
       }
     })
     this.subscriptions.push(routeSubscription);
@@ -54,9 +56,7 @@ export class EventPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
+      subscription.unsubscribe();
     })
   }
 
@@ -113,12 +113,8 @@ export class EventPage implements OnInit, OnDestroy {
     }
   }
 
-  async showConfirmRemoveParticipant(index: number){
-    const participationId = this.eventParticipants[index].id;
-    await this.alertService.presentConfirmAlert("Atenção", "Tem certeza que deseja remover esse participante desse evento?", async () => {
-      await this.firebaseService.removeEventParticipation(participationId)
-      this.alertService.presentAlert("Sucesso", "Participante removido com sucesso");
-    });
+  openEventConfig(){
+    this.routingService.goToEventConfigPage(this.cameFrom, this.eventIndex);
   }
 
   showConfirmEventParticipation() {

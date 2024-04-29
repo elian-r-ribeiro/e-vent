@@ -48,4 +48,12 @@ export class RoutingService {
   goBackToPreviousPage(){
     this.location.back();
   }
+
+  goToEventConfigPage(from: string, index: number){
+    this.router.navigate([from, 'event', index, 'event-config']);
+  }
+
+  goToParticipantInfoPage(from: string, index: number, participantIndex: number){
+    this.router.navigate([from, 'event', index, 'event-config', 'participant', participantIndex]);
+  }
 }

@@ -1,0 +1,25 @@
+.participants{
+    margin-bottom: 1000px;
+
+    img{
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    ion-label{
+        margin-left: 10px;
+    }
+}
+
+.participantsTitle{
+    margin-top: 10px;
+    font-size: large;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.trashIcon{
+    margin-right: 20px;
+}

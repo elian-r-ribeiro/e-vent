@@ -43,6 +43,16 @@ const routes: Routes = [
     path: 'editevent/:eventid',
     loadChildren: () => import('./view/events/editevent/editevent.module').then( m => m.EditeventPageModule)
   },
+  {
+    path: ':from/event/:index/event-config',
+    loadChildren: () => import('./view/events/event-config/event-config.module').then( m => m.EventConfigPageModule)
+  },
+  {
+    path: ':from/event/:index/event-config/participant/:participantIndex',
+    loadChildren: () => import('./view/events/participant-info/participant-info.module').then( m => m.ParticipantInfoPageModule)
+  },
+
+
 
 
 
