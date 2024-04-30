@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
 import { AuthService } from 'src/app/model/services/auth.service';
@@ -15,7 +16,7 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   private subscriptions : Subscription[] = [];
 
-  constructor(private firebaseService: FirebaseService, private builder: FormBuilder, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService) { }
+  constructor(private loadingController: LoadingController,private firebaseService: FirebaseService, private builder: FormBuilder, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService) { }
 
   profileForm!: FormGroup;
   userInfo: any;
@@ -73,12 +74,18 @@ export class ProfilePage implements OnInit, OnDestroy {
   }
 
   async updateProfile() {
+    const loading = await this.loadingController.create({
+      message: "Atualizando perfil..."
+    });
+    await loading.present();
+
     const firestoreProfileId = this.userInfo[0].id;
     const uid = this.authService.getLoggedUser().uid;
     if (this.image != null) {
       const file = this.image.item(0);
       if (file.type.split('/')[0] !== 'image') {
         this.alertService.presentAlert('Erro ao enviar foto de perfil', 'Tipo não suportado');
+        loading.dismiss();
       } else {
         const uploadTask = this.firebaseService.uploadImage(this.image, 'profilePictures', uid);
         await uploadTask?.then(async snapshot => {
@@ -88,11 +95,13 @@ export class ProfilePage implements OnInit, OnDestroy {
         await this.authService.updateProfile(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId);
         await this.firebaseService.updateParticipantNameAndPhoneNumber(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], uid);
         this.alertService.presentAlert('Perfil atualizado com sucesso', 'Suas informações foram atualizas');
+        loading.dismiss();
       }
     } else {
       await this.authService.updateProfile(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId);
       await this.firebaseService.updateParticipantNameAndPhoneNumber(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], uid);
       this.alertService.presentAlert('Perfil atualizado com sucesso', 'Suas informações foram atualizas');
+      loading.dismiss();
     }
 
   }

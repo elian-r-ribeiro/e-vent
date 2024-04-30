@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
 import { AuthService } from 'src/app/model/services/auth.service';
@@ -19,7 +20,7 @@ export class EditeventPage implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = [];
 
-  constructor(private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private builder: FormBuilder, private route: ActivatedRoute) { }
+  constructor(private loadingController: LoadingController, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private builder: FormBuilder, private route: ActivatedRoute) { }
 
   ngOnInit() {
     const routeSubscription = this.route.params.subscribe(params => {
@@ -77,11 +78,17 @@ export class EditeventPage implements OnInit, OnDestroy {
   }
 
   async updateEvent() {
+    const loading = await this.loadingController.create({
+      message: "Atualizando evento..."
+    });
+    await loading.present();
+
     const firestoreEventId = this.eventData.id;
     if (this.image != null) {
       const file = this.image.item(0);
       if (file.type.split('/')[0] !== 'image') {
         this.alertService.presentAlert('Erro ao enviar foto de perfil', 'Tipo não suportado');
+        loading.dismiss();
       } else {
         const uploadTask = this.firebaseService.uploadImage(this.image, 'eventImages', firestoreEventId);
         await uploadTask?.then(async snapshot => {
@@ -91,11 +98,13 @@ export class EditeventPage implements OnInit, OnDestroy {
         await this.firebaseService.updateEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], firestoreEventId);
         this.alertService.presentAlert('Sucesso', 'Informações do evento editadas com sucesso');
         this.routingService.goBackToPreviousPage();
+        loading.dismiss();
       }
     } else {
       await this.firebaseService.updateEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], firestoreEventId);
       this.alertService.presentAlert('Sucesso', 'Informações do evento editadas com sucesso');
       this.routingService.goBackToPreviousPage();
+      loading.dismiss();
     }
 
   }

@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { AlertService } from '../../common/alert.service';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { RoutingService } from './routing.service';
+import { LoadingController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class FirebaseService {
   private usersPath: string = "users";
   private participationsPath: string = "participations";
 
-  constructor(private routingService: RoutingService, private storage: AngularFireStorage, @Inject(Injector) private readonly injector: Injector, private alertService: AlertService, private firestore: AngularFirestore) { }
+  constructor(private loadingController: LoadingController,private routingService: RoutingService, private storage: AngularFireStorage, @Inject(Injector) private readonly injector: Injector, private alertService: AlertService, private firestore: AngularFirestore) { }
 
   private injectAuthService() {
     return this.injector.get(AuthService);
@@ -37,13 +38,20 @@ export class FirebaseService {
     for(const doc of querySnapshot!.docs){
       await this.firestore.collection(this.participationsPath).doc(doc.id).delete();
     }
+    this.alertService.presentAlert("Sucesso", "Evento deletado com sucesso");
   }
 
   async registerEvent(eventTitle: string, eventDesc: string, maxParticipants: number, image: any) {
+    const loading = await this.loadingController.create({
+      message: "Criando evento..."
+    });
+    await loading.present();
+
     const ownerUid = this.injectAuthService().getLoggedUser().uid;
     const file = image.item(0);
     if (file.type.split('/')[0] !== 'image') {
       this.alertService.presentAlert('Erro ao enviar imagem do evento', 'Tipo não suportado');
+      loading.dismiss();
     } else {
       const eventDocRef = await this.firestore.collection(this.eventsPath).add({ eventTitle, eventDesc, maxParticipants, ownerUid });
       const uploadTask = this.uploadImage(image, 'eventImages', eventDocRef.id);
@@ -52,6 +60,7 @@ export class FirebaseService {
         await eventDocRef.update({ imageURL });
         this.alertService.presentAlert('Evento registrado com sucesso', 'Você pode checar mais informações na aba "Meus eventos" e ele já está disponível para outras pessoas');
         this.routingService.goToHomePage();
+        loading.dismiss();
       })
     }
   }

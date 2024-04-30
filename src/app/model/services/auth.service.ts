@@ -4,6 +4,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { RoutingService } from './routing.service';
 import { FirebaseService } from './firebase.service';
 import { AlertService } from '../../common/alert.service';
+import { LoadingController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class AuthService implements OnInit {
   userData: any;
   userInfo: any;
 
-  constructor(private firebaseService: FirebaseService, private alertService: AlertService, private auth: AngularFireAuth, private firestore: AngularFirestore, private routingService: RoutingService) {
+  constructor(private firebaseService: FirebaseService, private alertService: AlertService, private auth: AngularFireAuth, private firestore: AngularFirestore, private routingService: RoutingService, private loadingController: LoadingController) {
     this.auth.authState.subscribe(user => {
       if (user) {
         this.userData = user;
@@ -31,9 +32,15 @@ export class AuthService implements OnInit {
   private PATH: string = "users";
 
   async registerUser(userName: string, email: string, phoneNumber: number, password: string, image: any) {
+    const loading = await this.loadingController.create({
+      message: "Criando conta..."
+    });
+    await loading.present();
+
     const file = image.item(0);
     if (file.type.split('/')[0] !== 'image') {
       this.alertService.presentAlert('Erro ao enviar foto de perfil', 'Tipo não suportado');
+      loading.dismiss();
     } else {
       const userData = await this.auth.createUserWithEmailAndPassword(email, password).then(async (userData) => {
         const uid = userData.user?.uid;
@@ -44,6 +51,7 @@ export class AuthService implements OnInit {
           await this.firestore.collection(this.PATH).add({ userName, email, phoneNumber, imageURL, uid });
           await this.alertService.presentAlert('Registro realizado com sucesso', 'Você será redirecionado para a página de login');
           this.routingService.goToLoginPage();
+          loading.dismiss();
         })
       }).catch(error => {
         let errorMessage: string;
@@ -56,6 +64,7 @@ export class AuthService implements OnInit {
             break;
         }
         this.alertService.presentAlert('Erro de Login', errorMessage);;
+        loading.dismiss();
       })
     }
   }
