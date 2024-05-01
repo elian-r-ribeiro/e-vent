@@ -1,11 +1,7 @@
 <ion-content>
     <ion-list class="eventInfo">
-        <ion-item>
-            <ion-label class="title">{{selectedEvent?.eventTitle}}</ion-label>
-        </ion-item>
-        <ion-item>
-            <ion-label class="description">{{selectedEvent?.eventDesc}}</ion-label>
-        </ion-item>
+        <ion-label class="title">{{selectedEvent?.eventTitle}}</ion-label>
+        <ion-label class="description">{{selectedEvent?.eventDesc}}</ion-label>
         <div class="imgContainer">
             <img src="{{selectedEvent?.imageURL}}">
         </div>
@@ -13,7 +9,7 @@
 
     <ion-label class="ownerTitle">Criador do evento:</ion-label>
     <ion-list class="owner">
-        <ion-item>
+        <ion-item class="ownerItem">
             <img src="{{owner?.imageURL}}">
             <ion-label>{{owner?.userName}}</ion-label>
         </ion-item>
@@ -21,7 +17,7 @@
 
     <ion-label class="participantsTitle">Participantes confirmados ({{currentParticipantsNumber}} de {{selectedEvent?.maxParticipants}}): </ion-label>
     <ion-list class="participants">
-        <ion-item *ngFor="let participant of eventParticipants; let i = index">
+        <ion-item class="participant" *ngFor="let participant of eventParticipants; let i = index">
             <img src="{{participant.participantProfileImage}}">
             <ion-label>{{participant.participantName}}</ion-label>
         </ion-item>

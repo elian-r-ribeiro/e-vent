@@ -3,11 +3,21 @@
       <img src="{{participant?.participantProfileImage}}">
     </div>
     <div class="infoContainer">
-        <ion-label class="vertical-label">{{participant?.participantName}}</ion-label>
-        <ion-label class="vertical-label">{{participant?.participantPhoneNumber}}</ion-label>
-        <ion-label class="vertical-label">{{participant?.participantEmail}}</ion-label>
-        <ion-label class="vertical-label">Participou? {{didParticipantWentToEvent}}</ion-label>
-        <ion-label class="vertical-label">(Não divulgue sem autorização)</ion-label>
+      <ion-list class="infos">
+        <ion-item>
+          <ion-label class="vertical-label">{{participant?.participantName}}</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label class="vertical-label">{{participant?.participantPhoneNumber}}</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label class="vertical-label">{{participant?.participantEmail}}</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label class="vertical-label">Participou? {{didParticipantWentToEvent}}</ion-label>
+        </ion-item>
+      </ion-list>
+      <ion-label class="vertical-label">(Não divulgue sem autorização)</ion-label>
     </div>
 </ion-content>
   

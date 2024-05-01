@@ -2,7 +2,18 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-size: large;
+    font-size: larger;
+
+    .infos{
+        background: none;
+        margin-top: -10px;
+
+        ion-item{
+            border-radius: 20px;
+            margin-top: 5px;
+            text-align: center;
+        }
+    }
 }
 
 .imgContainer{

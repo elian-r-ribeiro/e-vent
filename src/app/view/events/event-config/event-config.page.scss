@@ -1,5 +1,11 @@
 .participants{
     margin-bottom: 1000px;
+    background: none;
+
+    .participant{
+        border-radius: 20px;
+        margin-top: 5px;
+    }
 
     img{
         height: 30px;
