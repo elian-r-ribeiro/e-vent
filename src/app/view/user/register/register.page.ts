@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AlertService } from 'src/app/common/alert.service';
+import { OthersService } from 'src/app/common/others.service';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { RoutingService } from 'src/app/model/services/routing.service';
 
@@ -13,8 +14,10 @@ export class RegisterPage implements OnInit {
 
   registerForm!: FormGroup;
   image: any;
+  isFileSelected = false;
+  fileSelectLabelText = "Selecionar foto de perfil";
 
-  constructor(private routingService: RoutingService, private authService: AuthService, private builder: FormBuilder, private alertService: AlertService) {
+  constructor(private othersService: OthersService, private routingService: RoutingService, private authService: AuthService, private builder: FormBuilder, private alertService: AlertService) {
 
   }
 
@@ -68,5 +71,10 @@ export class RegisterPage implements OnInit {
 
   goToLoginPage() {
     this.routingService.goToLoginPage();
+  }
+
+  changeFileInputLabelOnFileSelect(value: string){
+    this.isFileSelected = this.othersService.changeFileInputStateOnFileSelect(value);
+    this.fileSelectLabelText = this.othersService.changeFileInputLabelOnFileSelect(value, "Foto de perfil selecionada", "Selecione a foto de perfil");
   }
 }

@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
+import { OthersService } from 'src/app/common/others.service';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
 import { RoutingService } from 'src/app/model/services/routing.service';
@@ -17,10 +18,11 @@ export class EditeventPage implements OnInit, OnDestroy {
   eventForm!: FormGroup;
   eventData: any;
   image: any;
-
   private subscriptions: Subscription[] = [];
+  isFileSelected = false;
+  fileSelectLabelText = "Selecionar imagem do evento";
 
-  constructor(private loadingController: LoadingController, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private builder: FormBuilder, private route: ActivatedRoute) { }
+  constructor(private othersService: OthersService, private loadingController: LoadingController, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private builder: FormBuilder, private route: ActivatedRoute) { }
 
   ngOnInit() {
     const routeSubscription = this.route.params.subscribe(params => {
@@ -107,5 +109,10 @@ export class EditeventPage implements OnInit, OnDestroy {
       loading.dismiss();
     }
 
+  }
+
+  changeFileInputLabelOnFileSelect(value: string){
+    this.isFileSelected = this.othersService.changeFileInputStateOnFileSelect(value);
+    this.fileSelectLabelText = this.othersService.changeFileInputLabelOnFileSelect(value, "Imagem do evento selecionada", "Selecione a imagem do evento");
   }
 }

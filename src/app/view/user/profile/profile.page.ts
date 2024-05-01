@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
+import { OthersService } from 'src/app/common/others.service';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
 import { RoutingService } from 'src/app/model/services/routing.service';
@@ -14,13 +15,16 @@ import { RoutingService } from 'src/app/model/services/routing.service';
 })
 export class ProfilePage implements OnInit, OnDestroy {
 
-  private subscriptions : Subscription[] = [];
+  
 
-  constructor(private loadingController: LoadingController,private firebaseService: FirebaseService, private builder: FormBuilder, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService) { }
+  constructor(private othersService: OthersService, private loadingController: LoadingController,private firebaseService: FirebaseService, private builder: FormBuilder, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService) { }
 
   profileForm!: FormGroup;
   userInfo: any;
   image: any = null;
+  private subscriptions : Subscription[] = [];
+  isFileSelected = false;
+  fileSelectLabelText = "Selecionar foto de perfil";
 
   ngOnInit() {
     this.profileForm = this.builder.group({
@@ -108,5 +112,10 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   logout() {
     this.authService.logout();
+  }
+
+  changeFileInputLabelOnFileSelect(value: string){
+    this.isFileSelected = this.othersService.changeFileInputStateOnFileSelect(value);
+    this.fileSelectLabelText = this.othersService.changeFileInputLabelOnFileSelect(value, "Foto de perfil selecionada", "Selecione a foto de perfil");
   }
 }

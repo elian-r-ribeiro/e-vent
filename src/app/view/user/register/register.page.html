@@ -28,7 +28,8 @@
     <span *ngIf="registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.errors?.['required']">A comfirmação de Senha é obrigatória</span>
     <span *ngIf="registerForm.get('confirmPassword')?.dirty && registerForm.get('password')?.value != registerForm.get('confirmPassword')?.value">As senhas não coincidem</span>
     <ion-item>
-      <ion-input type="file" (change)="uploadFile($event.target)" formControlName="profileImage"></ion-input>
+      <input type="file" #fileInput class="fileInput" (change)="uploadFile($event.target); changeFileInputLabelOnFileSelect(fileInput.value)" formControlName="profileImage">
+      <label (click)="fileInput.click()" class="fileInputLabel">{{fileSelectLabelText}}</label>
     </ion-item>
     <span *ngIf="registerForm.get('profileImage')?.errors?.['required']">A imagem de perfil é obrigatória</span>
     <ion-button type="submit" shape="round">Registrar</ion-button>

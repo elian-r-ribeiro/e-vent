@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AlertService } from 'src/app/common/alert.service';
+import { OthersService } from 'src/app/common/others.service';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
 import { RoutingService } from 'src/app/model/services/routing.service';
@@ -14,8 +15,11 @@ export class NewEventPage implements OnInit {
 
   eventForm!: FormGroup;
   image: any;
+  isFileSelected = false;
+  fileSelectLabelText = "Selecionar imagem do evento";
 
-  constructor(private builder: FormBuilder, private alertService: AlertService, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService) {
+
+  constructor(private othersService: OthersService, private builder: FormBuilder, private alertService: AlertService, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService) {
 
    }
 
@@ -54,5 +58,10 @@ export class NewEventPage implements OnInit {
 
   createEvent(){
     this.firebaseService.registerEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], this.image);
+  }
+
+  changeFileInputLabelOnFileSelect(value: string){
+    this.isFileSelected = this.othersService.changeFileInputStateOnFileSelect(value);
+    this.fileSelectLabelText = this.othersService.changeFileInputLabelOnFileSelect(value, "Imagem do evento selecionada", "Selecione a imagem do evento");
   }
 }

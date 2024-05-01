@@ -18,7 +18,7 @@ img{
 
     ion-item{
         text-align: center;
-        margin-top: 30px;
+        margin-top: 10px;
         width: 300px;
         border-radius: 10px;
     }
@@ -26,4 +26,22 @@ img{
     .confirmButton{
         margin-top: 50px;
     }
+
+    .fileInputLabel {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 15px;
+        background-color: gray;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 10px;
+      }
+      
+      .fileInput {
+        display: none;
+      }
 }

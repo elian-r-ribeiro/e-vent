@@ -15,7 +15,8 @@
     <span *ngIf="profileForm.get('phoneNumber')?.touched && profileForm.get('phoneNumber')?.errors?.['required']">Número de celular é obrigatório</span>
     <span *ngIf="profileForm.get('phoneNumber')?.dirty && profileForm.get('phoneNumber')?.errors?.['validatePhoneNumber']">Formato de número de celular inválido</span>
     <ion-item>
-      <ion-input (change)="uploadFile($event.target)" type="file" formControlName="profileImage"></ion-input>
+      <input type="file" #fileInput class="fileInput" (change)="uploadFile($event.target); changeFileInputLabelOnFileSelect(fileInput.value)" formControlName="profileImage">
+      <label (click)="fileInput.click()" class="fileInputLabel">{{fileSelectLabelText}}</label>
     </ion-item>
     <ion-button class="confirmButton" shape="round" type="submit">Confirmar alterações</ion-button>
     <ion-button (click)="showConfirmLogout()" shape="round" color="danger">Sair dessa conta</ion-button>

@@ -18,8 +18,9 @@
     <span *ngIf="eventForm.get('maxParticipants')?.touched && eventForm.get('maxParticipants')?.errors?.['required']">O número de participantes é obrigatório</span>
     <span *ngIf="eventForm.get('maxParticipants')?.dirty && eventForm.get('maxParticipants')?.errors?.['min']">O mínimo de participantes são 2</span>
     <ion-item>
-      <ion-input (change)="uploadFile($event.target)" formControlName="eventImage" type="file"></ion-input>
+      <input type="file" #fileInput class="fileInput" (change)="uploadFile($event.target); changeFileInputLabelOnFileSelect(fileInput.value)" formControlName="eventImage">
+      <label (click)="fileInput.click()" class="fileInputLabel">{{fileSelectLabelText}}</label>
     </ion-item>
-    <ion-button shape="round" type="submit">Editar evento</ion-button>
+    <ion-button class="editEventButton" shape="round" type="submit">Editar evento</ion-button>
   </form>
 </ion-content>

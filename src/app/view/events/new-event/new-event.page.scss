@@ -2,15 +2,34 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-top: 150px;
 
     ion-item{
         text-align: center;
-        margin-top: 30px;
+        margin-top: 10px;
         width: 300px;
         border-radius: 10px;
     }
-}
 
-.eventDesc{
-    height: 200px;
+    .fileInputLabel {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 15px;
+        background-color: gray;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 10px;
+      }
+      
+      .fileInput {
+        display: none;
+      }
+
+    .createEventButton{
+        margin-top: 20px;
+    }
 }
