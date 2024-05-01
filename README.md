@@ -38,7 +38,7 @@ entre outros. Vá em frente e explore.
 
 ## 📌 Versão
 
-Beta 1.2
+Beta 1.3
 
 ## ✒️ Autores
 
