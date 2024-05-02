@@ -19,6 +19,7 @@ export class HomePage implements OnInit, OnDestroy {
   userInfo: any;
   userName!: string;
   imageURL!: string;
+  darkMode = false;
 
   constructor(private firebaseService: FirebaseService, private routingService: RoutingService, private authService: AuthService, private alertService: AlertService, private auth: AngularFireAuth) {
 
@@ -27,6 +28,7 @@ export class HomePage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   ngOnInit() {
+    this.checkAppMode();
     this.user = this.authService.getLoggedUser();
     if (this.user == null) {
       this.routingService.goToLoginPage();
@@ -49,6 +51,12 @@ export class HomePage implements OnInit, OnDestroy {
     })
   }
 
+  checkAppMode(){
+    const isAppInDarkMode = localStorage.getItem('darkModeActivated');
+    isAppInDarkMode == 'true'?(this.darkMode = true):(this.darkMode = false);
+    document.body.classList.toggle('dark', this.darkMode);
+  }
+
   goToNewEventPage() {
     this.routingService.goToNewEventPage();
   }
@@ -63,5 +71,21 @@ export class HomePage implements OnInit, OnDestroy {
 
   goToMyEventsPage() {
     this.routingService.goToMyEventsPage();
+  }
+
+  toggleDarkMode(){
+    this.darkMode = !this.darkMode;
+
+    document.body.classList.toggle('dark', this.darkMode);
+
+    if(this.darkMode){
+      localStorage.setItem('darkModeActivated', 'true');
+    } else {
+      localStorage.setItem('darkModeActivated', 'false');
+    }
+  }
+
+  logout() {
+    this.authService.logout();
   }
 }

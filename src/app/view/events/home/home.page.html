@@ -5,6 +5,12 @@
     <ion-label (click)="goToProfilePage()" *ngFor="let user of userInfo" class="profileName">{{user.userName}}</ion-label>
   </div>
 
+  <div class="darkLightModeOptions">
+    <ion-icon color="black" *ngIf="darkMode"  name="moon-outline"></ion-icon>
+    <ion-icon color="white" *ngIf="!darkMode" name="sunny-outline"></ion-icon>
+    <ion-toggle class="darkLightModeToggle" (ionChange)="toggleDarkMode()" color="primary" [checked]="darkMode"></ion-toggle>
+  </div>
+
   <ion-label *ngFor="let user of userInfo" class="welcomeMessage"> Bem vindo ao E-vents, {{user.userName}}.</ion-label>
   <ion-label class="welcomeMessage2"> A seguir, os eventos disponíveis:</ion-label>
   
