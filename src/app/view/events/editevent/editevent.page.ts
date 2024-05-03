@@ -25,6 +25,7 @@ export class EditeventPage implements OnInit, OnDestroy {
   constructor(private othersService: OthersService, private loadingController: LoadingController, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private builder: FormBuilder, private route: ActivatedRoute) { }
 
   ngOnInit() {
+    this.othersService.checkAppMode();
     const routeSubscription = this.route.params.subscribe(params => {
       const userId = this.authService.getLoggedUser().uid;
       const eventId = params['eventid'];

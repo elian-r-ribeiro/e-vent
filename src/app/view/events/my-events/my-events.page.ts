@@ -1,6 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
+import { OthersService } from 'src/app/common/others.service';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
 import { RoutingService } from 'src/app/model/services/routing.service';
@@ -16,10 +18,12 @@ export class MyEventsPage implements OnInit, OnDestroy {
 
   userInfo: any;
   userEvents: any;
+  darkMode = false;
 
-  constructor(private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService) { }
+  constructor(private router: Router, private othersService: OthersService, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService) { }
 
   ngOnInit() {
+    this.darkMode = this.othersService.checkAppMode();
     if(this.authService.getLoggedUser() == null){
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
@@ -44,8 +48,6 @@ export class MyEventsPage implements OnInit, OnDestroy {
     })
   }
 
-  public pokemonList  = ['Pikachu', 'Charizard', 'Sei lá mais oqueSei lá mais'];
-
   goToNewEventPage(){
     this.routingService.goToNewEventPage();
   }
@@ -60,5 +62,10 @@ export class MyEventsPage implements OnInit, OnDestroy {
 
   goToHomePage(){
     this.routingService.goToHomePage();
+  }
+
+  toggleDarkMode(){
+    this.othersService.toggleDarkMode(this.darkMode);
+    this.darkMode = this.othersService.checkAppMode();
   }
 }

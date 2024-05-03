@@ -27,6 +27,7 @@ export class ProfilePage implements OnInit, OnDestroy {
   fileSelectLabelText = "Selecionar foto de perfil";
 
   ngOnInit() {
+    this.othersService.checkAppMode();
     this.profileForm = this.builder.group({
       userName: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
       phoneNumber: ['', [Validators.required, this.validatePhoneNumber]],

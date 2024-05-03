@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DocumentChangeAction } from '@angular/fire/compat/firestore';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
+import { OthersService } from 'src/app/common/others.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
 
 @Component({
@@ -20,9 +21,10 @@ export class ParticipantInfoPage implements OnInit, OnDestroy {
   didParticipantWentToEvent!: string;
 
 
-  constructor(private route: ActivatedRoute, private firebaseService: FirebaseService) { }
+  constructor(private route: ActivatedRoute, private firebaseService: FirebaseService, private othersService: OthersService) { }
 
   ngOnInit() {
+    this.othersService.checkAppMode();
     const routeSubscription = this.route.params.subscribe(res => {
       this.eventIndex = +res['index'];
       this.cameFrom = res['from'];

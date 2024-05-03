@@ -3,6 +3,7 @@ import { DocumentChangeAction } from '@angular/fire/compat/firestore';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
+import { OthersService } from 'src/app/common/others.service';
 import { Event } from 'src/app/model/entities/event';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
@@ -17,7 +18,7 @@ export class EventPage implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = [];
 
-  constructor(private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private firebaseService: FirebaseService, private route: ActivatedRoute) { }
+  constructor(private othersService: OthersService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private firebaseService: FirebaseService, private route: ActivatedRoute) { }
 
   event?: Event;
   isUserEventOwner?: boolean = false;
@@ -38,6 +39,8 @@ export class EventPage implements OnInit, OnDestroy {
   shouldShowOwnerButtons: boolean = false;
 
   ngOnInit() {
+    this.othersService.checkAppMode();
+
     if (this.authService.getLoggedUser() == null) {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');

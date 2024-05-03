@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
+import { OthersService } from 'src/app/common/others.service';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
 import { RoutingService } from 'src/app/model/services/routing.service';
@@ -21,14 +22,14 @@ export class HomePage implements OnInit, OnDestroy {
   imageURL!: string;
   darkMode = false;
 
-  constructor(private firebaseService: FirebaseService, private routingService: RoutingService, private authService: AuthService, private alertService: AlertService, private auth: AngularFireAuth) {
+  constructor(private othersService: OthersService, private firebaseService: FirebaseService, private routingService: RoutingService, private authService: AuthService, private alertService: AlertService, private auth: AngularFireAuth) {
 
   }
 
   private subscriptions: Subscription[] = [];
 
   ngOnInit() {
-    this.checkAppMode();
+    this.darkMode = this.othersService.checkAppMode();
     this.user = this.authService.getLoggedUser();
     if (this.user == null) {
       this.routingService.goToLoginPage();
@@ -51,12 +52,6 @@ export class HomePage implements OnInit, OnDestroy {
     })
   }
 
-  checkAppMode(){
-    const isAppInDarkMode = localStorage.getItem('darkModeActivated');
-    isAppInDarkMode == 'true'?(this.darkMode = true):(this.darkMode = false);
-    document.body.classList.toggle('dark', this.darkMode);
-  }
-
   goToNewEventPage() {
     this.routingService.goToNewEventPage();
   }
@@ -74,15 +69,8 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   toggleDarkMode(){
-    this.darkMode = !this.darkMode;
-
-    document.body.classList.toggle('dark', this.darkMode);
-
-    if(this.darkMode){
-      localStorage.setItem('darkModeActivated', 'true');
-    } else {
-      localStorage.setItem('darkModeActivated', 'false');
-    }
+    this.othersService.toggleDarkMode(this.darkMode);
+    this.darkMode = this.othersService.checkAppMode();
   }
 
   logout() {

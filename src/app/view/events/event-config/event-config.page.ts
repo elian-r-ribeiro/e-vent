@@ -7,6 +7,7 @@ import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
 import { RoutingService } from 'src/app/model/services/routing.service';
 import { jsPDF } from 'jspdf';
+import { OthersService } from 'src/app/common/others.service';
 
 @Component({
   selector: 'app-event-config',
@@ -28,9 +29,10 @@ export class EventConfigPage implements OnInit, OnDestroy {
   participantsPhoneNumbersArray : any[] = [];
   participantsEmailsArray : any[] = [];
 
-  constructor(private route: ActivatedRoute, private firebaseService: FirebaseService, private authService: AuthService, private alertService: AlertService, private routingService: RoutingService) { }
+  constructor(private othersService: OthersService, private route: ActivatedRoute, private firebaseService: FirebaseService, private authService: AuthService, private alertService: AlertService, private routingService: RoutingService) { }
 
   ngOnInit() {
+    this.othersService.checkAppMode();
     const routeSubscription = this.route.params.subscribe(res => {
       this.eventIndex = +res['index'];
       this.cameFrom = res['from'];

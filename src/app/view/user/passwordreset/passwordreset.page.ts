@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AlertService } from 'src/app/common/alert.service';
+import { OthersService } from 'src/app/common/others.service';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { RoutingService } from 'src/app/model/services/routing.service';
 
@@ -13,9 +14,10 @@ export class PasswordresetPage implements OnInit {
 
   passwordResetForm!: FormGroup;
 
-  constructor(private builder: FormBuilder, private authService: AuthService, private alertService: AlertService, private routingService: RoutingService) { }
+  constructor(private othersService: OthersService, private builder: FormBuilder, private authService: AuthService, private alertService: AlertService, private routingService: RoutingService) { }
 
   ngOnInit() {
+    this.othersService.checkAppMode();
     if (this.authService.getLoggedUser() != null) {
       this.routingService.goToHomePage();
       this.alertService.presentAlert('Login detectado', 'Você já está logado, você será redirecionado para a home');
