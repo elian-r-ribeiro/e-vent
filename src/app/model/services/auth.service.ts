@@ -49,8 +49,7 @@ export class AuthService implements OnInit {
           const imageURL = await snapshot.ref.getDownloadURL();
           
           await this.firestore.collection(this.PATH).add({ userName, email, phoneNumber, imageURL, uid });
-          await this.alertService.presentAlert('Registro realizado com sucesso', 'Você será redirecionado para a página de login');
-          this.routingService.goToLoginPage();
+          this.userLogin(email, password);
           loading.dismiss();
         })
       }).catch(error => {
