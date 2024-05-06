@@ -2,6 +2,16 @@
 
 Um aplicativo / website criado para organizar e criar eventos.
 
+### 💡 Funcionalidades
+
+-Criação, acesso, edição e recuperação de senha de conta de usuário;
+-Criação, edição e deleção de eventos;
+-Aba para todos os eventos disponíveis e outra para eventos apenas que o usuário criou;
+-O dono do evento pode acessar as informações dos participantes, assim como marcar se aquele usuário participou do
+evento ou não;
+-O dono do evento pode gerar relatórios em PDF, que mostrarão a lista dos participantes com seus dados de
+contato e se ele estava presente no evento ou não. 
+
 ### 📋 Pré-requisitos
 
 Você deve ter o Ionic instalado em sua máquina, juntamente com um banco de dados novo criado no Firebase.
