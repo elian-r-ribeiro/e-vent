@@ -74,6 +74,7 @@ export class EventPage implements OnInit, OnDestroy {
             this.eventOwner = res.map(eventOwner => { return { id: eventOwner.payload.doc.id, ...eventOwner.payload.doc.data() as any } as any });
             this.owner = this.eventOwner[0];
             this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
+            this.enableOwnerOptionsIfUserIsAdmin();
 
             const loggedUserInfoSubscription = this.authService.getUserInfo().subscribe(res => {
                 const loggedUserInfoResponse = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
@@ -106,6 +107,12 @@ export class EventPage implements OnInit, OnDestroy {
 
   showConfirmDeleteEvent() {
     this.alertService.presentConfirmAlert('Atenção', 'Tem certeza que deseja deletar esse evento? Essa ação não pode ser desfeita', this.deleteEvent.bind(this));
+  }
+
+  async enableOwnerOptionsIfUserIsAdmin(){
+    if(await this.authService.isUserAdmin()){
+      this.isUserEventOwner = true;
+    }
   }
 
   async deleteEvent() {

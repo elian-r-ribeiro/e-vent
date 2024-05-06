@@ -36,7 +36,7 @@ export class HomePage implements OnInit, OnDestroy {
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
     }
     const userInfoSubscription = this.authService.getUserInfo().subscribe(res => {
-      this.userInfo = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any })
+      this.userInfo = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
     });
     this.subscriptions.push(userInfoSubscription);
     const eventsSubscription = this.firebaseService.getAllEvents().subscribe(res =>

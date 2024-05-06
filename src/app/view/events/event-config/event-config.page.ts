@@ -28,11 +28,14 @@ export class EventConfigPage implements OnInit, OnDestroy {
   participantsNamesArray : any[] = [];
   participantsPhoneNumbersArray : any[] = [];
   participantsEmailsArray : any[] = [];
+  isUserEventOwner = false;
+  isUserAdmin = false;
 
   constructor(private othersService: OthersService, private route: ActivatedRoute, private firebaseService: FirebaseService, private authService: AuthService, private alertService: AlertService, private routingService: RoutingService) { }
 
   ngOnInit() {
     this.othersService.checkAppMode();
+    this.enableOwnerOptionsIfUserIsAdmin();
     const routeSubscription = this.route.params.subscribe(res => {
       this.eventIndex = +res['index'];
       this.cameFrom = res['from'];
@@ -58,8 +61,9 @@ export class EventConfigPage implements OnInit, OnDestroy {
       this.eventInfo = eventResponse[this.eventIndex];
       this.eventId = this.eventInfo.id;
       this.ownerId = this.eventInfo.ownerUid;
+      this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.logedUser.uid, this.ownerId);
       
-      if(this.ownerId != this.logedUser.uid){
+      if(!this.isUserEventOwner && !this.isUserAdmin){
         this.alertService.presentAlert("Erro", "Esse evento não é seu");
         this.routingService.goToHomePage();
       } else {
@@ -77,6 +81,12 @@ export class EventConfigPage implements OnInit, OnDestroy {
       }
     })
     this.subscriptions.push(eventSubscription);
+  }
+
+  async enableOwnerOptionsIfUserIsAdmin(){
+    if(await this.authService.isUserAdmin()){
+      this.isUserAdmin = true;
+    }
   }
 
   goToParticipantInfoPage(participantIndex: number){

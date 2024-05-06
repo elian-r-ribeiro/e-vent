@@ -5,6 +5,7 @@ import { RoutingService } from './routing.service';
 import { FirebaseService } from './firebase.service';
 import { AlertService } from '../../common/alert.service';
 import { LoadingController } from '@ionic/angular';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -48,7 +49,7 @@ export class AuthService implements OnInit {
         uploadTask?.then(async snapshot => {
           const imageURL = await snapshot.ref.getDownloadURL();
           
-          await this.firestore.collection(this.PATH).add({ userName, email, phoneNumber, imageURL, uid });
+          await this.firestore.collection(this.PATH).add({ userName, email, phoneNumber, imageURL, uid, isUserAdmin: false });
           this.userLogin(email, password);
           loading.dismiss();
         })
@@ -104,6 +105,16 @@ export class AuthService implements OnInit {
   getUserInfo() {
     const loggedUserUID = this.getLoggedUser().uid;
     return this.firestore.collection(this.PATH, ref => ref.where('uid', '==', loggedUserUID)).snapshotChanges();
+  }
+
+  async isUserAdmin(): Promise<boolean> {
+    const userInfoSnapshot = await firstValueFrom(this.getUserInfo());
+    const users = userInfoSnapshot.map(user => { return {id: user.payload.doc.id, ...user.payload.doc.data() as any } as any });
+    if(users[0].isUserAdmin){
+      return true;
+    }else{
+      return false;
+    }
   }
 
   updateProfile(newUserName: string, newPhoneNumber: number, id: string) {

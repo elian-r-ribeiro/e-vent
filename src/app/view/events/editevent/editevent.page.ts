@@ -21,11 +21,13 @@ export class EditeventPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   isFileSelected = false;
   fileSelectLabelText = "Selecionar imagem do evento";
+  isUserAdmin! : boolean;
 
   constructor(private othersService: OthersService, private loadingController: LoadingController, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private builder: FormBuilder, private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.othersService.checkAppMode();
+    this.enableOwnerOptionsIfUserIsAdmin();
     const routeSubscription = this.route.params.subscribe(params => {
       const userId = this.authService.getLoggedUser().uid;
       const eventId = params['eventid'];
@@ -33,7 +35,7 @@ export class EditeventPage implements OnInit, OnDestroy {
         this.eventData = { id: docSnapshot.id, ...docSnapshot.data() as any };
         const ownerId = this.eventData.ownerUid;
         const isUserEventOwner = this.firebaseService.isUserEventOwner(userId, ownerId);
-        if (!isUserEventOwner) {
+        if (!isUserEventOwner && !this.isUserAdmin) {
           this.alertService.presentAlert('Erro', 'Você tentou editar um evento que não é seu');
           this.routingService.goToHomePage();
         } else {
@@ -66,6 +68,12 @@ export class EditeventPage implements OnInit, OnDestroy {
         subscription.unsubscribe();
       }
     });
+  }
+
+  async enableOwnerOptionsIfUserIsAdmin(){
+    if(await this.authService.isUserAdmin()){
+      this.isUserAdmin = true;
+    }
   }
 
   uploadFile(image: any) {
