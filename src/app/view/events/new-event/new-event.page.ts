@@ -30,13 +30,7 @@ export class NewEventPage implements OnInit {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
     }
-
-    this.eventForm = this.builder.group({
-      eventTitle: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(50)]],
-      eventDesc: ['', [Validators.required, Validators.minLength(50), Validators.maxLength(200)]],
-      maxParticipants: [null, [Validators.required, Validators.min(2)]],
-      eventImage: [null, [this.validateImage]]
-    })
+    this.startForm();
   }
 
   validateImage(control: FormControl): { [s: string]: boolean } | null {
@@ -65,5 +59,14 @@ export class NewEventPage implements OnInit {
   changeFileInputLabelOnFileSelect(value: string){
     this.isFileSelected = this.othersService.changeFileInputStateOnFileSelect(value);
     this.fileSelectLabelText = this.othersService.changeFileInputLabelOnFileSelect(value, "Imagem do evento selecionada", "Selecione a imagem do evento");
+  }
+
+  startForm(){
+    this.eventForm = this.builder.group({
+      eventTitle: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(50)]],
+      eventDesc: ['', [Validators.required, Validators.minLength(50), Validators.maxLength(200)]],
+      maxParticipants: [null, [Validators.required, Validators.min(2)]],
+      eventImage: [null, [this.validateImage]]
+    })
   }
 }

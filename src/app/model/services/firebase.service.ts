@@ -15,10 +15,19 @@ export class FirebaseService {
   private usersPath: string = "users";
   private participationsPath: string = "participations";
 
-  constructor(private loadingController: LoadingController,private routingService: RoutingService, private storage: AngularFireStorage, @Inject(Injector) private readonly injector: Injector, private alertService: AlertService, private firestore: AngularFirestore) { }
+  constructor(private loadingController: LoadingController, private routingService: RoutingService, private storage: AngularFireStorage, @Inject(Injector) private readonly injector: Injector, private alertService: AlertService, private firestore: AngularFirestore) { }
 
   private injectAuthService() {
     return this.injector.get(AuthService);
+  }
+
+  async getImageDownloadURL(image: any, uid?: string) {
+    var imageURL: string = '';
+    const uploadTask = this.uploadImage(image, 'profilePictures', uid);
+    await uploadTask?.then(async snapshot => {
+      imageURL = await snapshot.ref.getDownloadURL();
+    })
+    return imageURL;
   }
 
   uploadImage(image: any, PATH: string, fileName: any) {
@@ -35,7 +44,7 @@ export class FirebaseService {
     const participationsSnapshot = this.firestore.collection(this.participationsPath, ref => ref.where('eventId', '==', eventId));
     const querySnapshot = await participationsSnapshot.get().toPromise();
 
-    for(const doc of querySnapshot!.docs){
+    for (const doc of querySnapshot!.docs) {
       await this.firestore.collection(this.participationsPath).doc(doc.id).delete();
     }
     this.alertService.presentAlert("Sucesso", "Evento deletado com sucesso");
@@ -115,12 +124,12 @@ export class FirebaseService {
     }
   }
 
-  updateDidParticipantWentToEventToYes(participationId: string){
-    return this.firestore.collection(this.participationsPath).doc(participationId).update({didParticipantWentToEvent: true});
+  updateDidParticipantWentToEventToYes(participationId: string) {
+    return this.firestore.collection(this.participationsPath).doc(participationId).update({ didParticipantWentToEvent: true });
   }
 
-  updateDidParticipantWentToEventToNo(participationId: string){
-    return this.firestore.collection(this.participationsPath).doc(participationId).update({didParticipantWentToEvent: false});
+  updateDidParticipantWentToEventToNo(participationId: string) {
+    return this.firestore.collection(this.participationsPath).doc(participationId).update({ didParticipantWentToEvent: false });
   }
 
   getUserAlreadyParticipatingOnEvent(eventId: string, userId: string) {

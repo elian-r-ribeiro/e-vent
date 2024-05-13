@@ -26,10 +26,7 @@ export class LoginPage implements OnInit {
       this.alertService.presentAlert('Login detectado', 'Você já está logado, você será redirecionado para a home');
     };
 
-    this.loginForm = this.builder.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
+    this.startForm();
   }
 
   submitForm(){
@@ -46,5 +43,12 @@ export class LoginPage implements OnInit {
 
   goToPasswordResetPage(){
     this.routingService.goToResetPasswordPage();
+  }
+
+  startForm(){
+    this.loginForm = this.builder.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
   }
 }

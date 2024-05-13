@@ -6,6 +6,7 @@ import { FirebaseService } from './firebase.service';
 import { AlertService } from '../../common/alert.service';
 import { LoadingController } from '@ionic/angular';
 import { firstValueFrom } from 'rxjs';
+import { OthersService } from 'src/app/common/others.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,9 @@ export class AuthService implements OnInit {
   userData: any;
   userInfo: any;
 
-  constructor(private firebaseService: FirebaseService, private alertService: AlertService, private auth: AngularFireAuth, private firestore: AngularFirestore, private routingService: RoutingService, private loadingController: LoadingController) {
+  constructor(private firebaseService: FirebaseService, private alertService: AlertService, private auth: AngularFireAuth,
+    private firestore: AngularFirestore, private routingService: RoutingService, private loadingController: LoadingController,
+    private othersService: OthersService) {
     this.auth.authState.subscribe(user => {
       if (user) {
         this.userData = user;
@@ -38,21 +41,15 @@ export class AuthService implements OnInit {
     });
     await loading.present();
 
-    const file = image.item(0);
-    if (file.type.split('/')[0] !== 'image') {
-      this.alertService.presentAlert('Erro ao enviar foto de perfil', 'Tipo não suportado');
+    if (!this.othersService.checkIfFileTypeIsCorrect(image)) {
       loading.dismiss();
     } else {
       const userData = await this.auth.createUserWithEmailAndPassword(email, password).then(async (userData) => {
         const uid = userData.user?.uid;
-        const uploadTask = this.firebaseService.uploadImage(image, 'profilePictures', uid);
-        uploadTask?.then(async snapshot => {
-          const imageURL = await snapshot.ref.getDownloadURL();
-          
-          await this.firestore.collection(this.PATH).add({ userName, email, phoneNumber, imageURL, uid, isUserAdmin: false });
-          this.userLogin(email, password);
-          loading.dismiss();
-        })
+        const imageURL = await this.firebaseService.getImageDownloadURL(image, uid);
+        await this.firestore.collection(this.PATH).add({ userName, email, phoneNumber, imageURL, uid, isUserAdmin: false });
+        this.userLogin(email, password);
+        loading.dismiss();
       }).catch(error => {
         let errorMessage: string;
         switch (error.code) {
@@ -109,10 +106,10 @@ export class AuthService implements OnInit {
 
   async isUserAdmin(): Promise<boolean> {
     const userInfoSnapshot = await firstValueFrom(this.getUserInfo());
-    const users = userInfoSnapshot.map(user => { return {id: user.payload.doc.id, ...user.payload.doc.data() as any } as any });
-    if(users[0].isUserAdmin){
+    const users = userInfoSnapshot.map(user => { return { id: user.payload.doc.id, ...user.payload.doc.data() as any } as any });
+    if (users[0].isUserAdmin) {
       return true;
-    }else{
+    } else {
       return false;
     }
   }
@@ -122,10 +119,10 @@ export class AuthService implements OnInit {
   }
 
   updateProfilePicture(newImageURL: string, id: string) {
-    return this.firestore.collection(this.PATH).doc(id).update({ imageURL: newImageURL});
+    return this.firestore.collection(this.PATH).doc(id).update({ imageURL: newImageURL });
   }
 
-  resetPassword(email: string){
+  resetPassword(email: string) {
     this.auth.sendPasswordResetEmail(email);
   }
 

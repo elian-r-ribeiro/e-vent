@@ -28,11 +28,7 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.othersService.checkAppMode();
-    this.profileForm = this.builder.group({
-      userName: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
-      phoneNumber: ['', [Validators.required, this.validatePhoneNumber]],
-      profileImage: [null]
-    });
+    this.startForm();
     if (this.authService.getLoggedUser() == null) {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
@@ -87,28 +83,25 @@ export class ProfilePage implements OnInit, OnDestroy {
     const firestoreProfileId = this.userInfo[0].id;
     const uid = this.authService.getLoggedUser().uid;
     if (this.image != null) {
-      const file = this.image.item(0);
-      if (file.type.split('/')[0] !== 'image') {
-        this.alertService.presentAlert('Erro ao enviar foto de perfil', 'Tipo não suportado');
+      if (!this.othersService.checkIfFileTypeIsCorrect(this.image)) {
         loading.dismiss();
       } else {
-        const uploadTask = this.firebaseService.uploadImage(this.image, 'profilePictures', uid);
-        await uploadTask?.then(async snapshot => {
-          const imageURL = await snapshot.ref.getDownloadURL();
-          this.authService.updateProfilePicture(imageURL, firestoreProfileId);
-        })
-        await this.authService.updateProfile(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId);
-        await this.firebaseService.updateParticipantNameAndPhoneNumber(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], uid);
-        this.alertService.presentAlert('Perfil atualizado com sucesso', 'Suas informações foram atualizas');
+        const imageURL = await this.firebaseService.getImageDownloadURL(this.image, uid);
+        await this.updateProfileWithNoProfilePicture(firestoreProfileId, uid);
+        await this.authService.updateProfilePicture(imageURL, firestoreProfileId);
         loading.dismiss();
       }
     } else {
-      await this.authService.updateProfile(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId);
-      await this.firebaseService.updateParticipantNameAndPhoneNumber(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], uid);
-      this.alertService.presentAlert('Perfil atualizado com sucesso', 'Suas informações foram atualizas');
+      await this.updateProfileWithNoProfilePicture(firestoreProfileId, uid);
       loading.dismiss();
     }
 
+  }
+
+  async updateProfileWithNoProfilePicture(firestoreProfileId: string, uid: string){
+    await this.authService.updateProfile(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId);
+    await this.firebaseService.updateParticipantNameAndPhoneNumber(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], uid);
+    this.alertService.presentAlert('Perfil atualizado com sucesso', 'Suas informações foram atualizas');
   }
 
   logout() {
@@ -118,5 +111,13 @@ export class ProfilePage implements OnInit, OnDestroy {
   changeFileInputLabelOnFileSelect(value: string){
     this.isFileSelected = this.othersService.changeFileInputStateOnFileSelect(value);
     this.fileSelectLabelText = this.othersService.changeFileInputLabelOnFileSelect(value, "Foto de perfil selecionada", "Selecione a foto de perfil");
+  }
+
+  startForm(){
+    this.profileForm = this.builder.group({
+      userName: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
+      phoneNumber: ['', [Validators.required, this.validatePhoneNumber]],
+      profileImage: [null]
+    });
   }
 }

@@ -28,14 +28,7 @@ export class RegisterPage implements OnInit {
       this.alertService.presentAlert('Login detectado', 'Você já está logado, você será redirecionado para a home');
     };
 
-    this.registerForm = this.builder.group({
-      userName: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
-      email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, this.validatePhoneNumber]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]],
-      profileImage: [null, [this.validateImage]]
-    })
+    this.startForm();
   }
 
   
@@ -77,5 +70,16 @@ export class RegisterPage implements OnInit {
   changeFileInputLabelOnFileSelect(value: string){
     this.isFileSelected = this.othersService.changeFileInputStateOnFileSelect(value);
     this.fileSelectLabelText = this.othersService.changeFileInputLabelOnFileSelect(value, "Foto de perfil selecionada", "Selecione a foto de perfil");
+  }
+
+  startForm(){
+    this.registerForm = this.builder.group({
+      userName: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
+      email: ['', [Validators.required, Validators.email]],
+      phoneNumber: ['', [Validators.required, this.validatePhoneNumber]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]],
+      profileImage: [null, [this.validateImage]]
+    });
   }
 }

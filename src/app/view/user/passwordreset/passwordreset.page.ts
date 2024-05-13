@@ -23,9 +23,7 @@ export class PasswordresetPage implements OnInit {
       this.alertService.presentAlert('Login detectado', 'Você já está logado, você será redirecionado para a home');
     };
 
-    this.passwordResetForm = this.builder.group({
-      email: ['', [Validators.required, Validators.email]]
-    });
+    this.startForm();
   }
 
   submitForm() {
@@ -38,4 +36,9 @@ export class PasswordresetPage implements OnInit {
     }
   }
 
+  startForm(){
+    this.passwordResetForm = this.builder.group({
+      email: ['', [Validators.required, Validators.email]]
+    });
+  }
 }
