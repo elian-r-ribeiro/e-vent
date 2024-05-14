@@ -121,7 +121,14 @@ ion-label{
     align-items: center;
 }
 
+ion-button{
+    width: 250px;
+}
+
 .cogButton{
     position: fixed;
     margin-bottom: 40px;
+    ion-button{
+        width: 100px;
+    }
 }
