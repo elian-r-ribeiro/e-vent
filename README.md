@@ -25,6 +25,9 @@ Se quiser executar através do seu editor de código:
 a instalação ser concluída;
 * Após a instalação do Ionic, baixe esse repositório, abra o diretório onde você baixou ele no seu CMD e digite o comando "npm install"
 para instalar as dependências do projeto;
+* Devido a um erro nos arquivos do firebase, será preciso corrigir um problema manualmente: Abra o arquivo "TProblem.txt" e copie o
+conteúdo dentro do mesmo. Após isso vá até "node_modules/@angular/fire/compat/database/interfaces.d.ts" e substitua TODO o conteúdo
+dentro deste arquivo pelo copiado do arquivo "TProblem.txt";
 * Após a instalação das dependências abra a pasta do projeto no seu editor de código (VSCode, por exemplo), e execute o comando 
 "ionic serve" no terminal para iniciar o servidor de desenvolvimento;
 * Após isso, abra o navegador e digite "localhost:8100" para acessar o aplicativo;
@@ -47,7 +50,7 @@ Você pode testar o aplicativo como um todo, desde criação e login de contas, 
 
 ## 📌 Versão
 
-Beta 1.3
+Beta 1.4
 
 ## ✒️ Autores
 
