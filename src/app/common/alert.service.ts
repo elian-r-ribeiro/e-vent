@@ -10,6 +10,7 @@ export class AlertService {
 
   async presentAlert(subHeader: string, message: string) {
     const alert = await this.alertController.create({
+      cssClass: 'alertBox',
       header: 'E-vent',
       subHeader: subHeader,
       message: message,
@@ -21,6 +22,7 @@ export class AlertService {
 
   async presentConfirmAlert(subHeader: string, message: string, onConfirm: () => void){
     const alert = await this.alertController.create({
+      cssClass: 'confirmAlertBox',
       header: 'E-vent',
       subHeader: subHeader,
       message: message,

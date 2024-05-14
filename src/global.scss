@@ -24,3 +24,47 @@
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+
+ion-alert.alertBox{
+    text-align: center;
+}
+
+ion-alert.alertBox .alert-wrapper {
+    border-radius: 20px;
+}
+
+ion-alert.alertBox .alert-title,
+ion-alert.alertBox .alert-sub-title {
+    text-align: center;
+    margin-top: 10px;
+}
+
+ion-alert.alertBox .alert-message{
+    margin-top: 10px;
+}
+
+ion-alert.alertBox .alert-button-group {
+    justify-content: center;
+}
+
+ion-alert.confirmAlertBox{
+    text-align: center;
+}
+
+ion-alert.confirmAlertBox .alert-wrapper {
+    border-radius: 20px;
+}
+
+ion-alert.confirmAlertBox .alert-title,
+ion-alert.confirmAlertBox .alert-sub-title {
+    text-align: center;
+    margin-top: 10px;
+}
+
+ion-alert.confirmAlertBox .alert-message{
+    margin-top: 10px;
+}
+
+ion-alert.confirmAlertBox .alert-button-group {
+    justify-content: center;
+}
