@@ -8,6 +8,7 @@ import { FirebaseService } from 'src/app/model/services/firebase.service';
 import { RoutingService } from 'src/app/model/services/routing.service';
 import { jsPDF } from 'jspdf';
 import { OthersService } from 'src/app/common/others.service';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-event-config',
@@ -31,7 +32,7 @@ export class EventConfigPage implements OnInit, OnDestroy {
   isUserEventOwner = false;
   isUserAdmin = false;
 
-  constructor(private othersService: OthersService, private route: ActivatedRoute, private firebaseService: FirebaseService, private authService: AuthService, private alertService: AlertService, private routingService: RoutingService) { }
+  constructor(private loadingController: LoadingController, private othersService: OthersService, private route: ActivatedRoute, private firebaseService: FirebaseService, private authService: AuthService, private alertService: AlertService, private routingService: RoutingService) { }
 
   ngOnInit() {
     this.othersService.checkAppMode();
@@ -115,7 +116,7 @@ export class EventConfigPage implements OnInit, OnDestroy {
     
   }
 
-  downloadPDFWithData() {
+  generatePDF() {
     const doc = new jsPDF();
 
     let currentYPosition = 10;
@@ -150,5 +151,21 @@ export class EventConfigPage implements OnInit, OnDestroy {
     }
 
     doc.save(this.eventInfo.eventTitle + ".pdf");
+    return doc;
+  }
+
+  async uploadFileToFirebaseAndGetDownloadURL(){
+    const loading = await this.loadingController.create({
+      message: "Gerando PDF..."
+    });
+    await loading.present();
+
+    const fileName : string = this.eventInfo.id; 
+    const pdfBlob = this.generatePDF().output('blob');
+
+    this.firebaseService.uploadPDFAndGetPDFDownloadURL(pdfBlob, fileName).then(downloadURL => {
+      window.open(downloadURL, '_blank');
+      loading.dismiss();
+    });
   }
 }

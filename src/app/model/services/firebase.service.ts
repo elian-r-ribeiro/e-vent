@@ -5,6 +5,7 @@ import { AlertService } from '../../common/alert.service';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { RoutingService } from './routing.service';
 import { LoadingController } from '@ionic/angular';
+import { OthersService } from 'src/app/common/others.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class FirebaseService {
   private usersPath: string = "users";
   private participationsPath: string = "participations";
 
-  constructor(private loadingController: LoadingController, private routingService: RoutingService, private storage: AngularFireStorage, @Inject(Injector) private readonly injector: Injector, private alertService: AlertService, private firestore: AngularFirestore) { }
+  constructor(private othersService: OthersService, private loadingController: LoadingController, private routingService: RoutingService, private storage: AngularFireStorage, @Inject(Injector) private readonly injector: Injector, private alertService: AlertService, private firestore: AngularFirestore) { }
 
   private injectAuthService() {
     return this.injector.get(AuthService);
@@ -30,6 +31,15 @@ export class FirebaseService {
     return imageURL;
   }
 
+  async uploadPDFAndGetPDFDownloadURL(file: any, fileName: string){
+    var pdfURL: string = '';
+    const uploadTask = this.uploadPDF(file, fileName);
+    await uploadTask?.then(async snapshot => {
+      pdfURL = await snapshot.ref.getDownloadURL();
+    });
+    return pdfURL;
+  }
+
   uploadImage(image: any, PATH: string, fileName: any) {
     const file = image.item(0);
     const path = `${PATH}/${fileName}`;
@@ -37,9 +47,22 @@ export class FirebaseService {
     return task;
   }
 
+  uploadPDF(pdfFile: any, fileName: string){
+    const path = `${'pdfFiles'}/${fileName}`
+    let uploadTask = this.storage.upload(path, pdfFile);
+    return uploadTask;
+  }
+
+  deletePDFFile(fileName: string){
+    const path = `${'pdfFiles'}/${fileName}`;
+    this.storage.ref(path).delete();
+  }
+
   async deleteEventAndEventImageAndEventParticipations(eventId: string) {
-    const completePath = `eventImages/${eventId}`;
-    this.storage.ref(completePath).delete();
+    const completeImagePath = `eventImages/${eventId}`;
+    const completePDFPath = `pdfFiles/${eventId}`
+    this.storage.ref(completeImagePath).delete();
+    this.storage.ref(completePDFPath).delete();
     await this.firestore.collection(this.eventsPath).doc(eventId).delete();
     const participationsSnapshot = this.firestore.collection(this.participationsPath, ref => ref.where('eventId', '==', eventId));
     const querySnapshot = await participationsSnapshot.get().toPromise();
@@ -57,10 +80,8 @@ export class FirebaseService {
     await loading.present();
 
     const ownerUid = this.injectAuthService().getLoggedUser().uid;
-    const file = image.item(0);
-    if (file.type.split('/')[0] !== 'image') {
-      this.alertService.presentAlert('Erro ao enviar imagem do evento', 'Tipo não suportado');
-      loading.dismiss();
+    if (!this.othersService.checkIfFileTypeIsCorrect(image)) {
+      loading.dismiss()
     } else {
       const eventDocRef = await this.firestore.collection(this.eventsPath).add({ eventTitle, eventDesc, maxParticipants, ownerUid });
       const uploadTask = this.uploadImage(image, 'eventImages', eventDocRef.id);
