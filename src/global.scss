@@ -68,3 +68,7 @@ ion-alert.confirmAlertBox .alert-message{
 ion-alert.confirmAlertBox .alert-button-group {
     justify-content: center;
 }
+
+ion-loading.loadingBox .loading-wrapper{
+    border-radius: 20px;
+}

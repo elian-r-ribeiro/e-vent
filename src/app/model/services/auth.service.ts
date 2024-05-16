@@ -36,10 +36,7 @@ export class AuthService implements OnInit {
   private PATH: string = "users";
 
   async registerUser(userName: string, email: string, phoneNumber: number, password: string, image: any) {
-    const loading = await this.loadingController.create({
-      message: "Criando conta..."
-    });
-    await loading.present();
+    const loading = await this.alertService.presentLoadingAlert('Criando conta...');
 
     if (!this.othersService.checkIfFileTypeIsCorrect(image)) {
       loading.dismiss();

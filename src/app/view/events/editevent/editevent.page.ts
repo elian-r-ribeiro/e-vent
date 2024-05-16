@@ -84,10 +84,7 @@ export class EditeventPage implements OnInit, OnDestroy {
   }
 
   async updateEvent() {
-    const loading = await this.loadingController.create({
-      message: "Atualizando evento..."
-    });
-    await loading.present();
+    const loading = await this.alertService.presentLoadingAlert("Atualizando evento...");
 
     const firestoreEventId = this.eventData.id;
     if (this.image != null) {

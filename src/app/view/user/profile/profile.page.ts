@@ -75,10 +75,7 @@ export class ProfilePage implements OnInit, OnDestroy {
   }
 
   async updateProfile() {
-    const loading = await this.loadingController.create({
-      message: "Atualizando perfil..."
-    });
-    await loading.present();
+    const loading = await this.alertService.presentLoadingAlert("Atualizando perfil...");
 
     const firestoreProfileId = this.userInfo[0].id;
     const uid = this.authService.getLoggedUser().uid;

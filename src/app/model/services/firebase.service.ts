@@ -74,10 +74,7 @@ export class FirebaseService {
   }
 
   async registerEvent(eventTitle: string, eventDesc: string, maxParticipants: number, image: any) {
-    const loading = await this.loadingController.create({
-      message: "Criando evento..."
-    });
-    await loading.present();
+    const loading = await this.alertService.presentLoadingAlert("Registrando evento...");
 
     const ownerUid = this.injectAuthService().getLoggedUser().uid;
     if (!this.othersService.checkIfFileTypeIsCorrect(image)) {

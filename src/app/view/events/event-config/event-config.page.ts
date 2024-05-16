@@ -155,10 +155,7 @@ export class EventConfigPage implements OnInit, OnDestroy {
   }
 
   async uploadFileToFirebaseAndGetDownloadURL(){
-    const loading = await this.loadingController.create({
-      message: "Gerando PDF..."
-    });
-    await loading.present();
+    const loading = await this.alertService.presentLoadingAlert("Gerando PDF...");
 
     const fileName : string = this.eventInfo.id; 
     const pdfBlob = this.generatePDF().output('blob');
