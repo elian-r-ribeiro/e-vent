@@ -4,7 +4,6 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
 import { OthersService } from 'src/app/common/others.service';
-import { Event } from 'src/app/model/entities/event';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
 import { RoutingService } from 'src/app/model/services/routing.service';
@@ -26,7 +25,7 @@ export class EventPage implements OnInit, OnDestroy {
   selectedEvent: any;
   eventOwner: any;
   owner: any;
-  loggedUserUID: string = this.authService.getLoggedUser().uid;
+  loggedUserUID: string = this.authService.getLoggedUserThroughLocalStorage().uid;
   eventId!: string;
   participantsInfo: any;
   loggedUserInfoReadyToUse: any;
@@ -41,7 +40,7 @@ export class EventPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.othersService.checkAppMode();
 
-    if (this.authService.getLoggedUser() == null) {
+    if (this.authService.getLoggedUserThroughLocalStorage() == null) {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
     }
@@ -76,7 +75,7 @@ export class EventPage implements OnInit, OnDestroy {
             this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
             this.enableOwnerOptionsIfUserIsAdmin();
 
-            const loggedUserInfoSubscription = this.authService.getUserInfo().subscribe(res => {
+            const loggedUserInfoSubscription = this.authService.getUserInfoFromFirebase().subscribe(res => {
                 const loggedUserInfoResponse = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
                 this.loggedUserInfoReadyToUse = loggedUserInfoResponse[0];
 

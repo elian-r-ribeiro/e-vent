@@ -91,18 +91,18 @@ export class AuthService implements OnInit {
       });
   }
 
-  getLoggedUser() {
+  getLoggedUserThroughLocalStorage() {
     const user: any = JSON.parse(localStorage.getItem('user') || 'null');
     return (user !== null) ? user : null;
   }
 
-  getUserInfo() {
-    const loggedUserUID = this.getLoggedUser().uid;
+  getUserInfoFromFirebase() {
+    const loggedUserUID = this.getLoggedUserThroughLocalStorage().uid;
     return this.firestore.collection(this.PATH, ref => ref.where('uid', '==', loggedUserUID)).snapshotChanges();
   }
 
   async isUserAdmin(): Promise<boolean> {
-    const userInfoSnapshot = await firstValueFrom(this.getUserInfo());
+    const userInfoSnapshot = await firstValueFrom(this.getUserInfoFromFirebase());
     const users = userInfoSnapshot.map(user => { return { id: user.payload.doc.id, ...user.payload.doc.data() as any } as any });
     if (users[0].isUserAdmin) {
       return true;

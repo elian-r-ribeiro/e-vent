@@ -29,7 +29,7 @@ export class EditeventPage implements OnInit, OnDestroy {
     this.othersService.checkAppMode();
     this.enableOwnerOptionsIfUserIsAdmin();
     const routeSubscription = this.route.params.subscribe(params => {
-      const userId = this.authService.getLoggedUser().uid;
+      const userId = this.authService.getLoggedUserThroughLocalStorage().uid;
       const eventId = params['eventid'];
       const getEventInfoByIdSubscription = this.firebaseService.getEventInfoById(eventId).subscribe(docSnapshot => {
         this.eventData = { id: docSnapshot.id, ...docSnapshot.data() as any };
@@ -49,7 +49,7 @@ export class EditeventPage implements OnInit, OnDestroy {
     this.subscriptions.push(routeSubscription);
 
 
-    if (this.authService.getLoggedUser() == null) {
+    if (this.authService.getLoggedUserThroughLocalStorage() == null) {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
     }

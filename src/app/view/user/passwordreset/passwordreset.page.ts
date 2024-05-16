@@ -18,7 +18,7 @@ export class PasswordresetPage implements OnInit {
 
   ngOnInit() {
     this.othersService.checkAppMode();
-    if (this.authService.getLoggedUser() != null) {
+    if (this.authService.getLoggedUserThroughLocalStorage() != null) {
       this.routingService.goToHomePage();
       this.alertService.presentAlert('Login detectado', 'Você já está logado, você será redirecionado para a home');
     };

@@ -22,7 +22,7 @@ export class EventConfigPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   eventId!: string;
   participants: any;
-  logedUser = this.authService.getLoggedUser();
+  logedUser = this.authService.getLoggedUserThroughLocalStorage();
   ownerId!: string;
   currentParticipantsNumber!: number
   eventInfo: any;

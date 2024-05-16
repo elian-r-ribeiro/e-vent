@@ -76,7 +76,7 @@ export class FirebaseService {
   async registerEvent(eventTitle: string, eventDesc: string, maxParticipants: number, image: any) {
     const loading = await this.alertService.presentLoadingAlert("Registrando evento...");
 
-    const ownerUid = this.injectAuthService().getLoggedUser().uid;
+    const ownerUid = this.injectAuthService().getLoggedUserThroughLocalStorage().uid;
     if (!this.othersService.checkIfFileTypeIsCorrect(image)) {
       loading.dismiss()
     } else {
@@ -94,7 +94,7 @@ export class FirebaseService {
   }
 
   getUserEvents() {
-    const loggedUserUID = this.injectAuthService().getLoggedUser().uid;
+    const loggedUserUID = this.injectAuthService().getLoggedUserThroughLocalStorage().uid;
     return this.firestore.collection(this.eventsPath, ref => ref.where('ownerUid', '==', loggedUserUID)).snapshotChanges();
   }
 

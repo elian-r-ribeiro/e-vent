@@ -29,11 +29,11 @@ export class ProfilePage implements OnInit, OnDestroy {
   ngOnInit() {
     this.othersService.checkAppMode();
     this.startForm();
-    if (this.authService.getLoggedUser() == null) {
+    if (this.authService.getLoggedUserThroughLocalStorage() == null) {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
     };
-    const getUserInfoSubscription = this.authService.getUserInfo().subscribe(res => {
+    const getUserInfoSubscription = this.authService.getUserInfoFromFirebase().subscribe(res => {
       this.userInfo = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
       if (this.userInfo.length > 0) {
         this.profileForm.get('userName')?.setValue(this.userInfo[0].userName);
@@ -78,7 +78,7 @@ export class ProfilePage implements OnInit, OnDestroy {
     const loading = await this.alertService.presentLoadingAlert("Atualizando perfil...");
 
     const firestoreProfileId = this.userInfo[0].id;
-    const uid = this.authService.getLoggedUser().uid;
+    const uid = this.authService.getLoggedUserThroughLocalStorage().uid;
     if (this.image != null) {
       if (!this.othersService.checkIfFileTypeIsCorrect(this.image)) {
         loading.dismiss();
