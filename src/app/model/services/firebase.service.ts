@@ -81,7 +81,7 @@ export class FirebaseService {
       loading.dismiss()
     } else {
       const eventDocRef = await this.firestore.collection(this.eventsPath).add({ eventTitle, eventDesc, maxParticipants, ownerUid });
-      const imageURL = this.getImageDownloadURL(image, 'eventImages', eventDocRef.id);
+      const imageURL = await this.getImageDownloadURL(image, 'eventImages', eventDocRef.id);
       await eventDocRef.update({ imageURL });
       this.alertService.presentAlert('Evento registrado com sucesso', 'Você pode checar mais informações na aba "Meus eventos" e ele já está disponível para outras pessoas');
       this.routingService.goToHomePage();

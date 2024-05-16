@@ -88,7 +88,7 @@ export class EditeventPage implements OnInit, OnDestroy {
 
     const firestoreEventId = this.eventData.id;
     if (this.image != null) {
-      if (this.othersService.checkIfFileTypeIsCorrect(this.image)) {
+      if (!this.othersService.checkIfFileTypeIsCorrect(this.image)) {
         loading.dismiss();
       } else {
         const imageURL = await this.firebaseService.getImageDownloadURL(this.image, 'eventImages', firestoreEventId)
