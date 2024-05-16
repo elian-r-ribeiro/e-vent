@@ -22,9 +22,9 @@ export class FirebaseService {
     return this.injector.get(AuthService);
   }
 
-  async getImageDownloadURL(image: any, uid?: string) {
+  async getImageDownloadURL(image: any, path: string, uidOrId?: string) {
     var imageURL: string = '';
-    const uploadTask = this.uploadImage(image, 'profilePictures', uid);
+    const uploadTask = this.uploadImage(image, path, uidOrId);
     await uploadTask?.then(async snapshot => {
       imageURL = await snapshot.ref.getDownloadURL();
     })
@@ -81,14 +81,11 @@ export class FirebaseService {
       loading.dismiss()
     } else {
       const eventDocRef = await this.firestore.collection(this.eventsPath).add({ eventTitle, eventDesc, maxParticipants, ownerUid });
-      const uploadTask = this.uploadImage(image, 'eventImages', eventDocRef.id);
-      uploadTask?.then(async snapshot => {
-        const imageURL = await snapshot.ref.getDownloadURL();
-        await eventDocRef.update({ imageURL });
-        this.alertService.presentAlert('Evento registrado com sucesso', 'Você pode checar mais informações na aba "Meus eventos" e ele já está disponível para outras pessoas');
-        this.routingService.goToHomePage();
-        loading.dismiss();
-      })
+      const imageURL = this.getImageDownloadURL(image, 'eventImages', eventDocRef.id);
+      await eventDocRef.update({ imageURL });
+      this.alertService.presentAlert('Evento registrado com sucesso', 'Você pode checar mais informações na aba "Meus eventos" e ele já está disponível para outras pessoas');
+      this.routingService.goToHomePage();
+      loading.dismiss();
     }
   }
 

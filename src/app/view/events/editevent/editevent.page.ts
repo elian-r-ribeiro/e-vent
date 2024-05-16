@@ -88,16 +88,11 @@ export class EditeventPage implements OnInit, OnDestroy {
 
     const firestoreEventId = this.eventData.id;
     if (this.image != null) {
-      const file = this.image.item(0);
-      if (file.type.split('/')[0] !== 'image') {
-        this.alertService.presentAlert('Erro ao enviar foto de perfil', 'Tipo não suportado');
+      if (this.othersService.checkIfFileTypeIsCorrect(this.image)) {
         loading.dismiss();
       } else {
-        const uploadTask = this.firebaseService.uploadImage(this.image, 'eventImages', firestoreEventId);
-        await uploadTask?.then(async snapshot => {
-          const imageURL = await snapshot.ref.getDownloadURL();
-          this.firebaseService.updateEventImage(imageURL, firestoreEventId);
-        })
+        const imageURL = await this.firebaseService.getImageDownloadURL(this.image, 'eventImages', firestoreEventId)
+        await this.firebaseService.updateEventImage(imageURL, firestoreEventId);
         await this.firebaseService.updateEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], firestoreEventId);
         this.alertService.presentAlert('Sucesso', 'Informações do evento editadas com sucesso');
         this.routingService.goBackToPreviousPage();

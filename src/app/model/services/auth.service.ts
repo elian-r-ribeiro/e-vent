@@ -43,7 +43,7 @@ export class AuthService implements OnInit {
     } else {
       const userData = await this.auth.createUserWithEmailAndPassword(email, password).then(async (userData) => {
         const uid = userData.user?.uid;
-        const imageURL = await this.firebaseService.getImageDownloadURL(image, uid);
+        const imageURL = await this.firebaseService.getImageDownloadURL(image, 'profilePictures' , uid);
         await this.firestore.collection(this.PATH).add({ userName, email, phoneNumber, imageURL, uid, isUserAdmin: false });
         this.userLogin(email, password);
         loading.dismiss();
