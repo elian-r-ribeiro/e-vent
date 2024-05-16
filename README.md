@@ -69,3 +69,7 @@ Beta 1.6
 ## ✒️ Autores
 
 * **Elian R. Ribeiro** - *Desenvolvedor* - [elian-r-ribeiro](https://github.com/elian-r-ribeiro)
+
+## 🎫 Observações
+
+* Não comercialize, utilize de forma pública ou publique este projeto como se fosse seu, ou sem autorização do dono do mesmo.
