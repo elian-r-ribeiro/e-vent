@@ -111,6 +111,12 @@ export class AuthService implements OnInit {
     }
   }
 
+  async updateProfileWithNoProfilePicture(userName: string, phoneNumber: number, firestoreProfileId: string, uid: string){
+    await this.updateProfile(userName, phoneNumber, firestoreProfileId);
+    await this.firebaseService.updateParticipantNameAndPhoneNumber(userName, phoneNumber, uid);
+    this.alertService.presentAlert('Perfil atualizado com sucesso', 'Suas informações foram atualizas');
+  }
+
   updateProfile(newUserName: string, newPhoneNumber: number, id: string) {
     return this.firestore.collection(this.PATH).doc(id).update({ userName: newUserName, phoneNumber: newPhoneNumber });
   }

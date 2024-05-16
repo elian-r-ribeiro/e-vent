@@ -126,7 +126,7 @@ export class FirebaseService {
     return this.firestore.collection(this.participationsPath, ref => ref.where('eventId', '==', eventId)).snapshotChanges();
   }
 
-  async updateParticipantNameAndPhoneNumber(newParticipantName: string, newParticipantPhoneNumber: string, participantId: string) {
+  async updateParticipantNameAndPhoneNumber(newParticipantName: string, newParticipantPhoneNumber: number, participantId: string) {
     const query = this.firestore.collection(this.participationsPath, ref => ref.where('participantId', '==', participantId));
 
     const querySnapshot = await query.get().toPromise();

@@ -33,14 +33,7 @@ export class ProfilePage implements OnInit, OnDestroy {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
     };
-    const getUserInfoSubscription = this.authService.getUserInfoFromFirebase().subscribe(res => {
-      this.userInfo = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
-      if (this.userInfo.length > 0) {
-        this.profileForm.get('userName')?.setValue(this.userInfo[0].userName);
-        this.profileForm.get('phoneNumber')?.setValue(this.userInfo[0].phoneNumber);
-      };
-    });
-    this.subscriptions.push(getUserInfoSubscription);
+    this.setUserInfo();
   }
 
   ngOnDestroy() {
@@ -49,6 +42,17 @@ export class ProfilePage implements OnInit, OnDestroy {
         subscription.unsubscribe();
       }
     })
+  }
+
+  setUserInfo(){
+    const getUserInfoSubscription = this.authService.getUserInfoFromFirebase().subscribe(res => {
+      this.userInfo = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
+      if (this.userInfo.length > 0) {
+        this.profileForm.get('userName')?.setValue(this.userInfo[0].userName);
+        this.profileForm.get('phoneNumber')?.setValue(this.userInfo[0].phoneNumber);
+      };
+    });
+    this.subscriptions.push(getUserInfoSubscription);
   }
 
   validatePhoneNumber(control: FormControl): { [s: string]: boolean } | null {
@@ -84,21 +88,15 @@ export class ProfilePage implements OnInit, OnDestroy {
         loading.dismiss();
       } else {
         const imageURL = await this.firebaseService.getImageDownloadURL(this.image, uid);
-        await this.updateProfileWithNoProfilePicture(firestoreProfileId, uid);
+        await this.authService.updateProfileWithNoProfilePicture(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId, uid);
         await this.authService.updateProfilePicture(imageURL, firestoreProfileId);
         loading.dismiss();
       }
     } else {
-      await this.updateProfileWithNoProfilePicture(firestoreProfileId, uid);
+      await this.authService.updateProfileWithNoProfilePicture(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId, uid);
       loading.dismiss();
     }
 
-  }
-
-  async updateProfileWithNoProfilePicture(firestoreProfileId: string, uid: string){
-    await this.authService.updateProfile(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId);
-    await this.firebaseService.updateParticipantNameAndPhoneNumber(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], uid);
-    this.alertService.presentAlert('Perfil atualizado com sucesso', 'Suas informações foram atualizas');
   }
 
   logout() {
