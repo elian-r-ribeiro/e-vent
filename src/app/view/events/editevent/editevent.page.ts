@@ -21,23 +21,18 @@ export class EditeventPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   isFileSelected = false;
   fileSelectLabelText = "Selecionar imagem do evento";
-  isUserAdmin! : boolean;
 
   constructor(private othersService: OthersService, private loadingController: LoadingController, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private builder: FormBuilder, private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.othersService.checkAppMode();
-    this.enableOwnerOptionsIfUserIsAdmin();
     const routeSubscription = this.route.params.subscribe(params => {
-      const userId = this.authService.getLoggedUserThroughLocalStorage().uid;
       const eventId = params['eventid'];
-      const getEventInfoByIdSubscription = this.firebaseService.getEventInfoById(eventId).subscribe(docSnapshot => {
+      const getEventInfoByIdSubscription = this.firebaseService.getEventInfoById(eventId).subscribe(async docSnapshot => {
         this.eventData = { id: docSnapshot.id, ...docSnapshot.data() as any };
         const ownerId = this.eventData.ownerUid;
-        const isUserEventOwner = this.firebaseService.isUserEventOwner(userId, ownerId);
-        if (!isUserEventOwner && !this.isUserAdmin) {
-          this.alertService.presentAlert('Erro', 'Você tentou editar um evento que não é seu');
-          this.routingService.goToHomePage();
+        if (!await this.firebaseService.isUserEventOwnerOrAdmin(ownerId)) {
+          this.firebaseService.changePageAndGiveWarningIfUserIsntEventOwner();
         } else {
           this.eventForm.get('eventTitle')?.setValue(this.eventData.eventTitle);
           this.eventForm.get('eventDesc')?.setValue(this.eventData.eventDesc);
@@ -47,24 +42,16 @@ export class EditeventPage implements OnInit, OnDestroy {
       this.subscriptions.push(getEventInfoByIdSubscription);
     })
     this.subscriptions.push(routeSubscription);
-
     this.authService.checkIfUserIsntLoged();
-
     this.startForm();
   }
 
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => {
-      if(subscription){
+      if (subscription) {
         subscription.unsubscribe();
       }
     });
-  }
-
-  async enableOwnerOptionsIfUserIsAdmin(){
-    if(await this.authService.isUserAdmin()){
-      this.isUserAdmin = true;
-    }
   }
 
   uploadFile(image: any) {
@@ -73,7 +60,7 @@ export class EditeventPage implements OnInit, OnDestroy {
 
   showConfirmEventEdit() {
     if (!this.eventForm.valid) {
-      this.alertService.presentAlert('Erro ao registrar evento', 'Cheque todos os campos e tente novamente');
+      this.alertService.presentAlert('Erro ao editar evento', 'Cheque todos os campos e tente novamente');
     } else {
       this.alertService.presentConfirmAlert('Atenção', 'Tem certeza que deseja editar esse evento? Essa ação não pode ser desfeita. Certifique-se de colocar local, horário e detalhes do evento', this.updateEvent.bind(this));
     }
@@ -103,12 +90,12 @@ export class EditeventPage implements OnInit, OnDestroy {
 
   }
 
-  changeFileInputLabelOnFileSelect(value: string){
+  changeFileInputLabelOnFileSelect(value: string) {
     this.isFileSelected = this.othersService.changeFileInputStateOnFileSelect(value);
     this.fileSelectLabelText = this.othersService.changeFileInputLabelOnFileSelect(value, "Imagem do evento selecionada", "Selecione a imagem do evento");
   }
 
-  startForm(){
+  startForm() {
     this.eventForm = this.builder.group({
       eventTitle: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(50)]],
       eventDesc: ['', [Validators.required, Validators.minLength(50), Validators.maxLength(200)]],

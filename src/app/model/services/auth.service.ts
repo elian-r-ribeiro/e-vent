@@ -43,7 +43,7 @@ export class AuthService implements OnInit {
     } else {
       const userData = await this.auth.createUserWithEmailAndPassword(email, password).then(async (userData) => {
         const uid = userData.user?.uid;
-        const imageURL = await this.firebaseService.getImageDownloadURL(image, 'profilePictures' , uid);
+        const imageURL = await this.firebaseService.getImageDownloadURL(image, 'profilePictures', uid);
         await this.firestore.collection(this.PATH).add({ userName, email, phoneNumber, imageURL, uid, isUserAdmin: false });
         this.userLogin(email, password);
         loading.dismiss();
@@ -91,14 +91,14 @@ export class AuthService implements OnInit {
       });
   }
 
-  checkIfUserIsLoged(){
+  checkIfUserIsLoged() {
     if (this.getLoggedUserThroughLocalStorage() != null) {
       this.routingService.goToHomePage();
       this.alertService.presentAlert('Login detectado', 'Você já está logado, você será redirecionado para a home');
     };
   }
 
-  checkIfUserIsntLoged(){
+  checkIfUserIsntLoged() {
     if (this.getLoggedUserThroughLocalStorage() == null) {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
@@ -125,7 +125,7 @@ export class AuthService implements OnInit {
     }
   }
 
-  async updateProfileWithNoProfilePicture(userName: string, phoneNumber: number, firestoreProfileId: string, uid: string){
+  async updateProfileWithNoProfilePicture(userName: string, phoneNumber: number, firestoreProfileId: string, uid: string) {
     await this.updateProfile(userName, phoneNumber, firestoreProfileId);
     await this.firebaseService.updateParticipantNameAndPhoneNumber(userName, phoneNumber, uid);
     this.alertService.presentAlert('Perfil atualizado com sucesso', 'Suas informações foram atualizas');

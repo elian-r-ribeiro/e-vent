@@ -66,11 +66,10 @@ export class EventPage implements OnInit, OnDestroy {
         this.selectedEvent = this.events[eventIndex];
         this.eventId = this.selectedEvent.id;
 
-        const eventOwnerInfoSubscription = this.firebaseService.getEventOwnerInfo(this.selectedEvent.ownerUid).subscribe(res => {
+        const eventOwnerInfoSubscription = this.firebaseService.getEventOwnerInfo(this.selectedEvent.ownerUid).subscribe(async res => {
             this.eventOwner = res.map(eventOwner => { return { id: eventOwner.payload.doc.id, ...eventOwner.payload.doc.data() as any } as any });
             this.owner = this.eventOwner[0];
-            this.isUserEventOwner = this.firebaseService.isUserEventOwner(this.loggedUserUID, this.owner.uid);
-            this.enableOwnerOptionsIfUserIsAdmin();
+            this.isUserEventOwner = await this.firebaseService.isUserEventOwnerOrAdmin(this.owner.uid);
 
             const loggedUserInfoSubscription = this.authService.getUserInfoFromFirebase().subscribe(res => {
                 const loggedUserInfoResponse = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
@@ -105,19 +104,9 @@ export class EventPage implements OnInit, OnDestroy {
     this.alertService.presentConfirmAlert('Atenção', 'Tem certeza que deseja deletar esse evento? Essa ação não pode ser desfeita', this.deleteEvent.bind(this));
   }
 
-  async enableOwnerOptionsIfUserIsAdmin(){
-    if(await this.authService.isUserAdmin()){
-      this.isUserEventOwner = true;
-    }
-  }
-
   async deleteEvent() {
-    if (!this.isUserEventOwner) {
-      this.alertService.presentAlert('Erro', 'Você não pode deletar um evento que não é seu');
-    } else {
-      await this.firebaseService.deleteEventAndEventImageAndEventParticipations(this.eventId);
-      this.routingService.goBackToPreviousPage();
-    }
+    await this.firebaseService.deleteEventAndEventImageAndEventParticipations(this.eventId);
+    this.routingService.goBackToPreviousPage();
   }
 
   toggleOwnerButtons(){

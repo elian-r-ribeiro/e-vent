@@ -31,7 +31,7 @@ export class FirebaseService {
     return imageURL;
   }
 
-  async uploadPDFAndGetPDFDownloadURL(file: any, fileName: string){
+  async uploadPDFAndGetPDFDownloadURL(file: any, fileName: string) {
     var pdfURL: string = '';
     const uploadTask = this.uploadPDF(file, fileName);
     await uploadTask?.then(async snapshot => {
@@ -47,13 +47,13 @@ export class FirebaseService {
     return task;
   }
 
-  uploadPDF(pdfFile: any, fileName: string){
+  uploadPDF(pdfFile: any, fileName: string) {
     const path = `${'pdfFiles'}/${fileName}`
     let uploadTask = this.storage.upload(path, pdfFile);
     return uploadTask;
   }
 
-  deletePDFFile(fileName: string){
+  deletePDFFile(fileName: string) {
     const path = `${'pdfFiles'}/${fileName}`;
     this.storage.ref(path).delete();
   }
@@ -151,8 +151,23 @@ export class FirebaseService {
     return this.firestore.collection(this.participationsPath, ref => ref.where('eventId', '==', eventId).where('participantId', '==', userId)).snapshotChanges();
   }
 
-  isUserEventOwner(userId: string, ownerId: string) {
-    if (userId == ownerId) {
+  changePageAndGiveWarningIfUserIsntEventOwner() {
+    this.alertService.presentAlert("Erro", "Esse evento não é seu");
+    this.routingService.goToHomePage();
+  }
+
+  async isUserEventOwnerOrAdmin(ownerId: string) {
+    const isUserAdmin: boolean = await this.enableOwnerOptionsIfUserIsAdmin()
+    const logedUserID: string = await this.injectAuthService().getLoggedUserThroughLocalStorage().uid;
+    if (logedUserID == ownerId || isUserAdmin) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async enableOwnerOptionsIfUserIsAdmin() {
+    if (await this.injectAuthService().isUserAdmin()) {
       return true;
     } else {
       return false;
