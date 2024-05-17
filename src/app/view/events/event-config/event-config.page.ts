@@ -36,6 +36,7 @@ export class EventConfigPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.othersService.checkAppMode();
+    this.authService.checkIfUserIsntLoged();
     this.enableOwnerOptionsIfUserIsAdmin();
     const routeSubscription = this.route.params.subscribe(res => {
       this.eventIndex = +res['index'];

@@ -91,6 +91,20 @@ export class AuthService implements OnInit {
       });
   }
 
+  checkIfUserIsLoged(){
+    if (this.getLoggedUserThroughLocalStorage() != null) {
+      this.routingService.goToHomePage();
+      this.alertService.presentAlert('Login detectado', 'Você já está logado, você será redirecionado para a home');
+    };
+  }
+
+  checkIfUserIsntLoged(){
+    if (this.getLoggedUserThroughLocalStorage() == null) {
+      this.routingService.goToLoginPage();
+      this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
+    }
+  }
+
   getLoggedUserThroughLocalStorage() {
     const user: any = JSON.parse(localStorage.getItem('user') || 'null');
     return (user !== null) ? user : null;

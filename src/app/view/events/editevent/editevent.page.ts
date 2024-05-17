@@ -48,11 +48,7 @@ export class EditeventPage implements OnInit, OnDestroy {
     })
     this.subscriptions.push(routeSubscription);
 
-
-    if (this.authService.getLoggedUserThroughLocalStorage() == null) {
-      this.routingService.goToLoginPage();
-      this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
-    }
+    this.authService.checkIfUserIsntLoged();
 
     this.startForm();
   }

@@ -24,10 +24,7 @@ export class MyEventsPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.darkMode = this.othersService.checkAppMode();
-    if(this.authService.getLoggedUserThroughLocalStorage() == null){
-      this.routingService.goToLoginPage();
-      this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
-    }
+    this.authService.checkIfUserIsntLoged();
     const getUserInfoSubscription = this.authService.getUserInfoFromFirebase().subscribe(res=>{
       this.userInfo = res.map(userInfo => 
         {return{id:userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any} as any})

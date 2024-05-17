@@ -26,10 +26,7 @@ export class NewEventPage implements OnInit {
 
   ngOnInit() {
     this.darkMode = this.othersService.checkAppMode();
-    if(this.authService.getLoggedUserThroughLocalStorage() == null){
-      this.routingService.goToLoginPage();
-      this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
-    }
+    this.authService.checkIfUserIsntLoged();
     this.startForm();
   }
 
