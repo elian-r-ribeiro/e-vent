@@ -27,18 +27,7 @@ export class ParticipantInfoPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.authService.checkIfUserIsntLoged();
     this.othersService.checkAppMode();
-    const routeSubscription = this.route.params.subscribe(res => {
-      this.eventIndex = +res['index'];
-      this.cameFrom = res['from'];
-      this.participantIndex = res['participantIndex'];
-
-      if (this.cameFrom == 'home') {
-        this.processParticipants(this.firebaseService.getAllEvents());
-      } else {
-        this.processParticipants(this.firebaseService.getUserEvents());
-      }
-    });
-    this.subscriptions.push(routeSubscription);
+    this.getRouteInfo();
   }
 
   ngOnDestroy() {
@@ -47,13 +36,34 @@ export class ParticipantInfoPage implements OnInit, OnDestroy {
     });
   }
 
-  async processParticipants(getEventFn: Observable<DocumentChangeAction<unknown>[]>) {
+  getRouteInfo(){
+    const routeSubscription = this.route.params.subscribe(res => {
+      this.eventIndex = +res['index'];
+      this.cameFrom = res['from'];
+      this.participantIndex = res['participantIndex'];
+
+      if (this.cameFrom == 'home') {
+        this.setEventInfo(this.firebaseService.getAllEventsAlreadySubscribed());
+      } else {
+        this.setEventInfo(this.firebaseService.getUserEventsAlreadySubscribed());
+      }
+    });
+    this.subscriptions.push(routeSubscription);
+  }
+
+  setEventInfo(getEventFn: Observable<DocumentChangeAction<unknown>[]>){
     const eventSubscription = getEventFn.subscribe((res: any[]) => {
-      const eventResponse = res.map(event => { return { id: event.payload.doc.id, ...event.payload.doc.data() as any } as any });
+      const eventResponse = res;
       const eventInfo = eventResponse[this.eventIndex];
       this.eventId = eventInfo.id;
-      const participantsSubscription = this.firebaseService.getEventParticipants(this.eventId).subscribe(res => {
-        const participant = res.map(participant => { return { id: participant.payload.doc.id, ...participant.payload.doc.data() as any } as any });
+      this.getEventParticipantAndSetParticipantWentToEventOrNot();
+    });
+    this.subscriptions.push(eventSubscription);
+  }
+
+  async getEventParticipantAndSetParticipantWentToEventOrNot() {
+      const participantsSubscription = this.firebaseService.getEventParticipantsAlreadySubscribed(this.eventId).subscribe(res => {
+        const participant = res;
         this.participant = participant[this.participantIndex];
         if(this.participant.didParticipantWentToEvent == true){
           this.didParticipantWentToEvent = "Sim";
@@ -62,8 +72,5 @@ export class ParticipantInfoPage implements OnInit, OnDestroy {
         }
       });
       this.subscriptions.push(participantsSubscription);
-    })
-    this.subscriptions.push(eventSubscription);
   }
-
 }

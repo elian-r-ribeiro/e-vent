@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
 import { OthersService } from 'src/app/common/others.service';
@@ -21,27 +20,14 @@ export class EditeventPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   isFileSelected = false;
   fileSelectLabelText = "Selecionar imagem do evento";
+  eventId: string = '';
 
-  constructor(private othersService: OthersService, private loadingController: LoadingController, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private builder: FormBuilder, private route: ActivatedRoute) { }
+  constructor(private othersService: OthersService, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private builder: FormBuilder, private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.othersService.checkAppMode();
-    const routeSubscription = this.route.params.subscribe(params => {
-      const eventId = params['eventid'];
-      const getEventInfoByIdSubscription = this.firebaseService.getEventInfoById(eventId).subscribe(async docSnapshot => {
-        this.eventData = { id: docSnapshot.id, ...docSnapshot.data() as any };
-        const ownerId = this.eventData.ownerUid;
-        if (!await this.firebaseService.isUserEventOwnerOrAdmin(ownerId)) {
-          this.firebaseService.changePageAndGiveWarningIfUserIsntEventOwner();
-        } else {
-          this.eventForm.get('eventTitle')?.setValue(this.eventData.eventTitle);
-          this.eventForm.get('eventDesc')?.setValue(this.eventData.eventDesc);
-          this.eventForm.get('maxParticipants')?.setValue(this.eventData.maxParticipants);
-        }
-      })
-      this.subscriptions.push(getEventInfoByIdSubscription);
-    })
-    this.subscriptions.push(routeSubscription);
+    this.getRouteInfo();
+    this.setEventData();
     this.authService.checkIfUserIsntLoged();
     this.startForm();
   }
@@ -52,6 +38,28 @@ export class EditeventPage implements OnInit, OnDestroy {
         subscription.unsubscribe();
       }
     });
+  }
+
+  setEventData(){
+    const getEventInfoByIdSubscription = this.firebaseService.getEventInfoById(this.eventId).subscribe(async docSnapshot => {
+      this.eventData = { id: docSnapshot.id, ...docSnapshot.data() as any };
+      const ownerId = this.eventData.ownerUid;
+      if (!await this.firebaseService.isUserEventOwnerOrAdmin(ownerId)) {
+        this.firebaseService.changePageAndGiveWarningIfUserIsntEventOwner();
+      } else {
+        this.eventForm.get('eventTitle')?.setValue(this.eventData.eventTitle);
+        this.eventForm.get('eventDesc')?.setValue(this.eventData.eventDesc);
+        this.eventForm.get('maxParticipants')?.setValue(this.eventData.maxParticipants);
+      }
+    })
+    this.subscriptions.push(getEventInfoByIdSubscription);
+  }
+
+  getRouteInfo() {
+    const routeSubscription = this.route.params.subscribe(params => {
+      this.eventId = params['eventid'];
+    });
+    this.subscriptions.push(routeSubscription);
   }
 
   uploadFile(image: any) {

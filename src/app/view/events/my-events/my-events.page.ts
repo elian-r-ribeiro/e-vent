@@ -17,7 +17,7 @@ export class MyEventsPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   userInfo: any;
-  userEvents: any;
+  userEvents$: any;
   darkMode = false;
 
   constructor(private router: Router, private othersService: OthersService, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService) { }
@@ -25,16 +25,8 @@ export class MyEventsPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.darkMode = this.othersService.checkAppMode();
     this.authService.checkIfUserIsntLoged();
-    const getUserInfoSubscription = this.authService.getUserInfoFromFirebase().subscribe(res=>{
-      this.userInfo = res.map(userInfo => 
-        {return{id:userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any} as any})
-    })
-    this.subscriptions.push(getUserInfoSubscription);
-    const getUserEventsSubscription = this.firebaseService.getUserEvents().subscribe(res=>{
-      this.userEvents = res.map(userEvents => 
-        {return{id:userEvents.payload.doc.id, ...userEvents.payload.doc.data() as any} as any})
-    })
-    this.subscriptions.push(getUserEventsSubscription);
+    this.setUserProfileInfo();
+    this.setEventsList();
   }
 
   ngOnDestroy() {
@@ -43,6 +35,17 @@ export class MyEventsPage implements OnInit, OnDestroy {
         subscription.unsubscribe();
       }
     })
+  }
+
+  setEventsList(){
+    this.userEvents$ = this.firebaseService.getUserEventsAlreadySubscribed();
+  }
+
+  setUserProfileInfo(){
+    const getUserInfoSubscription = this.authService.getUserInfoFromFirebaseAlreadySubscribed().subscribe(res=>{
+      this.userInfo = res;
+    });
+    this.subscriptions.push(getUserInfoSubscription);
   }
 
   goToNewEventPage(){

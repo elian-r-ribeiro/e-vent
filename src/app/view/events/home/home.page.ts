@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
 import { OthersService } from 'src/app/common/others.service';
 import { AuthService } from 'src/app/model/services/auth.service';
@@ -15,7 +15,7 @@ import { RoutingService } from 'src/app/model/services/routing.service';
 export class HomePage implements OnInit, OnDestroy {
 
   user: any;
-  events: any;
+  events$?: Observable<any[]>;
   userData: any;
   userInfo: any;
   userName!: string;
@@ -28,17 +28,12 @@ export class HomePage implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = [];
 
-  ngOnInit() {
+  async ngOnInit() {
     this.darkMode = this.othersService.checkAppMode();
     this.user = this.authService.getLoggedUserThroughLocalStorage();
     this.authService.checkIfUserIsntLoged();
-    const userInfoSubscription = this.authService.getUserInfoFromFirebase().subscribe(res => {
-      this.userInfo = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
-    });
-    this.subscriptions.push(userInfoSubscription);
-    const eventsSubscription = this.firebaseService.getAllEvents().subscribe(res =>
-      this.events = res.map(events => { return { id: events.payload.doc.id, ...events.payload.doc.data() as any } as any }));
-    this.subscriptions.push(eventsSubscription);
+    this.setUserProfileInfo();
+    this.setEventsList();
   }
 
   ngOnDestroy() {
@@ -47,6 +42,17 @@ export class HomePage implements OnInit, OnDestroy {
         subscription.unsubscribe();
       }
     })
+  }
+
+  setEventsList(){
+    this.events$ = this.firebaseService.getAllEventsAlreadySubscribed();
+  }
+
+  setUserProfileInfo(){
+    const userInfoSubscription = this.authService.getUserInfoFromFirebaseAlreadySubscribed().subscribe(res => {
+      this.userInfo = res;
+    });
+    this.subscriptions.push(userInfoSubscription);
   }
 
   goToNewEventPage() {

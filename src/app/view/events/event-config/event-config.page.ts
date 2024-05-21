@@ -35,17 +35,7 @@ export class EventConfigPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.othersService.checkAppMode();
     this.authService.checkIfUserIsntLoged();
-    const routeSubscription = this.route.params.subscribe(res => {
-      this.eventIndex = +res['index'];
-      this.cameFrom = res['from'];
-
-      if (this.cameFrom == 'home') {
-        this.processParticipants(this.firebaseService.getAllEvents());
-      } else {
-        this.processParticipants(this.firebaseService.getUserEvents());
-      }
-    });
-    this.subscriptions.push(routeSubscription);
+    this.getRouteInfo();
   }
 
   ngOnDestroy() {
@@ -54,30 +44,46 @@ export class EventConfigPage implements OnInit, OnDestroy {
     });
   }
 
-  async processParticipants(getEventFn: Observable<DocumentChangeAction<unknown>[]>) {
+  getRouteInfo(){
+    const routeSubscription = this.route.params.subscribe(res => {
+      this.eventIndex = +res['index'];
+      this.cameFrom = res['from'];
+
+      if (this.cameFrom == 'home') {
+        this.setEventInfo(this.firebaseService.getAllEventsAlreadySubscribed());
+      } else {
+        this.setEventInfo(this.firebaseService.getUserEventsAlreadySubscribed());
+      }
+    });
+    this.subscriptions.push(routeSubscription);
+  }
+
+  setEventInfo(getEventFn: Observable<DocumentChangeAction<unknown>[]>){
     const eventSubscription = getEventFn.subscribe(async (res: any[]) => {
-      const eventResponse = res.map(event => { return { id: event.payload.doc.id, ...event.payload.doc.data() as any } as any });
-      this.eventInfo = eventResponse[this.eventIndex];
+      this.eventInfo = res[this.eventIndex];
       this.eventId = this.eventInfo.id;
       this.ownerId = this.eventInfo.ownerUid;
-      
-      if(!await this.firebaseService.isUserEventOwnerOrAdmin(this.ownerId)){
-        this.firebaseService.changePageAndGiveWarningIfUserIsntEventOwner();
-      } else {
-        const participantsSubscription = this.firebaseService.getEventParticipants(this.eventId).subscribe(res => {
-          this.currentParticipantsNumber = res.length;
-          const participants = res.map(participant => { return { id: participant.payload.doc.id, ...participant.payload.doc.data() as any } as any });
-          for(let i = 0; i < res.length; i++){
-            this.participantsNamesArray.push(participants[i].participantName);
-            this.participantsPhoneNumbersArray.push(participants[i].participantPhoneNumber);
-            this.participantsEmailsArray.push(participants[i].participantEmail);
-          }
-          this.participants = participants;
-        })
-        this.subscriptions.push(participantsSubscription);
-      }
-    })
+      await this.processParticipants();
+    });
     this.subscriptions.push(eventSubscription);
+  }
+
+  async processParticipants() {
+    if(!await this.firebaseService.isUserEventOwnerOrAdmin(this.ownerId)){
+      this.firebaseService.changePageAndGiveWarningIfUserIsntEventOwner();
+    } else {
+      const participantsSubscription = this.firebaseService.getEventParticipants(this.eventId).subscribe(res => {
+        this.currentParticipantsNumber = res.length;
+        const participants = res.map(participant => { return { id: participant.payload.doc.id, ...participant.payload.doc.data() as any } as any });
+        for(let i = 0; i < res.length; i++){
+          this.participantsNamesArray.push(participants[i].participantName);
+          this.participantsPhoneNumbersArray.push(participants[i].participantPhoneNumber);
+          this.participantsEmailsArray.push(participants[i].participantEmail);
+        }
+        this.participants = participants;
+      })
+      this.subscriptions.push(participantsSubscription);
+    }
   }
 
   goToParticipantInfoPage(participantIndex: number){

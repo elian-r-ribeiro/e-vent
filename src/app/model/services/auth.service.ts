@@ -5,7 +5,7 @@ import { RoutingService } from './routing.service';
 import { FirebaseService } from './firebase.service';
 import { AlertService } from '../../common/alert.service';
 import { LoadingController } from '@ionic/angular';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, map } from 'rxjs';
 import { OthersService } from 'src/app/common/others.service';
 
 @Injectable({
@@ -108,6 +108,12 @@ export class AuthService implements OnInit {
   getLoggedUserThroughLocalStorage() {
     const user: any = JSON.parse(localStorage.getItem('user') || 'null');
     return (user !== null) ? user : null;
+  }
+
+  getUserInfoFromFirebaseAlreadySubscribed() {
+    return this.getUserInfoFromFirebase().pipe(
+      map(res => res.map(user => ({ id: user.payload.doc.id, ...user.payload.doc.data() as any })))
+    )
   }
 
   getUserInfoFromFirebase() {

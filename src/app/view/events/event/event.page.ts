@@ -39,19 +39,8 @@ export class EventPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.othersService.checkAppMode();
-
     this.authService.checkIfUserIsntLoged();
-
-    const routeSubscription = this.route.params.subscribe(params => {
-      this.eventIndex = +params['index'];
-      this.cameFrom = params['from'];
-      if (this.cameFrom === 'home') {
-        this.processEvents(this.firebaseService.getAllEvents(), this.eventIndex);
-      } else {
-        this.processEvents(this.firebaseService.getUserEvents(), this.eventIndex);
-      }
-    })
-    this.subscriptions.push(routeSubscription);
+    this.getRouteInfo();
   }
 
   ngOnDestroy() {
@@ -60,43 +49,68 @@ export class EventPage implements OnInit, OnDestroy {
     })
   }
 
-  async processEvents(getEventsFn: Observable<DocumentChangeAction<unknown>[]>, eventIndex: number) {
+  getRouteInfo(){
+    const routeSubscription = this.route.params.subscribe(params => {
+      this.eventIndex = +params['index'];
+      this.cameFrom = params['from'];
+      if (this.cameFrom === 'home') {
+        this.setEventInfo(this.firebaseService.getAllEventsAlreadySubscribed(), this.eventIndex);
+        this.getLoggedUserInfo();
+      } else {
+        this.setEventInfo(this.firebaseService.getUserEventsAlreadySubscribed(), this.eventIndex);
+        this.getLoggedUserInfo();
+      }
+    })
+    this.subscriptions.push(routeSubscription);
+  }
+
+  getLoggedUserInfo(){
+    const loggedUserInfoSubscription = this.authService.getUserInfoFromFirebaseAlreadySubscribed().subscribe(res => {
+      this.loggedUserInfoReadyToUse = res[0];
+    });
+    this.subscriptions.push(loggedUserInfoSubscription);
+  }
+
+  setEventInfo(getEventsFn: Observable<DocumentChangeAction<unknown>[]>, eventIndex: number){
     const eventsSubscription = getEventsFn.subscribe((res: any[]) => {
-        this.events = res.map(events => { return { id: events.payload.doc.id, ...events.payload.doc.data() as any } });
-        this.selectedEvent = this.events[eventIndex];
-        this.eventId = this.selectedEvent.id;
-
-        const eventOwnerInfoSubscription = this.firebaseService.getEventOwnerInfo(this.selectedEvent.ownerUid).subscribe(async res => {
-            this.eventOwner = res.map(eventOwner => { return { id: eventOwner.payload.doc.id, ...eventOwner.payload.doc.data() as any } as any });
-            this.owner = this.eventOwner[0];
-            this.isUserEventOwner = await this.firebaseService.isUserEventOwnerOrAdmin(this.owner.uid);
-
-            const loggedUserInfoSubscription = this.authService.getUserInfoFromFirebase().subscribe(res => {
-                const loggedUserInfoResponse = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
-                this.loggedUserInfoReadyToUse = loggedUserInfoResponse[0];
-
-                const eventParticipantsSubscription = this.firebaseService.getEventParticipants(this.eventId).subscribe(res => {
-                    this.currentParticipantsNumber = res.length;
-                    this.eventParticipants = res.map(eventParticipants => { return { id: eventParticipants.payload.doc.id, ...eventParticipants.payload.doc.data() as any } as any });
-
-                    const getUserAlreadyParticipatingOnEventSubscription = this.firebaseService.getUserAlreadyParticipatingOnEvent(this.eventId, this.loggedUserUID).subscribe(res => {
-                        if(res.length > 0){
-                            this.isUserAlreadyEventParticipant = true;
-                            const getUserAlreadyParticipatingOnEventResponse = res.map(participationInfo => { return { id: participationInfo.payload.doc.id, ...participationInfo.payload.doc.data() as any } as any });
-                            this.userParticipationOnEventId = getUserAlreadyParticipatingOnEventResponse[0].id;
-                        } else {
-                            this.isUserAlreadyEventParticipant = false;
-                        }
-                    });
-                    this.subscriptions.push(getUserAlreadyParticipatingOnEventSubscription);
-                });
-                this.subscriptions.push(eventParticipantsSubscription);
-            });
-            this.subscriptions.push(loggedUserInfoSubscription);
-        });
-        this.subscriptions.push(eventOwnerInfoSubscription);
+      this.events = res;
+      this.selectedEvent = this.events[eventIndex];
+      this.eventId = this.selectedEvent.id;
+      this.setEventOwnerInfo();
+      this.getEventParticipants();
+      this.getUserEventParticipation();
     });
     this.subscriptions.push(eventsSubscription);
+  }
+
+  setEventOwnerInfo(){
+    const eventOwnerInfoSubscription = this.firebaseService.getEventOwnerInfoAlreadySubscribed(this.selectedEvent.ownerUid).subscribe(async res => {
+      this.eventOwner = res;
+      this.owner = this.eventOwner[0];
+      this.isUserEventOwner = await this.firebaseService.isUserEventOwnerOrAdmin(this.owner.uid);
+    });
+    this.subscriptions.push(eventOwnerInfoSubscription);
+  }
+
+  getEventParticipants(){
+    const eventParticipantsSubscription = this.firebaseService.getEventParticipantsAlreadySubscribed(this.eventId).subscribe(res => {
+      this.currentParticipantsNumber = res.length;
+      this.eventParticipants = res;
+    });
+    this.subscriptions.push(eventParticipantsSubscription);
+  }
+
+  async getUserEventParticipation() {          
+    const getUserAlreadyParticipatingOnEventSubscription = this.firebaseService.getUserAlreadyParticipatingOnEventAlreadySubscribed(this.eventId, this.loggedUserUID).subscribe(res => {
+        if(res.length > 0){
+            this.isUserAlreadyEventParticipant = true;
+            const getUserAlreadyParticipatingOnEventResponse = res;
+            this.userParticipationOnEventId = getUserAlreadyParticipatingOnEventResponse[0].id;
+        } else {
+            this.isUserAlreadyEventParticipant = false;
+        }
+    });
+    this.subscriptions.push(getUserAlreadyParticipatingOnEventSubscription);
 }
 
 

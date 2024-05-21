@@ -6,6 +6,7 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { RoutingService } from './routing.service';
 import { LoadingController } from '@ionic/angular';
 import { OthersService } from 'src/app/common/others.service';
+import { Observable, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -89,8 +90,20 @@ export class FirebaseService {
     }
   }
 
+  getAllEventsAlreadySubscribed(): Observable<any[]> {
+    return this.getAllEvents().pipe(
+      map(res => res.map(event => ({ id: event.payload.doc.id, ...event.payload.doc.data() as any })))
+    );
+  }
+
   getAllEvents() {
     return this.firestore.collection(this.eventsPath).snapshotChanges();
+  }
+
+  getUserEventsAlreadySubscribed() {
+    return this.getUserEvents().pipe(
+      map(res => res.map(event => ({ id: event.payload.doc.id, ...event.payload.doc.data() as any })))
+    );
   }
 
   getUserEvents() {
@@ -100,6 +113,12 @@ export class FirebaseService {
 
   getEventInfoById(eventId: string) {
     return this.firestore.collection(this.eventsPath).doc(eventId).get();
+  }
+
+  getEventOwnerInfoAlreadySubscribed(eventOwnerUID: string) {
+    return this.getEventOwnerInfo(eventOwnerUID).pipe(
+      map(res => res.map(owner => ({ id: owner.payload.doc.id, ...owner.payload.doc.data() as any })))
+    );
   }
 
   getEventOwnerInfo(eventOwnerUID: string) {
@@ -120,6 +139,12 @@ export class FirebaseService {
 
   removeEventParticipation(participationId: string) {
     return this.firestore.collection(this.participationsPath).doc(participationId).delete();
+  }
+
+  getEventParticipantsAlreadySubscribed(eventId: string) {
+    return this.getEventParticipants(eventId).pipe(
+      map(res => res.map(participant => ({ id: participant.payload.doc.id, ...participant.payload.doc.data() as any })))
+    );
   }
 
   getEventParticipants(eventId: string) {
@@ -145,6 +170,12 @@ export class FirebaseService {
 
   updateDidParticipantWentToEventToNo(participationId: string) {
     return this.firestore.collection(this.participationsPath).doc(participationId).update({ didParticipantWentToEvent: false });
+  }
+
+  getUserAlreadyParticipatingOnEventAlreadySubscribed(eventId: string, userId: string) {
+    return this.getUserAlreadyParticipatingOnEvent(eventId, userId).pipe(
+      map(res => res.map(participant => ({ id: participant.payload.doc.id, ...participant.payload.doc.data() as any })))
+    );
   }
 
   getUserAlreadyParticipatingOnEvent(eventId: string, userId: string) {

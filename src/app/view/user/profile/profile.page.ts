@@ -42,8 +42,8 @@ export class ProfilePage implements OnInit, OnDestroy {
   }
 
   setUserInfo(){
-    const getUserInfoSubscription = this.authService.getUserInfoFromFirebase().subscribe(res => {
-      this.userInfo = res.map(userInfo => { return { id: userInfo.payload.doc.id, ...userInfo.payload.doc.data() as any } as any });
+    const getUserInfoSubscription = this.authService.getUserInfoFromFirebaseAlreadySubscribed().subscribe(res => {
+      this.userInfo = res;
       if (this.userInfo.length > 0) {
         this.profileForm.get('userName')?.setValue(this.userInfo[0].userName);
         this.profileForm.get('phoneNumber')?.setValue(this.userInfo[0].phoneNumber);
