@@ -19,12 +19,13 @@ export class MyEventsPage implements OnInit, OnDestroy {
   userInfo: any;
   userEvents$: any;
   darkMode = false;
+  loggedUserUid = this.authService.getLoggedUserThroughLocalStorage().uid;
 
-  constructor(private router: Router, private othersService: OthersService, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService) { }
+  constructor(private othersService: OthersService, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService) { }
 
   ngOnInit() {
     this.darkMode = this.othersService.checkAppMode();
-    this.authService.checkIfUserIsntLoged();
+    this.authService.checkIfUserIsntLogged();
     this.setUserProfileInfo();
     this.setEventsList();
   }
@@ -38,11 +39,11 @@ export class MyEventsPage implements OnInit, OnDestroy {
   }
 
   setEventsList(){
-    this.userEvents$ = this.firebaseService.getUserEventsAlreadySubscribed();
+    this.userEvents$ = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('ownerUid', this.loggedUserUid, 'events');
   }
 
   setUserProfileInfo(){
-    const getUserInfoSubscription = this.authService.getUserInfoFromFirebaseAlreadySubscribed().subscribe(res=>{
+    const getUserInfoSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('uid', this.loggedUserUid, 'users').subscribe(res=>{
       this.userInfo = res;
     });
     this.subscriptions.push(getUserInfoSubscription);

@@ -4,9 +4,8 @@ import { AuthService } from './auth.service';
 import { AlertService } from '../../common/alert.service';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { RoutingService } from './routing.service';
-import { LoadingController } from '@ionic/angular';
 import { OthersService } from 'src/app/common/others.service';
-import { Observable, map } from 'rxjs';
+import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -14,10 +13,9 @@ import { Observable, map } from 'rxjs';
 export class FirebaseService {
 
   private eventsPath: string = "events";
-  private usersPath: string = "users";
   private participationsPath: string = "participations";
 
-  constructor(private othersService: OthersService, private loadingController: LoadingController, private routingService: RoutingService, private storage: AngularFireStorage, @Inject(Injector) private readonly injector: Injector, private alertService: AlertService, private firestore: AngularFirestore) { }
+  constructor(private othersService: OthersService, private routingService: RoutingService, private storage: AngularFireStorage, @Inject(Injector) private readonly injector: Injector, private alertService: AlertService, private firestore: AngularFirestore) { }
 
   private injectAuthService() {
     return this.injector.get(AuthService);
@@ -90,39 +88,29 @@ export class FirebaseService {
     }
   }
 
-  getAllEventsAlreadySubscribed(): Observable<any[]> {
-    return this.getAllEvents().pipe(
-      map(res => res.map(event => ({ id: event.payload.doc.id, ...event.payload.doc.data() as any })))
+  getSomethingFromFirebaseWithConditionAlreadySubscribed(condition: string, equalsTo: string, path: string) {
+    return this.getSomethingFromFirebaseWithCondition(condition, equalsTo, path).pipe(
+      map(res => res.map(snapshot => ({ id: snapshot.payload.doc.id, ...snapshot.payload.doc.data() as any })))
     );
   }
 
-  getAllEvents() {
-    return this.firestore.collection(this.eventsPath).snapshotChanges();
+  getSomethingFromFirebaseWithCondition(condition: string, equalsTo: string, path: string) {
+    return this.firestore.collection(path, ref => ref.where(condition, '==', equalsTo)).snapshotChanges();
   }
 
-  getUserEventsAlreadySubscribed() {
-    return this.getUserEvents().pipe(
-      map(res => res.map(event => ({ id: event.payload.doc.id, ...event.payload.doc.data() as any })))
+  getSomethingFromFirebaseAlreadySubscribed(path: string) {
+    return this.getSomethingFromFirebase(path).pipe(
+      map(res => res.map(snapshot => ({ id: snapshot.payload.doc.id, ...snapshot.payload.doc.data() as any })))
     );
   }
 
-  getUserEvents() {
-    const loggedUserUID = this.injectAuthService().getLoggedUserThroughLocalStorage().uid;
-    return this.firestore.collection(this.eventsPath, ref => ref.where('ownerUid', '==', loggedUserUID)).snapshotChanges();
+  getSomethingFromFirebase(path: string) {
+    return this.firestore.collection(path).snapshotChanges();
   }
 
+  //Manter essa
   getEventInfoById(eventId: string) {
     return this.firestore.collection(this.eventsPath).doc(eventId).get();
-  }
-
-  getEventOwnerInfoAlreadySubscribed(eventOwnerUID: string) {
-    return this.getEventOwnerInfo(eventOwnerUID).pipe(
-      map(res => res.map(owner => ({ id: owner.payload.doc.id, ...owner.payload.doc.data() as any })))
-    );
-  }
-
-  getEventOwnerInfo(eventOwnerUID: string) {
-    return this.firestore.collection(this.usersPath, ref => ref.where('uid', '==', eventOwnerUID)).snapshotChanges();
   }
 
   updateEvent(newEventTitle: string, newEventDesc: string, newMaxParticipants: number, eventId: string) {
@@ -139,16 +127,6 @@ export class FirebaseService {
 
   removeEventParticipation(participationId: string) {
     return this.firestore.collection(this.participationsPath).doc(participationId).delete();
-  }
-
-  getEventParticipantsAlreadySubscribed(eventId: string) {
-    return this.getEventParticipants(eventId).pipe(
-      map(res => res.map(participant => ({ id: participant.payload.doc.id, ...participant.payload.doc.data() as any })))
-    );
-  }
-
-  getEventParticipants(eventId: string) {
-    return this.firestore.collection(this.participationsPath, ref => ref.where('eventId', '==', eventId)).snapshotChanges();
   }
 
   async updateParticipantNameAndPhoneNumber(newParticipantName: string, newParticipantPhoneNumber: number, participantId: string) {
@@ -172,6 +150,7 @@ export class FirebaseService {
     return this.firestore.collection(this.participationsPath).doc(participationId).update({ didParticipantWentToEvent: false });
   }
 
+  //Manter essa
   getUserAlreadyParticipatingOnEventAlreadySubscribed(eventId: string, userId: string) {
     return this.getUserAlreadyParticipatingOnEvent(eventId, userId).pipe(
       map(res => res.map(participant => ({ id: participant.payload.doc.id, ...participant.payload.doc.data() as any })))
@@ -189,8 +168,8 @@ export class FirebaseService {
 
   async isUserEventOwnerOrAdmin(ownerId: string) {
     const isUserAdmin: boolean = await this.enableOwnerOptionsIfUserIsAdmin()
-    const logedUserID: string = await this.injectAuthService().getLoggedUserThroughLocalStorage().uid;
-    if (logedUserID == ownerId || isUserAdmin) {
+    const loggedUserID: string = await this.injectAuthService().getLoggedUserThroughLocalStorage().uid;
+    if (loggedUserID == ownerId || isUserAdmin) {
       return true;
     } else {
       return false;

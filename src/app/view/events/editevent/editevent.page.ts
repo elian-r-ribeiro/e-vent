@@ -28,7 +28,7 @@ export class EditeventPage implements OnInit, OnDestroy {
     this.othersService.checkAppMode();
     this.getRouteInfo();
     this.setEventData();
-    this.authService.checkIfUserIsntLoged();
+    this.authService.checkIfUserIsntLogged();
     this.startForm();
   }
 

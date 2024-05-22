@@ -1,7 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Observable, Subscription } from 'rxjs';
-import { AlertService } from 'src/app/common/alert.service';
 import { OthersService } from 'src/app/common/others.service';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
@@ -16,13 +14,11 @@ export class HomePage implements OnInit, OnDestroy {
 
   user: any;
   events$?: Observable<any[]>;
-  userData: any;
   userInfo: any;
-  userName!: string;
-  imageURL!: string;
   darkMode = false;
+  loggedUserUid = this.authService.getLoggedUserThroughLocalStorage().uid;
 
-  constructor(private othersService: OthersService, private firebaseService: FirebaseService, private routingService: RoutingService, private authService: AuthService, private alertService: AlertService, private auth: AngularFireAuth) {
+  constructor(private othersService: OthersService, private firebaseService: FirebaseService, private routingService: RoutingService, private authService: AuthService) {
 
   }
 
@@ -31,7 +27,7 @@ export class HomePage implements OnInit, OnDestroy {
   async ngOnInit() {
     this.darkMode = this.othersService.checkAppMode();
     this.user = this.authService.getLoggedUserThroughLocalStorage();
-    this.authService.checkIfUserIsntLoged();
+    this.authService.checkIfUserIsntLogged();
     this.setUserProfileInfo();
     this.setEventsList();
   }
@@ -45,11 +41,11 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   setEventsList(){
-    this.events$ = this.firebaseService.getAllEventsAlreadySubscribed();
+    this.events$ = this.firebaseService.getSomethingFromFirebaseAlreadySubscribed('events');
   }
 
   setUserProfileInfo(){
-    const userInfoSubscription = this.authService.getUserInfoFromFirebaseAlreadySubscribed().subscribe(res => {
+    const userInfoSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('uid', this.loggedUserUid, 'users').subscribe(res => {
       this.userInfo = res;
     });
     this.subscriptions.push(userInfoSubscription);

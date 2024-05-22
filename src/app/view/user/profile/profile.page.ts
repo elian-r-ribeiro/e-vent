@@ -1,12 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AlertService } from 'src/app/common/alert.service';
 import { OthersService } from 'src/app/common/others.service';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
-import { RoutingService } from 'src/app/model/services/routing.service';
 
 @Component({
   selector: 'app-profile',
@@ -17,7 +15,7 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   
 
-  constructor(private othersService: OthersService, private loadingController: LoadingController,private firebaseService: FirebaseService, private builder: FormBuilder, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService) { }
+  constructor(private othersService: OthersService, private firebaseService: FirebaseService, private builder: FormBuilder, private authService: AuthService, private alertService: AlertService) { }
 
   profileForm!: FormGroup;
   userInfo: any;
@@ -25,11 +23,12 @@ export class ProfilePage implements OnInit, OnDestroy {
   private subscriptions : Subscription[] = [];
   isFileSelected = false;
   fileSelectLabelText = "Selecionar foto de perfil";
+  loggedUserUID = this.authService.getLoggedUserThroughLocalStorage().uid;
 
   ngOnInit() {
     this.othersService.checkAppMode();
     this.startForm();
-    this.authService.checkIfUserIsntLoged();
+    this.authService.checkIfUserIsntLogged();
     this.setUserInfo();
   }
 
@@ -42,7 +41,7 @@ export class ProfilePage implements OnInit, OnDestroy {
   }
 
   setUserInfo(){
-    const getUserInfoSubscription = this.authService.getUserInfoFromFirebaseAlreadySubscribed().subscribe(res => {
+    const getUserInfoSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('uid', this.loggedUserUID, 'users').subscribe(res => {
       this.userInfo = res;
       if (this.userInfo.length > 0) {
         this.profileForm.get('userName')?.setValue(this.userInfo[0].userName);
@@ -79,18 +78,17 @@ export class ProfilePage implements OnInit, OnDestroy {
     const loading = await this.alertService.presentLoadingAlert("Atualizando perfil...");
 
     const firestoreProfileId = this.userInfo[0].id;
-    const uid = this.authService.getLoggedUserThroughLocalStorage().uid;
     if (this.image != null) {
       if (!this.othersService.checkIfFileTypeIsCorrect(this.image)) {
         loading.dismiss();
       } else {
-        const imageURL = await this.firebaseService.getImageDownloadURL(this.image, uid);
-        await this.authService.updateProfileWithNoProfilePicture(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId, uid);
+        const imageURL = await this.firebaseService.getImageDownloadURL(this.image, this.loggedUserUID);
+        await this.authService.updateProfileWithNoProfilePicture(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId, this.loggedUserUID);
         await this.authService.updateProfilePicture(imageURL, firestoreProfileId);
         loading.dismiss();
       }
     } else {
-      await this.authService.updateProfileWithNoProfilePicture(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId, uid);
+      await this.authService.updateProfileWithNoProfilePicture(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId, this.loggedUserUID);
       loading.dismiss();
     }
 

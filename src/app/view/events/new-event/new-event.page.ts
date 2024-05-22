@@ -4,7 +4,6 @@ import { AlertService } from 'src/app/common/alert.service';
 import { OthersService } from 'src/app/common/others.service';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
-import { RoutingService } from 'src/app/model/services/routing.service';
 
 @Component({
   selector: 'app-new-event',
@@ -20,13 +19,13 @@ export class NewEventPage implements OnInit {
   darkMode: boolean = false;
 
 
-  constructor(private othersService: OthersService, private builder: FormBuilder, private alertService: AlertService, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService) {
+  constructor(private othersService: OthersService, private builder: FormBuilder, private alertService: AlertService, private firebaseService: FirebaseService, private authService: AuthService) {
 
    }
 
   ngOnInit() {
     this.darkMode = this.othersService.checkAppMode();
-    this.authService.checkIfUserIsntLoged();
+    this.authService.checkIfUserIsntLogged();
     this.startForm();
   }
 

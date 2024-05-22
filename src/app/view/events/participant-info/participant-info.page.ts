@@ -20,12 +20,13 @@ export class ParticipantInfoPage implements OnInit, OnDestroy {
   participantIndex!: number;
   participant: any;
   didParticipantWentToEvent!: string;
+  loggedUserUid = this.authService.getLoggedUserThroughLocalStorage().uid;
 
 
   constructor(private authService: AuthService, private route: ActivatedRoute, private firebaseService: FirebaseService, private othersService: OthersService) { }
 
   ngOnInit() {
-    this.authService.checkIfUserIsntLoged();
+    this.authService.checkIfUserIsntLogged();
     this.othersService.checkAppMode();
     this.getRouteInfo();
   }
@@ -43,9 +44,9 @@ export class ParticipantInfoPage implements OnInit, OnDestroy {
       this.participantIndex = res['participantIndex'];
 
       if (this.cameFrom == 'home') {
-        this.setEventInfo(this.firebaseService.getAllEventsAlreadySubscribed());
+        this.setEventInfo(this.firebaseService.getSomethingFromFirebaseAlreadySubscribed('events'));
       } else {
-        this.setEventInfo(this.firebaseService.getUserEventsAlreadySubscribed());
+        this.setEventInfo(this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('ownerUid', this.loggedUserUid, 'events'));
       }
     });
     this.subscriptions.push(routeSubscription);
@@ -62,7 +63,7 @@ export class ParticipantInfoPage implements OnInit, OnDestroy {
   }
 
   async getEventParticipantAndSetParticipantWentToEventOrNot() {
-      const participantsSubscription = this.firebaseService.getEventParticipantsAlreadySubscribed(this.eventId).subscribe(res => {
+      const participantsSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('eventId', this.eventId, 'participations').subscribe(res => {
         const participant = res;
         this.participant = participant[this.participantIndex];
         if(this.participant.didParticipantWentToEvent == true){

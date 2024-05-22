@@ -4,7 +4,6 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { RoutingService } from './routing.service';
 import { FirebaseService } from './firebase.service';
 import { AlertService } from '../../common/alert.service';
-import { LoadingController } from '@ionic/angular';
 import { firstValueFrom, map } from 'rxjs';
 import { OthersService } from 'src/app/common/others.service';
 
@@ -16,9 +15,7 @@ export class AuthService implements OnInit {
   userData: any;
   userInfo: any;
 
-  constructor(private firebaseService: FirebaseService, private alertService: AlertService, private auth: AngularFireAuth,
-    private firestore: AngularFirestore, private routingService: RoutingService, private loadingController: LoadingController,
-    private othersService: OthersService) {
+  constructor(private firebaseService: FirebaseService, private alertService: AlertService, private auth: AngularFireAuth, private firestore: AngularFirestore, private routingService: RoutingService,private othersService: OthersService) {
     this.auth.authState.subscribe(user => {
       if (user) {
         this.userData = user;
@@ -91,14 +88,14 @@ export class AuthService implements OnInit {
       });
   }
 
-  checkIfUserIsLoged() {
+  checkIfUserIsLogged() {
     if (this.getLoggedUserThroughLocalStorage() != null) {
       this.routingService.goToHomePage();
       this.alertService.presentAlert('Login detectado', 'Você já está logado, você será redirecionado para a home');
     };
   }
 
-  checkIfUserIsntLoged() {
+  checkIfUserIsntLogged() {
     if (this.getLoggedUserThroughLocalStorage() == null) {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');

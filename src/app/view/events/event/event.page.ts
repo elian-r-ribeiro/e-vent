@@ -19,7 +19,6 @@ export class EventPage implements OnInit, OnDestroy {
 
   constructor(private othersService: OthersService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private firebaseService: FirebaseService, private route: ActivatedRoute) { }
 
-  event?: Event;
   isUserEventOwner?: boolean = false;
   events: any;
   selectedEvent: any;
@@ -27,7 +26,6 @@ export class EventPage implements OnInit, OnDestroy {
   owner: any;
   loggedUserUID: string = this.authService.getLoggedUserThroughLocalStorage().uid;
   eventId!: string;
-  participantsInfo: any;
   loggedUserInfoReadyToUse: any;
   eventParticipants: any;
   isUserAlreadyEventParticipant?: boolean;
@@ -39,7 +37,7 @@ export class EventPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.othersService.checkAppMode();
-    this.authService.checkIfUserIsntLoged();
+    this.authService.checkIfUserIsntLogged();
     this.getRouteInfo();
   }
 
@@ -54,10 +52,10 @@ export class EventPage implements OnInit, OnDestroy {
       this.eventIndex = +params['index'];
       this.cameFrom = params['from'];
       if (this.cameFrom === 'home') {
-        this.setEventInfo(this.firebaseService.getAllEventsAlreadySubscribed(), this.eventIndex);
+        this.setEventInfo(this.firebaseService.getSomethingFromFirebaseAlreadySubscribed('events'), this.eventIndex);
         this.getLoggedUserInfo();
       } else {
-        this.setEventInfo(this.firebaseService.getUserEventsAlreadySubscribed(), this.eventIndex);
+        this.setEventInfo(this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('ownerUid', this.loggedUserUID, 'events'), this.eventIndex);
         this.getLoggedUserInfo();
       }
     })
@@ -65,7 +63,7 @@ export class EventPage implements OnInit, OnDestroy {
   }
 
   getLoggedUserInfo(){
-    const loggedUserInfoSubscription = this.authService.getUserInfoFromFirebaseAlreadySubscribed().subscribe(res => {
+    const loggedUserInfoSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('uid', this.loggedUserUID, 'users').subscribe(res => {
       this.loggedUserInfoReadyToUse = res[0];
     });
     this.subscriptions.push(loggedUserInfoSubscription);
@@ -84,7 +82,7 @@ export class EventPage implements OnInit, OnDestroy {
   }
 
   setEventOwnerInfo(){
-    const eventOwnerInfoSubscription = this.firebaseService.getEventOwnerInfoAlreadySubscribed(this.selectedEvent.ownerUid).subscribe(async res => {
+    const eventOwnerInfoSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('uid', this.selectedEvent.ownerUid, 'users').subscribe(async res => {
       this.eventOwner = res;
       this.owner = this.eventOwner[0];
       this.isUserEventOwner = await this.firebaseService.isUserEventOwnerOrAdmin(this.owner.uid);
@@ -93,7 +91,7 @@ export class EventPage implements OnInit, OnDestroy {
   }
 
   getEventParticipants(){
-    const eventParticipantsSubscription = this.firebaseService.getEventParticipantsAlreadySubscribed(this.eventId).subscribe(res => {
+    const eventParticipantsSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('eventId', this.eventId, 'participations').subscribe(res => {
       this.currentParticipantsNumber = res.length;
       this.eventParticipants = res;
     });

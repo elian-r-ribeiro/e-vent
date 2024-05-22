@@ -23,7 +23,7 @@ export class RegisterPage implements OnInit {
 
   ngOnInit() {
     this.othersService.checkAppMode();
-    this.authService.checkIfUserIsLoged();
+    this.authService.checkIfUserIsLogged();
     this.startForm();
   }
 

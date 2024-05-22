@@ -8,7 +8,6 @@ import { FirebaseService } from 'src/app/model/services/firebase.service';
 import { RoutingService } from 'src/app/model/services/routing.service';
 import { jsPDF } from 'jspdf';
 import { OthersService } from 'src/app/common/others.service';
-import { LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-event-config',
@@ -22,7 +21,7 @@ export class EventConfigPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   eventId!: string;
   participants: any;
-  logedUser = this.authService.getLoggedUserThroughLocalStorage();
+  loggedUser = this.authService.getLoggedUserThroughLocalStorage();
   ownerId!: string;
   currentParticipantsNumber!: number
   eventInfo: any;
@@ -30,11 +29,11 @@ export class EventConfigPage implements OnInit, OnDestroy {
   participantsPhoneNumbersArray : any[] = [];
   participantsEmailsArray : any[] = [];
 
-  constructor(private loadingController: LoadingController, private othersService: OthersService, private route: ActivatedRoute, private firebaseService: FirebaseService, private authService: AuthService, private alertService: AlertService, private routingService: RoutingService) { }
+  constructor(private othersService: OthersService, private route: ActivatedRoute, private firebaseService: FirebaseService, private authService: AuthService, private alertService: AlertService, private routingService: RoutingService) { }
 
   ngOnInit() {
     this.othersService.checkAppMode();
-    this.authService.checkIfUserIsntLoged();
+    this.authService.checkIfUserIsntLogged();
     this.getRouteInfo();
   }
 
@@ -50,9 +49,9 @@ export class EventConfigPage implements OnInit, OnDestroy {
       this.cameFrom = res['from'];
 
       if (this.cameFrom == 'home') {
-        this.setEventInfo(this.firebaseService.getAllEventsAlreadySubscribed());
+        this.setEventInfo(this.firebaseService.getSomethingFromFirebaseAlreadySubscribed('events'));
       } else {
-        this.setEventInfo(this.firebaseService.getUserEventsAlreadySubscribed());
+        this.setEventInfo(this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('ownerUid', this.loggedUser.uid, 'events'));
       }
     });
     this.subscriptions.push(routeSubscription);
@@ -72,9 +71,9 @@ export class EventConfigPage implements OnInit, OnDestroy {
     if(!await this.firebaseService.isUserEventOwnerOrAdmin(this.ownerId)){
       this.firebaseService.changePageAndGiveWarningIfUserIsntEventOwner();
     } else {
-      const participantsSubscription = this.firebaseService.getEventParticipants(this.eventId).subscribe(res => {
+      const participantsSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('eventId', this.eventId, 'participations').subscribe(res => {
         this.currentParticipantsNumber = res.length;
-        const participants = res.map(participant => { return { id: participant.payload.doc.id, ...participant.payload.doc.data() as any } as any });
+        const participants = res;
         for(let i = 0; i < res.length; i++){
           this.participantsNamesArray.push(participants[i].participantName);
           this.participantsPhoneNumbersArray.push(participants[i].participantPhoneNumber);
