@@ -9,7 +9,7 @@ export class OthersService {
 
   constructor(private alertService: AlertService) { }
 
-  changeFileInputStateOnFileSelect(value: string){
+  changeFileInputStateOnFileSelect(value: string): boolean {
     if(value){
       return true;
     } else {
@@ -17,7 +17,7 @@ export class OthersService {
     }
   }
 
-  changeFileInputLabelOnFileSelect(value: string, textSelected: string, textNotSelected: string){
+  changeFileInputLabelOnFileSelect(value: string, textSelected: string, textNotSelected: string): string {
     if(value){
       return textSelected;
     } else {
@@ -25,7 +25,7 @@ export class OthersService {
     }
   }
 
-  checkAppMode(){
+  checkAppMode(): boolean {
     var darkMode = false;
     const isAppInDarkMode = localStorage.getItem('darkModeActivated');
     isAppInDarkMode == 'true'?(darkMode = true):(darkMode = false);
@@ -33,7 +33,7 @@ export class OthersService {
     return darkMode;
   }
 
-  toggleDarkMode(darkMode: boolean){
+  toggleDarkMode(darkMode: boolean): void {
     darkMode = !darkMode;
 
     document.body.classList.toggle('dark', darkMode);
@@ -45,7 +45,7 @@ export class OthersService {
     }
   }
 
-  checkIfFileTypeIsCorrect(image: any){
+  checkIfFileTypeIsCorrect(image: any): boolean {
     const file = image.item(0);
     if (file.type.split('/')[0] !== 'image') {
       this.alertService.presentAlert('Erro ao enviar foto de perfil', 'Tipo não suportado');

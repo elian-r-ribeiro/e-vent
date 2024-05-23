@@ -19,13 +19,13 @@ export class LoginPage implements OnInit {
 
    }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.othersService.checkAppMode();
     this.authService.checkIfUserIsLogged();
     this.startForm();
   }
 
-  submitForm(){
+  submitForm(): void {
     if(!this.loginForm.valid){
       this.alertService.presentAlert('Erro ao cadastrar', 'Cheque todos os campos e tente novamente');
     }else{
@@ -33,15 +33,15 @@ export class LoginPage implements OnInit {
     }
   }
 
-  goToRegisterPage(){
+  goToRegisterPage(): void {
     this.routingService.goToRegisterPage();
   }
 
-  goToPasswordResetPage(){
+  goToPasswordResetPage(): void {
     this.routingService.goToResetPasswordPage();
   }
 
-  startForm(){
+  startForm(): void {
     this.loginForm = this.builder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]

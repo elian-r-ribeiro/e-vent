@@ -64,7 +64,7 @@ Você pode testar o aplicativo como um todo, desde criação e login de contas, 
 
 ## 📌 Versão
 
-Beta 1.8
+Beta 1.9
 
 ## ✒️ Autores
 

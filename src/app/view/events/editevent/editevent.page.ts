@@ -24,7 +24,7 @@ export class EditeventPage implements OnInit, OnDestroy {
 
   constructor(private othersService: OthersService, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService, private builder: FormBuilder, private route: ActivatedRoute) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.othersService.checkAppMode();
     this.getRouteInfo();
     this.setEventData();
@@ -32,7 +32,7 @@ export class EditeventPage implements OnInit, OnDestroy {
     this.startForm();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => {
       if (subscription) {
         subscription.unsubscribe();
@@ -40,7 +40,7 @@ export class EditeventPage implements OnInit, OnDestroy {
     });
   }
 
-  setEventData(){
+  setEventData(): void {
     const getEventInfoByIdSubscription = this.firebaseService.getEventInfoById(this.eventId).subscribe(async docSnapshot => {
       this.eventData = { id: docSnapshot.id, ...docSnapshot.data() as any };
       const ownerId = this.eventData.ownerUid;
@@ -55,18 +55,18 @@ export class EditeventPage implements OnInit, OnDestroy {
     this.subscriptions.push(getEventInfoByIdSubscription);
   }
 
-  getRouteInfo() {
+  getRouteInfo(): void {
     const routeSubscription = this.route.params.subscribe(params => {
       this.eventId = params['eventid'];
     });
     this.subscriptions.push(routeSubscription);
   }
 
-  uploadFile(image: any) {
+  uploadFile(image: any): void {
     this.image = image.files;
   }
 
-  showConfirmEventEdit() {
+  showConfirmEventEdit(): void {
     if (!this.eventForm.valid) {
       this.alertService.presentAlert('Erro ao editar evento', 'Cheque todos os campos e tente novamente');
     } else {
@@ -74,7 +74,7 @@ export class EditeventPage implements OnInit, OnDestroy {
     }
   }
 
-  async updateEvent() {
+  async updateEvent(): Promise<void> {
     const loading = await this.alertService.presentLoadingAlert("Atualizando evento...");
 
     const firestoreEventId = this.eventData.id;
@@ -98,12 +98,12 @@ export class EditeventPage implements OnInit, OnDestroy {
 
   }
 
-  changeFileInputLabelOnFileSelect(value: string) {
+  changeFileInputLabelOnFileSelect(value: string): void {
     this.isFileSelected = this.othersService.changeFileInputStateOnFileSelect(value);
     this.fileSelectLabelText = this.othersService.changeFileInputLabelOnFileSelect(value, "Imagem do evento selecionada", "Selecione a imagem do evento");
   }
 
-  startForm() {
+  startForm(): void {
     this.eventForm = this.builder.group({
       eventTitle: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(50)]],
       eventDesc: ['', [Validators.required, Validators.minLength(50), Validators.maxLength(200)]],

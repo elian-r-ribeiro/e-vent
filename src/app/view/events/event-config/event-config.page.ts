@@ -25,25 +25,25 @@ export class EventConfigPage implements OnInit, OnDestroy {
   ownerId!: string;
   currentParticipantsNumber!: number
   eventInfo: any;
-  participantsNamesArray : any[] = [];
-  participantsPhoneNumbersArray : any[] = [];
-  participantsEmailsArray : any[] = [];
+  participantsNamesArray: any[] = [];
+  participantsPhoneNumbersArray: any[] = [];
+  participantsEmailsArray: any[] = [];
 
   constructor(private othersService: OthersService, private route: ActivatedRoute, private firebaseService: FirebaseService, private authService: AuthService, private alertService: AlertService, private routingService: RoutingService) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.othersService.checkAppMode();
     this.authService.checkIfUserIsntLogged();
     this.getRouteInfo();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => {
       subscription.unsubscribe();
     });
   }
 
-  getRouteInfo(){
+  getRouteInfo(): void {
     const routeSubscription = this.route.params.subscribe(res => {
       this.eventIndex = +res['index'];
       this.cameFrom = res['from'];
@@ -57,7 +57,7 @@ export class EventConfigPage implements OnInit, OnDestroy {
     this.subscriptions.push(routeSubscription);
   }
 
-  setEventInfo(getEventFn: Observable<DocumentChangeAction<unknown>[]>){
+  setEventInfo(getEventFn: Observable<DocumentChangeAction<unknown>[]>): void {
     const eventSubscription = getEventFn.subscribe(async (res: any[]) => {
       this.eventInfo = res[this.eventIndex];
       this.eventId = this.eventInfo.id;
@@ -67,14 +67,14 @@ export class EventConfigPage implements OnInit, OnDestroy {
     this.subscriptions.push(eventSubscription);
   }
 
-  async processParticipants() {
-    if(!await this.firebaseService.isUserEventOwnerOrAdmin(this.ownerId)){
+  async processParticipants(): Promise<void> {
+    if (!await this.firebaseService.isUserEventOwnerOrAdmin(this.ownerId)) {
       this.firebaseService.changePageAndGiveWarningIfUserIsntEventOwner();
     } else {
       const participantsSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('eventId', this.eventId, 'participations').subscribe(res => {
         this.currentParticipantsNumber = res.length;
         const participants = res;
-        for(let i = 0; i < res.length; i++){
+        for (let i = 0; i < res.length; i++) {
           this.participantsNamesArray.push(participants[i].participantName);
           this.participantsPhoneNumbersArray.push(participants[i].participantPhoneNumber);
           this.participantsEmailsArray.push(participants[i].participantEmail);
@@ -85,11 +85,11 @@ export class EventConfigPage implements OnInit, OnDestroy {
     }
   }
 
-  goToParticipantInfoPage(participantIndex: number){
+  goToParticipantInfoPage(participantIndex: number): void {
     this.routingService.goToParticipantInfoPage(this.cameFrom, this.eventIndex, participantIndex);
   }
 
-  async showConfirmRemoveParticipant(index: number){
+  async showConfirmRemoveParticipant(index: number): Promise<void> {
     const participationId = this.participants[index].id;
     await this.alertService.presentConfirmAlert("Atenção", "Tem certeza que deseja remover esse participante desse evento?", async () => {
       await this.firebaseService.removeEventParticipation(participationId)
@@ -97,9 +97,9 @@ export class EventConfigPage implements OnInit, OnDestroy {
     });
   }
 
-  async showConfirmChangeParticipationStatus(index: number){
+  async showConfirmChangeParticipationStatus(index: number): Promise<void> {
     const participationId = this.participants[index].id;
-    if(this.participants[index].didParticipantWentToEvent == false){
+    if (this.participants[index].didParticipantWentToEvent == false) {
       await this.alertService.presentConfirmAlert("Atenção", "Essa opção irá alterar o status do participante para 'participou do evento', tem certeza que deseja fazer isso?", async () => {
         this.firebaseService.updateDidParticipantWentToEventToYes(participationId);
       });
@@ -108,10 +108,10 @@ export class EventConfigPage implements OnInit, OnDestroy {
         this.firebaseService.updateDidParticipantWentToEventToNo(participationId);
       });
     }
-    
+
   }
 
-  generatePDF() {
+  generatePDF(): jsPDF {
     const doc = new jsPDF();
 
     let currentYPosition = 10;
@@ -131,7 +131,7 @@ export class EventConfigPage implements OnInit, OnDestroy {
       doc.text(participantsNames, 10, currentYPosition);
       doc.text(participantsPhoneNumbers, 10, currentYPosition + 10);
       doc.text(participantsEmails, 10, currentYPosition + 20);
-      if(this.participants[i].didParticipantWentToEvent){
+      if (this.participants[i].didParticipantWentToEvent) {
         doc.text("Participou? Sim", 10, currentYPosition + 30);
       } else {
         doc.text("Participou? Não", 10, currentYPosition + 30);
@@ -139,7 +139,7 @@ export class EventConfigPage implements OnInit, OnDestroy {
 
       currentYPosition += 40;
 
-      if(currentYPosition > maxPageHight) {
+      if (currentYPosition > maxPageHight) {
         doc.addPage();
         currentYPosition = 10;
       }
@@ -149,10 +149,10 @@ export class EventConfigPage implements OnInit, OnDestroy {
     return doc;
   }
 
-  async uploadFileToFirebaseAndGetDownloadURL(){
+  async uploadFileToFirebaseAndGetDownloadURL(): Promise<void> {
     const loading = await this.alertService.presentLoadingAlert("Gerando PDF...");
 
-    const fileName : string = this.eventInfo.id; 
+    const fileName: string = this.eventInfo.id;
     const pdfBlob = this.generatePDF().output('blob');
 
     this.firebaseService.uploadPDFAndGetPDFDownloadURL(pdfBlob, fileName).then(downloadURL => {

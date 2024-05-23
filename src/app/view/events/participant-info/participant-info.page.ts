@@ -25,19 +25,19 @@ export class ParticipantInfoPage implements OnInit, OnDestroy {
 
   constructor(private authService: AuthService, private route: ActivatedRoute, private firebaseService: FirebaseService, private othersService: OthersService) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.authService.checkIfUserIsntLogged();
     this.othersService.checkAppMode();
     this.getRouteInfo();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => {
       subscription.unsubscribe();
     });
   }
 
-  getRouteInfo(){
+  getRouteInfo(): void {
     const routeSubscription = this.route.params.subscribe(res => {
       this.eventIndex = +res['index'];
       this.cameFrom = res['from'];
@@ -52,7 +52,7 @@ export class ParticipantInfoPage implements OnInit, OnDestroy {
     this.subscriptions.push(routeSubscription);
   }
 
-  setEventInfo(getEventFn: Observable<DocumentChangeAction<unknown>[]>){
+  setEventInfo(getEventFn: Observable<DocumentChangeAction<unknown>[]>): void {
     const eventSubscription = getEventFn.subscribe((res: any[]) => {
       const eventResponse = res;
       const eventInfo = eventResponse[this.eventIndex];
@@ -62,16 +62,16 @@ export class ParticipantInfoPage implements OnInit, OnDestroy {
     this.subscriptions.push(eventSubscription);
   }
 
-  async getEventParticipantAndSetParticipantWentToEventOrNot() {
-      const participantsSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('eventId', this.eventId, 'participations').subscribe(res => {
-        const participant = res;
-        this.participant = participant[this.participantIndex];
-        if(this.participant.didParticipantWentToEvent == true){
-          this.didParticipantWentToEvent = "Sim";
-        } else {
-          this.didParticipantWentToEvent = "Não";
-        }
-      });
-      this.subscriptions.push(participantsSubscription);
+  async getEventParticipantAndSetParticipantWentToEventOrNot(): Promise<void> {
+    const participantsSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('eventId', this.eventId, 'participations').subscribe(res => {
+      const participant = res;
+      this.participant = participant[this.participantIndex];
+      if (this.participant.didParticipantWentToEvent == true) {
+        this.didParticipantWentToEvent = "Sim";
+      } else {
+        this.didParticipantWentToEvent = "Não";
+      }
+    });
+    this.subscriptions.push(participantsSubscription);
   }
 }

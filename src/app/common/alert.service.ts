@@ -8,7 +8,7 @@ export class AlertService {
 
   constructor(private alertController: AlertController, private loadingController: LoadingController) { }
 
-  async presentLoadingAlert(message: string){
+  async presentLoadingAlert(message: string): Promise<HTMLIonLoadingElement>{
     const loading = await this.loadingController.create({
       message: message,
       cssClass: 'loadingBox'
@@ -18,7 +18,7 @@ export class AlertService {
     return loading;
   }
 
-  async presentAlert(subHeader: string, message: string) {
+  async presentAlert(subHeader: string, message: string): Promise<void> {
     const alert = await this.alertController.create({
       cssClass: 'alertBox',
       header: 'E-vent',
@@ -30,7 +30,7 @@ export class AlertService {
     await alert.present();
   }
 
-  async presentConfirmAlert(subHeader: string, message: string, onConfirm: () => void){
+  async presentConfirmAlert(subHeader: string, message: string, onConfirm: () => void): Promise<void> {
     const alert = await this.alertController.create({
       cssClass: 'confirmAlertBox',
       header: 'E-vent',

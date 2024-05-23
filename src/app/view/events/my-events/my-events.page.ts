@@ -23,14 +23,14 @@ export class MyEventsPage implements OnInit, OnDestroy {
 
   constructor(private othersService: OthersService, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.darkMode = this.othersService.checkAppMode();
     this.authService.checkIfUserIsntLogged();
     this.setUserProfileInfo();
     this.setEventsList();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => {
       if(subscription){
         subscription.unsubscribe();
@@ -38,34 +38,34 @@ export class MyEventsPage implements OnInit, OnDestroy {
     })
   }
 
-  setEventsList(){
+  setEventsList(): void{
     this.userEvents$ = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('ownerUid', this.loggedUserUid, 'events');
   }
 
-  setUserProfileInfo(){
+  setUserProfileInfo(): void {
     const getUserInfoSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('uid', this.loggedUserUid, 'users').subscribe(res=>{
       this.userInfo = res;
     });
     this.subscriptions.push(getUserInfoSubscription);
   }
 
-  goToNewEventPage(){
+  goToNewEventPage(): void {
     this.routingService.goToNewEventPage();
   }
 
-  goToEventPage(index: number){
+  goToEventPage(index: number): void {
     this.routingService.goToEventPage(index, 'my-events');
   }
 
-  goToProfilePage(){
+  goToProfilePage(): void {
     this.routingService.goToProfilePage();
   }
 
-  goToHomePage(){
+  goToHomePage(): void {
     this.routingService.goToHomePage();
   }
 
-  toggleDarkMode(){
+  toggleDarkMode(): void {
     this.othersService.toggleDarkMode(this.darkMode);
     this.darkMode = this.othersService.checkAppMode();
   }

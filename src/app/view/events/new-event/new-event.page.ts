@@ -23,7 +23,7 @@ export class NewEventPage implements OnInit {
 
    }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.darkMode = this.othersService.checkAppMode();
     this.authService.checkIfUserIsntLogged();
     this.startForm();
@@ -36,11 +36,11 @@ export class NewEventPage implements OnInit {
     return null;
   }
 
-  uploadFile(image: any){
+  uploadFile(image: any): void {
     this.image = image.files;
   }
 
-  showConfirmEventCreation(){
+  showConfirmEventCreation(): void {
     if(!this.eventForm.valid){
       this.alertService.presentAlert('Erro ao registrar evento', 'Cheque todos os campos e tente novamente');
     }else{
@@ -48,16 +48,16 @@ export class NewEventPage implements OnInit {
     }
   }
 
-  createEvent(){
+  createEvent(): void {
     this.firebaseService.registerEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], this.image);
   }
 
-  changeFileInputLabelOnFileSelect(value: string){
+  changeFileInputLabelOnFileSelect(value: string): void {
     this.isFileSelected = this.othersService.changeFileInputStateOnFileSelect(value);
     this.fileSelectLabelText = this.othersService.changeFileInputLabelOnFileSelect(value, "Imagem do evento selecionada", "Selecione a imagem do evento");
   }
 
-  startForm(){
+  startForm(): void {
     this.eventForm = this.builder.group({
       eventTitle: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(50)]],
       eventDesc: ['', [Validators.required, Validators.minLength(50), Validators.maxLength(200)]],

@@ -1,16 +1,16 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFirestore, DocumentChangeAction } from '@angular/fire/compat/firestore';
 import { RoutingService } from './routing.service';
 import { FirebaseService } from './firebase.service';
 import { AlertService } from '../../common/alert.service';
-import { firstValueFrom, map } from 'rxjs';
+import { Observable, firstValueFrom, map } from 'rxjs';
 import { OthersService } from 'src/app/common/others.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService implements OnInit {
+export class AuthService {
 
   userData: any;
   userInfo: any;
@@ -26,13 +26,9 @@ export class AuthService implements OnInit {
     });
   }
 
-  ngOnInit() {
-
-  }
-
   private PATH: string = "users";
 
-  async registerUser(userName: string, email: string, phoneNumber: number, password: string, image: any) {
+  async registerUser(userName: string, email: string, phoneNumber: number, password: string, image: any): Promise<void> {
     const loading = await this.alertService.presentLoadingAlert('Criando conta...');
 
     if (!this.othersService.checkIfFileTypeIsCorrect(image)) {
@@ -60,7 +56,7 @@ export class AuthService implements OnInit {
     }
   }
 
-  userLogin(email: string, password: string) {
+  userLogin(email: string, password: string): void {
     this.auth.signInWithEmailAndPassword(email, password)
       .then(() => {
         this.alertService.presentAlert('Login realizado com sucesso', 'Você será redirecionado para a Home');
@@ -88,14 +84,14 @@ export class AuthService implements OnInit {
       });
   }
 
-  checkIfUserIsLogged() {
+  checkIfUserIsLogged(): void {
     if (this.getLoggedUserThroughLocalStorage() != null) {
       this.routingService.goToHomePage();
       this.alertService.presentAlert('Login detectado', 'Você já está logado, você será redirecionado para a home');
     };
   }
 
-  checkIfUserIsntLogged() {
+  checkIfUserIsntLogged(): void {
     if (this.getLoggedUserThroughLocalStorage() == null) {
       this.routingService.goToLoginPage();
       this.alertService.presentAlert('Você tentou acessar uma página sem estar logado', 'Para acessar essa página você precisa estar logado, realize o login e tente novamente');
@@ -107,13 +103,13 @@ export class AuthService implements OnInit {
     return (user !== null) ? user : null;
   }
 
-  getUserInfoFromFirebaseAlreadySubscribed() {
+  getUserInfoFromFirebaseAlreadySubscribed(): Observable<any[]> {
     return this.getUserInfoFromFirebase().pipe(
       map(res => res.map(user => ({ id: user.payload.doc.id, ...user.payload.doc.data() as any })))
     )
   }
 
-  getUserInfoFromFirebase() {
+  getUserInfoFromFirebase(): Observable<DocumentChangeAction<unknown>[]> {
     const loggedUserUID = this.getLoggedUserThroughLocalStorage().uid;
     return this.firestore.collection(this.PATH, ref => ref.where('uid', '==', loggedUserUID)).snapshotChanges();
   }
@@ -128,25 +124,25 @@ export class AuthService implements OnInit {
     }
   }
 
-  async updateProfileWithNoProfilePicture(userName: string, phoneNumber: number, firestoreProfileId: string, uid: string) {
+  async updateProfileWithNoProfilePicture(userName: string, phoneNumber: number, firestoreProfileId: string, uid: string): Promise<void> {
     await this.updateProfile(userName, phoneNumber, firestoreProfileId);
     await this.firebaseService.updateParticipantNameAndPhoneNumber(userName, phoneNumber, uid);
     this.alertService.presentAlert('Perfil atualizado com sucesso', 'Suas informações foram atualizas');
   }
 
-  updateProfile(newUserName: string, newPhoneNumber: number, id: string) {
+  updateProfile(newUserName: string, newPhoneNumber: number, id: string): Promise<void> {
     return this.firestore.collection(this.PATH).doc(id).update({ userName: newUserName, phoneNumber: newPhoneNumber });
   }
 
-  updateProfilePicture(newImageURL: string, id: string) {
+  updateProfilePicture(newImageURL: string, id: string): Promise<void> {
     return this.firestore.collection(this.PATH).doc(id).update({ imageURL: newImageURL });
   }
 
-  resetPassword(email: string) {
+  resetPassword(email: string): void {
     this.auth.sendPasswordResetEmail(email);
   }
 
-  logout() {
+  logout(): void {
     this.auth.signOut();
     localStorage.setItem('user', 'null');
     this.routingService.goToLoginPage();

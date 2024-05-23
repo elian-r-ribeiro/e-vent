@@ -7,53 +7,53 @@ import { Location } from '@angular/common';
 })
 export class RoutingService {
 
-  constructor(private router : Router, private location: Location) { }
+  constructor(private router: Router, private location: Location) { }
 
-  goToLoginPage(){
+  goToLoginPage(): void {
     this.router.navigate(['/login']);
   }
 
-  goToRegisterPage(){
+  goToRegisterPage(): void {
     this.router.navigate(['/register']);
   }
 
-  goToNewEventPage(){
+  goToNewEventPage(): void {
     this.router.navigate(['/new-event']);
   }
 
-  goToEventPage(index: number, from: string){
+  goToEventPage(index: number, from: string): void {
     this.router.navigate([from, 'event', index]);
   }
 
-  goToEditEventPage(eventid?: string){
+  goToEditEventPage(eventid?: string): void {
     this.router.navigate(['/editevent', eventid]);
   }
 
-  goToProfilePage(){
+  goToProfilePage(): void {
     this.router.navigate(['/profile']);
   }
 
-  goToMyEventsPage(){
+  goToMyEventsPage(): void {
     this.router.navigate(['/my-events']);
   }
 
-  goToHomePage(){
+  goToHomePage(): void {
     this.router.navigate(['/home']);
   }
 
-  goToResetPasswordPage(){
+  goToResetPasswordPage(): void {
     this.router.navigate(['/passwordreset']);
   }
 
-  goBackToPreviousPage(){
+  goBackToPreviousPage(): void {
     this.location.back();
   }
 
-  goToEventConfigPage(from: string, index: number){
+  goToEventConfigPage(from: string, index: number): void {
     this.router.navigate([from, 'event', index, 'event-config']);
   }
 
-  goToParticipantInfoPage(from: string, index: number, participantIndex: number){
+  goToParticipantInfoPage(from: string, index: number, participantIndex: number): void {
     this.router.navigate([from, 'event', index, 'event-config', 'participant', participantIndex]);
   }
 }

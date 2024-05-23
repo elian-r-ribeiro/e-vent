@@ -24,7 +24,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = [];
 
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
     this.darkMode = this.othersService.checkAppMode();
     this.user = this.authService.getLoggedUserThroughLocalStorage();
     this.authService.checkIfUserIsntLogged();
@@ -32,7 +32,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.setEventsList();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => {
       if (subscription) {
         subscription.unsubscribe();
@@ -40,39 +40,39 @@ export class HomePage implements OnInit, OnDestroy {
     })
   }
 
-  setEventsList(){
+  setEventsList(): void {
     this.events$ = this.firebaseService.getSomethingFromFirebaseAlreadySubscribed('events');
   }
 
-  setUserProfileInfo(){
+  setUserProfileInfo(): void {
     const userInfoSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('uid', this.loggedUserUid, 'users').subscribe(res => {
       this.userInfo = res;
     });
     this.subscriptions.push(userInfoSubscription);
   }
 
-  goToNewEventPage() {
+  goToNewEventPage(): void {
     this.routingService.goToNewEventPage();
   }
 
-  goToEventPage(index: number) {
+  goToEventPage(index: number): void {
     this.routingService.goToEventPage(index, 'home');
   }
 
-  goToProfilePage() {
+  goToProfilePage(): void {
     this.routingService.goToProfilePage();
   }
 
-  goToMyEventsPage() {
+  goToMyEventsPage(): void {
     this.routingService.goToMyEventsPage();
   }
 
-  toggleDarkMode(){
+  toggleDarkMode(): void {
     this.othersService.toggleDarkMode(this.darkMode);
     this.darkMode = this.othersService.checkAppMode();
   }
 
-  logout() {
+  logout(): void {
     this.authService.logout();
   }
 }

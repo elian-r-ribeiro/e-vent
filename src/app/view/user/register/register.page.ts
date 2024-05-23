@@ -21,7 +21,7 @@ export class RegisterPage implements OnInit {
 
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.othersService.checkAppMode();
     this.authService.checkIfUserIsLogged();
     this.startForm();
@@ -43,15 +43,15 @@ export class RegisterPage implements OnInit {
     return null;
   }
 
-  uploadFile(image: any){
+  uploadFile(image: any): void {
     this.image = image.files;
   }
 
-  showConfirmAccountRegister(){
+  showConfirmAccountRegister(): void {
     this.alertService.presentConfirmAlert("Atenção", "Tem certeza que deseja criar essa conta? Certifique-se de estar usando seu nome real e número e email reais, assim como uma foto de perfil sua (não utilize foto de anime ou qualquer coisa do gênero). Contas irregulares serão deletadas sem aviso prévio", this.submitForm.bind(this));
   }
 
-  submitForm() {
+  submitForm(): void {
     if (!this.registerForm.valid) {
       this.alertService.presentAlert('Erro ao cadastrar', 'Cheque todos os campos e tente novamente');
     } else {
@@ -59,20 +59,16 @@ export class RegisterPage implements OnInit {
     }
   }
 
-  consoleLog(){
-    console.log("Teste");
-  }
-
-  goToLoginPage() {
+  goToLoginPage(): void {
     this.routingService.goToLoginPage();
   }
 
-  changeFileInputLabelOnFileSelect(value: string){
+  changeFileInputLabelOnFileSelect(value: string): void {
     this.isFileSelected = this.othersService.changeFileInputStateOnFileSelect(value);
     this.fileSelectLabelText = this.othersService.changeFileInputLabelOnFileSelect(value, "Foto de perfil selecionada", "Selecione a foto de perfil");
   }
 
-  startForm(){
+  startForm(): void {
     this.registerForm = this.builder.group({
       userName: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
       email: ['', [Validators.required, Validators.email]],

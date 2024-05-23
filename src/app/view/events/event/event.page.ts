@@ -35,19 +35,19 @@ export class EventPage implements OnInit, OnDestroy {
   cameFrom!: string;
   shouldShowOwnerButtons: boolean = false;
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.othersService.checkAppMode();
     this.authService.checkIfUserIsntLogged();
     this.getRouteInfo();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => {
       subscription.unsubscribe();
     })
   }
 
-  getRouteInfo(){
+  getRouteInfo(): void {
     const routeSubscription = this.route.params.subscribe(params => {
       this.eventIndex = +params['index'];
       this.cameFrom = params['from'];
@@ -62,14 +62,14 @@ export class EventPage implements OnInit, OnDestroy {
     this.subscriptions.push(routeSubscription);
   }
 
-  getLoggedUserInfo(){
+  getLoggedUserInfo(): void {
     const loggedUserInfoSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('uid', this.loggedUserUID, 'users').subscribe(res => {
       this.loggedUserInfoReadyToUse = res[0];
     });
     this.subscriptions.push(loggedUserInfoSubscription);
   }
 
-  setEventInfo(getEventsFn: Observable<DocumentChangeAction<unknown>[]>, eventIndex: number){
+  setEventInfo(getEventsFn: Observable<DocumentChangeAction<unknown>[]>, eventIndex: number): void {
     const eventsSubscription = getEventsFn.subscribe((res: any[]) => {
       this.events = res;
       this.selectedEvent = this.events[eventIndex];
@@ -81,7 +81,7 @@ export class EventPage implements OnInit, OnDestroy {
     this.subscriptions.push(eventsSubscription);
   }
 
-  setEventOwnerInfo(){
+  setEventOwnerInfo(): void {
     const eventOwnerInfoSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('uid', this.selectedEvent.ownerUid, 'users').subscribe(async res => {
       this.eventOwner = res;
       this.owner = this.eventOwner[0];
@@ -90,7 +90,7 @@ export class EventPage implements OnInit, OnDestroy {
     this.subscriptions.push(eventOwnerInfoSubscription);
   }
 
-  getEventParticipants(){
+  getEventParticipants(): void {
     const eventParticipantsSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('eventId', this.eventId, 'participations').subscribe(res => {
       this.currentParticipantsNumber = res.length;
       this.eventParticipants = res;
@@ -98,7 +98,7 @@ export class EventPage implements OnInit, OnDestroy {
     this.subscriptions.push(eventParticipantsSubscription);
   }
 
-  async getUserEventParticipation() {          
+  async getUserEventParticipation(): Promise<void> {          
     const getUserAlreadyParticipatingOnEventSubscription = this.firebaseService.getUserAlreadyParticipatingOnEventAlreadySubscribed(this.eventId, this.loggedUserUID).subscribe(res => {
         if(res.length > 0){
             this.isUserAlreadyEventParticipant = true;
@@ -112,16 +112,16 @@ export class EventPage implements OnInit, OnDestroy {
 }
 
 
-  showConfirmDeleteEvent() {
+  showConfirmDeleteEvent(): void {
     this.alertService.presentConfirmAlert('Atenção', 'Tem certeza que deseja deletar esse evento? Essa ação não pode ser desfeita', this.deleteEvent.bind(this));
   }
 
-  async deleteEvent() {
+  async deleteEvent(): Promise<void> {
     await this.firebaseService.deleteEventAndEventImageAndEventParticipations(this.eventId);
     this.routingService.goBackToPreviousPage();
   }
 
-  toggleOwnerButtons(){
+  toggleOwnerButtons(): void {
     if(this.shouldShowOwnerButtons == false){
       this.shouldShowOwnerButtons = true;
     } else {
@@ -129,19 +129,19 @@ export class EventPage implements OnInit, OnDestroy {
     }
   }
 
-  openEventConfig(){
+  openEventConfig(): void {
     this.routingService.goToEventConfigPage(this.cameFrom, this.eventIndex);
   }
 
-  showConfirmEventParticipation() {
+  showConfirmEventParticipation(): void {
     this.alertService.presentConfirmAlert("Atenção", "Tem certeza que deseja confirmar participação nesse evento?", this.addEventParticipation.bind(this));
   }
 
-  showConfirmEventCancelParticipation(){
+  showConfirmEventCancelParticipation(): void {
     this.alertService.presentConfirmAlert("Atenção", "Tem certeza que deseja cancelar a particição nesse evento?", this.removeEventParticipation.bind(this));
   }
 
-  async addEventParticipation() {
+  async addEventParticipation(): Promise<void> {
     if(this.isUserAlreadyEventParticipant){
       this.alertService.presentAlert("Erro", "Você já está inscrito nesse evento");
     } else if(this.currentParticipantsNumber == this.selectedEvent.maxParticipants) {
@@ -152,7 +152,7 @@ export class EventPage implements OnInit, OnDestroy {
     }
   }
 
-  async removeEventParticipation(){
+  async removeEventParticipation(): Promise<void> {
     if(!this.isUserAlreadyEventParticipant){
       this.alertService.presentAlert("Erro", "Você não está inscrito nesse evento");
     } else {
@@ -161,7 +161,7 @@ export class EventPage implements OnInit, OnDestroy {
     }
   }
 
-  goToEditEvent() {
+  goToEditEvent(): void {
     this.routingService.goToEditEventPage(this.eventId);
   }
 }

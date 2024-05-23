@@ -16,13 +16,13 @@ export class PasswordresetPage implements OnInit {
 
   constructor(private othersService: OthersService, private builder: FormBuilder, private authService: AuthService, private alertService: AlertService, private routingService: RoutingService) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.othersService.checkAppMode();
     this.authService.checkIfUserIsLogged();
     this.startForm();
   }
 
-  submitForm() {
+  submitForm(): void {
     if (!this.passwordResetForm.valid) {
       this.alertService.presentAlert('Erro ao enviar e-mail', 'Cheque o campo e tente novamente');
     } else {
@@ -32,7 +32,7 @@ export class PasswordresetPage implements OnInit {
     }
   }
 
-  startForm(){
+  startForm(): void {
     this.passwordResetForm = this.builder.group({
       email: ['', [Validators.required, Validators.email]]
     });

@@ -25,14 +25,14 @@ export class ProfilePage implements OnInit, OnDestroy {
   fileSelectLabelText = "Selecionar foto de perfil";
   loggedUserUID = this.authService.getLoggedUserThroughLocalStorage().uid;
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.othersService.checkAppMode();
     this.startForm();
     this.authService.checkIfUserIsntLogged();
     this.setUserInfo();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => {
       if(subscription){
         subscription.unsubscribe();
@@ -40,7 +40,7 @@ export class ProfilePage implements OnInit, OnDestroy {
     })
   }
 
-  setUserInfo(){
+  setUserInfo(): void {
     const getUserInfoSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('uid', this.loggedUserUID, 'users').subscribe(res => {
       this.userInfo = res;
       if (this.userInfo.length > 0) {
@@ -58,11 +58,11 @@ export class ProfilePage implements OnInit, OnDestroy {
     return null;
   }
 
-  uploadFile(image: any) {
+  uploadFile(image: any): void {
     this.image = image.files;
   }
 
-  showConfirmProfileEdit() {
+  showConfirmProfileEdit(): void {
     if (!this.profileForm.valid) {
       this.alertService.presentAlert('Erro ao atualizar perfil', 'Cheque os campos e tente novamente');
     } else {
@@ -70,11 +70,11 @@ export class ProfilePage implements OnInit, OnDestroy {
     }
   }
 
-  showConfirmLogout(){
+  showConfirmLogout(): void {
     this.alertService.presentConfirmAlert('Atenção', 'Tem certeza que deseja sair dessa conta?', this.logout.bind(this));
   }
 
-  async updateProfile() {
+  async updateProfile(): Promise<void> {
     const loading = await this.alertService.presentLoadingAlert("Atualizando perfil...");
 
     const firestoreProfileId = this.userInfo[0].id;
@@ -94,16 +94,16 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   }
 
-  logout() {
+  logout(): void {
     this.authService.logout();
   }
 
-  changeFileInputLabelOnFileSelect(value: string){
+  changeFileInputLabelOnFileSelect(value: string): void {
     this.isFileSelected = this.othersService.changeFileInputStateOnFileSelect(value);
     this.fileSelectLabelText = this.othersService.changeFileInputLabelOnFileSelect(value, "Foto de perfil selecionada", "Selecione a foto de perfil");
   }
 
-  startForm(){
+  startForm(): void {
     this.profileForm = this.builder.group({
       userName: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
       phoneNumber: ['', [Validators.required, this.validatePhoneNumber]],
