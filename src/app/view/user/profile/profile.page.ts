@@ -82,7 +82,7 @@ export class ProfilePage implements OnInit, OnDestroy {
       if (!this.othersService.checkIfFileTypeIsCorrect(this.image)) {
         loading.dismiss();
       } else {
-        const imageURL = await this.firebaseService.getImageDownloadURL(this.image, this.loggedUserUID);
+        const imageURL = await this.firebaseService.getImageDownloadURL(this.image, 'profilePictures', this.loggedUserUID);
         await this.authService.updateProfileWithNoProfilePicture(this.profileForm.value['userName'], this.profileForm.value['phoneNumber'], firestoreProfileId, this.loggedUserUID);
         await this.authService.updateProfilePicture(imageURL, firestoreProfileId);
         loading.dismiss();
