@@ -1,3 +1,4 @@
+<ion-icon (click)="goBackToPreviousPage()" class="backicon" name="chevron-back-outline"></ion-icon>
 <ion-label class="participantsTitle">Participantes confirmados ({{currentParticipantsNumber}} de {{eventInfo?.maxParticipants}}): </ion-label>
 <ion-list class="participants">
     <ion-item class="participant" *ngFor="let participant of participants; let i = index">

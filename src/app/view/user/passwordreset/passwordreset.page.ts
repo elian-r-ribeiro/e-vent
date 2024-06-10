@@ -37,4 +37,8 @@ export class PasswordresetPage implements OnInit {
       email: ['', [Validators.required, Validators.email]]
     });
   }
+
+  goBackToPreviousPage() {
+    this.routingService.goBackToPreviousPage();
+  }
 }

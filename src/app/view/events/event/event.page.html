@@ -1,8 +1,9 @@
+<ion-icon (click)="goBackToPreviousPage()" class="backicon" name="chevron-back-outline"></ion-icon>
 <ion-content>
     <ion-list class="eventInfo">
         <ion-label class="title">{{selectedEvent?.eventTitle}}</ion-label>
         <ion-label class="description">{{selectedEvent?.eventDesc}}</ion-label>
-        <ion-label class="locationDateAndTime">Localização, data e hora: {{selectedEvent?.eventLocationDateAndTime}}</ion-label>
+        <ion-label class="locationDateAndTime">Localização, data e hora: {{selectedEvent?.eventLocation}}, {{selectedEvent?.eventDate}}, {{selectedEvent?.eventTime}}</ion-label>
         <div class="imgContainer">
             <img src="{{selectedEvent?.imageURL}}">
         </div>
@@ -28,13 +29,13 @@
         <ion-button (click)="showConfirmDeleteEvent()" shape="round" color="danger">Excluir evento</ion-button>
     </ion-fab>
     <ion-fab *ngIf="isUserEventOwner && shouldShowOwnerButtons" class="configEventButton" horizontal="end" vertical="bottom">
-        <ion-button (click)="openEventConfig()" shape="round" color="tertiary">Configurações do evento</ion-button>
+        <ion-button (click)="openEventConfig()" shape="round" color="tertiary">Relatório do evento</ion-button>
     </ion-fab>
     <ion-fab  *ngIf="isUserEventOwner && shouldShowOwnerButtons" class="editEventButton" horizontal="end" vertical="bottom">
         <ion-button (click)="goToEditEvent()" shape="round" color="warning">Editar evento</ion-button>
     </ion-fab>
     <ion-fab *ngIf="isUserEventOwner" class="cogButton" horizontal="end" vertical="bottom">
-        <ion-button (click)="toggleOwnerButtons()" shape="round" size="large">
+        <ion-button (click)="toggleOwnerButtons()" shape="round">
             <ion-icon slot="icon-only" ios="cog-outline" md="settings-sharp"></ion-icon>
         </ion-button>
     </ion-fab>

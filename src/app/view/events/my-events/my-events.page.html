@@ -15,9 +15,10 @@
   <ion-label class="welcomeMessage2"> A seguir, os eventos que você criou:</ion-label>
   
   <ion-list class="eventsList" [inset]="true">
-    <ion-item (click)="goToEventPage(i)" *ngFor="let event of userEvents$ | async; let i = index" class="eventItem">
+    <ion-item (click)="goToEventPage(i)" *ngFor="let event of userEvents; let i = index" class="eventItem">
       <ion-label>{{event.eventTitle}}</ion-label>
       <p>{{event.eventDesc}}</p>
+      <ion-icon name="trash-outline" color="danger" (click)="showConfirmDeleteEvent(i, $event)"></ion-icon>
     </ion-item>
   </ion-list>
 

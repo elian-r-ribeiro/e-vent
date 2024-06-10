@@ -5,6 +5,7 @@ import { Observable, Subscription } from 'rxjs';
 import { OthersService } from 'src/app/common/others.service';
 import { AuthService } from 'src/app/model/services/auth.service';
 import { FirebaseService } from 'src/app/model/services/firebase.service';
+import { RoutingService } from 'src/app/model/services/routing.service';
 
 @Component({
   selector: 'app-participant-info',
@@ -23,7 +24,7 @@ export class ParticipantInfoPage implements OnInit, OnDestroy {
   loggedUserUid = this.authService.getLoggedUserThroughLocalStorage().uid;
 
 
-  constructor(private authService: AuthService, private route: ActivatedRoute, private firebaseService: FirebaseService, private othersService: OthersService) { }
+  constructor(private authService: AuthService, private route: ActivatedRoute, private firebaseService: FirebaseService, private othersService: OthersService, private routingService: RoutingService) { }
 
   ngOnInit(): void {
     this.authService.checkIfUserIsntLogged();
@@ -73,5 +74,9 @@ export class ParticipantInfoPage implements OnInit, OnDestroy {
       }
     });
     this.subscriptions.push(participantsSubscription);
+  }
+
+  goBackToPreviousPage() {
+    this.routingService.goBackToPreviousPage();
   }
 }

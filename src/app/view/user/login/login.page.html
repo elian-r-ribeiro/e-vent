@@ -12,7 +12,7 @@
     <span *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['required']">Senha é obrigatória</span>
     <span *ngIf="loginForm.get('password')?.dirty && loginForm.get('password')?.errors?.['minlength']">A senha é de no mínimo 6 caracteres</span>
     <ion-button type="submit" shape="round">Logar</ion-button>
-    <p (click)="goToPasswordResetPage()">Esqueceu sua senha? Recupere ela aqui</p>
-    <p (click)="goToRegisterPage()">Não tem uma conta? Registre uma aqui</p>
+    <p (click)="goToPasswordResetPage()">Esqueci minha senha</p>
+    <p (click)="goToRegisterPage()">Registre uma conta</p>
   </form>
 </ion-content>

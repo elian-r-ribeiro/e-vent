@@ -58,17 +58,17 @@ ion-label {
 
 .editEventButton {
     position: fixed;
-    margin-bottom: 140px;
+    margin-bottom: 120px;
 }
 
 .deleteEventButton {
     position: fixed;
-    margin-bottom: 180px;
+    margin-bottom: 160px;
 }
 
 .configEventButton {
     position: fixed;
-    margin-bottom: 100px;
+    margin-bottom: 80px;
 }
 
 .imgContainer {
@@ -149,4 +149,17 @@ ion-button {
     ion-button {
         width: 100px;
     }
+}
+
+.cogButton ion-icon {
+    font-size: 22px;
+}
+
+.backicon {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    z-index: 1000;
+    cursor: pointer;
 }

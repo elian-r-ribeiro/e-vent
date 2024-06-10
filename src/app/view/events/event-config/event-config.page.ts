@@ -117,7 +117,7 @@ export class EventConfigPage implements OnInit, OnDestroy {
     let currentYPosition = 10;
     const maxPageHight = 240;
 
-    doc.text(this.eventInfo.eventTitle, 10, currentYPosition);
+    doc.text("Título do evento: "+ this.eventInfo.eventTitle, 10, currentYPosition);
     currentYPosition += 10;
 
     for (let i = 0; i < this.currentParticipantsNumber; i++) {
@@ -128,9 +128,9 @@ export class EventConfigPage implements OnInit, OnDestroy {
       doc.text("===========================", 10, currentYPosition);
       currentYPosition += 10;
 
-      doc.text(participantsNames, 10, currentYPosition);
-      doc.text(participantsPhoneNumbers, 10, currentYPosition + 10);
-      doc.text(participantsEmails, 10, currentYPosition + 20);
+      doc.text("Nome do participante: " + participantsNames, 10, currentYPosition);
+      doc.text("Número de telefone do participante: " + participantsPhoneNumbers, 10, currentYPosition + 10);
+      doc.text("E-mail do participante: " + participantsEmails, 10, currentYPosition + 20);
       if (this.participants[i].didParticipantWentToEvent) {
         doc.text("Participou? Sim", 10, currentYPosition + 30);
       } else {
@@ -159,5 +159,9 @@ export class EventConfigPage implements OnInit, OnDestroy {
       window.open(downloadURL, '_blank');
       loading.dismiss();
     });
+  }
+
+  goBackToPreviousPage() {
+    this.routingService.goBackToPreviousPage();
   }
 }

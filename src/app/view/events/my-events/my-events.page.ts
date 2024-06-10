@@ -17,11 +17,11 @@ export class MyEventsPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   userInfo: any;
-  userEvents$: any;
+  userEvents: any;
   darkMode = false;
   loggedUserUid = this.authService.getLoggedUserThroughLocalStorage().uid;
 
-  constructor(private othersService: OthersService, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService) { }
+  constructor(private othersService: OthersService, private firebaseService: FirebaseService, private authService: AuthService, private routingService: RoutingService, private alertService: AlertService) { }
 
   ngOnInit(): void {
     this.darkMode = this.othersService.checkAppMode();
@@ -39,7 +39,10 @@ export class MyEventsPage implements OnInit, OnDestroy {
   }
 
   setEventsList(): void{
-    this.userEvents$ = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('ownerUid', this.loggedUserUid, 'events');
+    const userEventsSubscription = this.firebaseService.getSomethingFromFirebaseWithConditionAlreadySubscribed('ownerUid', this.loggedUserUid, 'events').subscribe(res => { 
+      this.userEvents = res;
+    });
+    this.subscriptions.push(userEventsSubscription);
   }
 
   setUserProfileInfo(): void {
@@ -68,5 +71,16 @@ export class MyEventsPage implements OnInit, OnDestroy {
   toggleDarkMode(): void {
     this.othersService.toggleDarkMode(this.darkMode);
     this.darkMode = this.othersService.checkAppMode();
+  }
+
+  showConfirmDeleteEvent(index: number, event: Event) {
+    event.stopPropagation();
+    this.alertService.presentConfirmAlert('Atenção', 'Tem certeza que deseja deletar esse evento? Essa ação não pode ser desfeita', async () => {
+      await this.firebaseService.deleteEventAndEventImageAndEventParticipations(this.userEvents[index].id);
+    });
+  }
+
+  deleteEvent(index: number) {
+    this.firebaseService.deleteEventAndEventImageAndEventParticipations(this.userEvents[index].id);
   }
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { AlertService } from 'src/app/common/alert.service';
 import { OthersService } from 'src/app/common/others.service';
 import { AuthService } from 'src/app/model/services/auth.service';
@@ -25,22 +25,6 @@ export class RegisterPage implements OnInit {
     this.othersService.checkAppMode();
     this.authService.checkIfUserIsLogged();
     this.startForm();
-  }
-
-  
-
-  validateImage(control: FormControl): { [s: string]: boolean } | null {
-    if (!control.value) {
-      return { 'required': true };
-    }
-    return null;
-  }
-
-  validatePhoneNumber(control: FormControl): { [s: string]: boolean } | null {
-    if (control.value && control.value.toString().trim().length !== 11) {
-      return { 'validatePhoneNumber': true };
-    }
-    return null;
   }
 
   uploadFile(image: any): void {
@@ -71,11 +55,34 @@ export class RegisterPage implements OnInit {
   startForm(): void {
     this.registerForm = this.builder.group({
       userName: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required, this.validateEmail()]],
       phoneNumber: ['', [Validators.required, this.validatePhoneNumber]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
       profileImage: [null, [this.validateImage]]
     });
+  }
+
+  validateImage(control: FormControl): { [s: string]: boolean } | null {
+    if (!control.value) {
+      return { 'required': true };
+    }
+    return null;
+  }
+
+  validatePhoneNumber(control: FormControl): { [s: string]: boolean } | null {
+    if (control.value && control.value.toString().trim().length !== 11) {
+      return { 'validatePhoneNumber': true };
+    }
+    return null;
+  }
+
+  validateEmail(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const email = control.value;
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const valid = emailPattern.test(email);
+      return !valid ? { 'invalidEmail': { value: email } } : null;
+    };
   }
 }

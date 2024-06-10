@@ -98,18 +98,18 @@ export class EventPage implements OnInit, OnDestroy {
     this.subscriptions.push(eventParticipantsSubscription);
   }
 
-  async getUserEventParticipation(): Promise<void> {          
+  async getUserEventParticipation(): Promise<void> {
     const getUserAlreadyParticipatingOnEventSubscription = this.firebaseService.getUserAlreadyParticipatingOnEventAlreadySubscribed(this.eventId, this.loggedUserUID).subscribe(res => {
-        if(res.length > 0){
-            this.isUserAlreadyEventParticipant = true;
-            const getUserAlreadyParticipatingOnEventResponse = res;
-            this.userParticipationOnEventId = getUserAlreadyParticipatingOnEventResponse[0].id;
-        } else {
-            this.isUserAlreadyEventParticipant = false;
-        }
+      if (res.length > 0) {
+        this.isUserAlreadyEventParticipant = true;
+        const getUserAlreadyParticipatingOnEventResponse = res;
+        this.userParticipationOnEventId = getUserAlreadyParticipatingOnEventResponse[0].id;
+      } else {
+        this.isUserAlreadyEventParticipant = false;
+      }
     });
     this.subscriptions.push(getUserAlreadyParticipatingOnEventSubscription);
-}
+  }
 
 
   showConfirmDeleteEvent(): void {
@@ -122,7 +122,7 @@ export class EventPage implements OnInit, OnDestroy {
   }
 
   toggleOwnerButtons(): void {
-    if(this.shouldShowOwnerButtons == false){
+    if (this.shouldShowOwnerButtons == false) {
       this.shouldShowOwnerButtons = true;
     } else {
       this.shouldShowOwnerButtons = false;
@@ -142,9 +142,9 @@ export class EventPage implements OnInit, OnDestroy {
   }
 
   async addEventParticipation(): Promise<void> {
-    if(this.isUserAlreadyEventParticipant){
+    if (this.isUserAlreadyEventParticipant) {
       this.alertService.presentAlert("Erro", "Você já está inscrito nesse evento");
-    } else if(this.currentParticipantsNumber == this.selectedEvent.maxParticipants) {
+    } else if (this.currentParticipantsNumber == this.selectedEvent.maxParticipants) {
       this.alertService.presentAlert("Erro", "Número máximo de participantes do evento atingido");
     } else {
       await this.firebaseService.addEventParticipation(this.eventId, this.loggedUserInfoReadyToUse.uid, this.loggedUserInfoReadyToUse.userName, this.loggedUserInfoReadyToUse.phoneNumber, this.loggedUserInfoReadyToUse.email, this.loggedUserInfoReadyToUse.imageURL);
@@ -153,7 +153,7 @@ export class EventPage implements OnInit, OnDestroy {
   }
 
   async removeEventParticipation(): Promise<void> {
-    if(!this.isUserAlreadyEventParticipant){
+    if (!this.isUserAlreadyEventParticipant) {
       this.alertService.presentAlert("Erro", "Você não está inscrito nesse evento");
     } else {
       await this.firebaseService.removeEventParticipation(this.userParticipationOnEventId);
@@ -163,5 +163,9 @@ export class EventPage implements OnInit, OnDestroy {
 
   goToEditEvent(): void {
     this.routingService.goToEditEventPage(this.eventId);
+  }
+
+  goBackToPreviousPage() { 
+    this.routingService.goBackToPreviousPage();
   }
 }

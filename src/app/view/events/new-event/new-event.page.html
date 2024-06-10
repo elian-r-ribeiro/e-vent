@@ -1,3 +1,4 @@
+<ion-icon (click)="goBackToPreviousPage()" class="backicon" name="chevron-back-outline"></ion-icon>
 <ion-content [fullscreen]="true">
   <form [formGroup]="eventForm" class="newEventForm" (ngSubmit)="showConfirmEventCreation()">
     <ion-item>
@@ -18,11 +19,21 @@
     <span *ngIf="eventForm.get('maxParticipants')?.touched && eventForm.get('maxParticipants')?.errors?.['required']">O número de participantes é obrigatório</span>
     <span *ngIf="eventForm.get('maxParticipants')?.dirty && eventForm.get('maxParticipants')?.errors?.['min']">O mínimo de participantes são 2</span>
     <ion-item>
-      <ion-input formControlName="eventLocationDateAndTime" class="eventLocationDateAndTime" type="text" placeholder="Local, data e hora do evento (máx. 50)"></ion-input>
+      <ion-input formControlName="eventLocation" class="eventLocation" type="text" placeholder="Local do evento (máx 50)"></ion-input>
     </ion-item>
-    <span *ngIf="eventForm.get('eventLocationDateAndTime')?.touched && eventForm.get('eventLocationDateAndTime')?.errors?.['required']">O local, data e hora do evento é obrigatório</span>
-    <span *ngIf="eventForm.get('eventLocationDateAndTime')?.dirty && eventForm.get('eventLocationDateAndTime')?.errors?.['minlength']">Local, data e hora deve ter no mínimo 10 caracteres</span>
-    <span *ngIf="eventForm.get('eventLocationDateAndTime')?.dirty && eventForm.get('eventLocationDateAndTime')?.errors?.['maxlength']">Local, data e hora deve ter no máximo 50 caracteres</span>
+    <span *ngIf="eventForm.get('eventLocation')?.touched && eventForm.get('eventLocation')?.errors?.['required']">O local do evento é obrigatório</span>
+    <span *ngIf="eventForm.get('eventLocation')?.dirty && eventForm.get('eventLocation')?.errors?.['minlength']">Local deve ter no mínimo 10 caracteres</span>
+    <span *ngIf="eventForm.get('eventLocation')?.dirty && eventForm.get('eventLocation')?.errors?.['maxlength']">Local deve ter no máximo 50 caracteres</span>
+    <ion-item>
+      <ion-input formControlName="eventDate" class="eventDate" type="text" placeholder="Data do evento (dd/mm/aaaa)"></ion-input>
+    </ion-item>
+    <span *ngIf="eventForm.get('eventDate')?.touched && eventForm.get('eventDate')?.errors?.['required']">Data do evento é obrigatório</span>
+    <span *ngIf="eventForm.get('eventDate')?.dirty && eventForm.get('eventDate')?.errors?.['invalidDate']">Formato da data inválido</span>
+    <ion-item>
+      <ion-input formControlName="eventTime" class="eventTime" type="text" placeholder="Horário do evento (hh:mm)"></ion-input>
+    </ion-item>
+    <span *ngIf="eventForm.get('eventTime')?.touched && eventForm.get('eventTime')?.errors?.['required']">Horário do evento é obrigatório</span>
+    <span *ngIf="eventForm.get('eventTime')?.dirty && eventForm.get('eventTime')?.errors?.['invalidTime']">Formato do horário inválido</span>
     <ion-item>
       <input type="file" #fileInput class="fileInput" (change)="uploadFile($event.target); changeFileInputLabelOnFileSelect(fileInput.value)" formControlName="eventImage">
       <label (click)="fileInput.click()" class="fileInputLabel">{{fileSelectLabelText}}</label>

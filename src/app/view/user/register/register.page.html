@@ -11,7 +11,7 @@
       <ion-input formControlName="email" type="text" placeholder="E-mail"></ion-input>
     </ion-item>
     <span *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.errors?.['required']">E-mail é obrigatório</span>
-    <span *ngIf="registerForm.get('email')?.dirty && registerForm.get('email')?.errors?.['email']">Formato de Email Inválido</span>
+    <span *ngIf="registerForm.get('email')?.dirty && registerForm.get('email')?.errors?.['invalidEmail']">Formato de Email Inválido</span>
     <ion-item>
       <ion-input formControlName="phoneNumber" type="number" placeholder="Número de celular"></ion-input>
     </ion-item>
@@ -33,6 +33,6 @@
     </ion-item>
     <span *ngIf="registerForm.get('profileImage')?.errors?.['required']">A imagem de perfil é obrigatória</span>
     <ion-button type="submit" shape="round">Registrar</ion-button>
-    <p (click)="goToLoginPage()">Já tem uma conta? Faça login aqui</p>
+    <p (click)="goToLoginPage()">Faça login</p>
   </form>
 </ion-content>
