@@ -49,7 +49,7 @@ export class NewEventPage implements OnInit {
   }
 
   createEvent(): void {
-    this.firebaseService.registerEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], this.image);
+    this.firebaseService.registerEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], this.eventForm.value['eventLocationDateAndTime'] , this.image);
   }
 
   changeFileInputLabelOnFileSelect(value: string): void {
@@ -62,6 +62,7 @@ export class NewEventPage implements OnInit {
       eventTitle: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(50)]],
       eventDesc: ['', [Validators.required, Validators.minLength(50), Validators.maxLength(200)]],
       maxParticipants: [null, [Validators.required, Validators.min(2)]],
+      eventLocationDateAndTime: [null, [Validators.required, Validators.minLength(10), Validators.maxLength(50)]],
       eventImage: [null, [this.validateImage]]
     })
   }

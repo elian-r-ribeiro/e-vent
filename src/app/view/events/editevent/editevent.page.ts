@@ -50,6 +50,7 @@ export class EditeventPage implements OnInit, OnDestroy {
         this.eventForm.get('eventTitle')?.setValue(this.eventData.eventTitle);
         this.eventForm.get('eventDesc')?.setValue(this.eventData.eventDesc);
         this.eventForm.get('maxParticipants')?.setValue(this.eventData.maxParticipants);
+        this.eventForm.get('eventLocationDateAndTime')?.setValue(this.eventData.eventLocationDateAndTime);
       }
     })
     this.subscriptions.push(getEventInfoByIdSubscription);
@@ -84,13 +85,13 @@ export class EditeventPage implements OnInit, OnDestroy {
       } else {
         const imageURL = await this.firebaseService.getImageDownloadURL(this.image, 'eventImages', firestoreEventId)
         await this.firebaseService.updateEventImage(imageURL, firestoreEventId);
-        await this.firebaseService.updateEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], firestoreEventId);
+        await this.firebaseService.updateEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], this.eventForm.value['eventLocationDateAndTime'], firestoreEventId);
         this.alertService.presentAlert('Sucesso', 'Informações do evento editadas com sucesso');
         this.routingService.goBackToPreviousPage();
         loading.dismiss();
       }
     } else {
-      await this.firebaseService.updateEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], firestoreEventId);
+      await this.firebaseService.updateEvent(this.eventForm.value['eventTitle'], this.eventForm.value['eventDesc'], this.eventForm.value['maxParticipants'], this.eventForm.value['eventLocationDateAndTime'], firestoreEventId);
       this.alertService.presentAlert('Sucesso', 'Informações do evento editadas com sucesso');
       this.routingService.goBackToPreviousPage();
       loading.dismiss();
@@ -108,6 +109,7 @@ export class EditeventPage implements OnInit, OnDestroy {
       eventTitle: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(50)]],
       eventDesc: ['', [Validators.required, Validators.minLength(50), Validators.maxLength(200)]],
       maxParticipants: [null, [Validators.required, Validators.min(2)]],
+      eventLocationDateAndTime: [null, [Validators.required, Validators.minLength(10), Validators.maxLength(50)]],
       eventImage: [null]
     });
   }

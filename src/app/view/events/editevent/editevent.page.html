@@ -18,6 +18,12 @@
     <span *ngIf="eventForm.get('maxParticipants')?.touched && eventForm.get('maxParticipants')?.errors?.['required']">O número de participantes é obrigatório</span>
     <span *ngIf="eventForm.get('maxParticipants')?.dirty && eventForm.get('maxParticipants')?.errors?.['min']">O mínimo de participantes são 2</span>
     <ion-item>
+      <ion-input formControlName="eventLocationDateAndTime" class="eventLocationDateAndTime" type="text" placeholder="Local, data e hora do evento (máx. 50)"></ion-input>
+    </ion-item>
+    <span *ngIf="eventForm.get('eventLocationDateAndTime')?.touched && eventForm.get('eventLocationDateAndTime')?.errors?.['required']">O local, data e hora do evento é obrigatório</span>
+    <span *ngIf="eventForm.get('eventLocationDateAndTime')?.dirty && eventForm.get('eventLocationDateAndTime')?.errors?.['minlength']">Local, data e hora deve ter no mínimo 10 caracteres</span>
+    <span *ngIf="eventForm.get('eventLocationDateAndTime')?.dirty && eventForm.get('eventLocationDateAndTime')?.errors?.['maxlength']">Local, data e hora deve ter no máximo 50 caracteres</span>
+    <ion-item>
       <input type="file" #fileInput class="fileInput" (change)="uploadFile($event.target); changeFileInputLabelOnFileSelect(fileInput.value)" formControlName="eventImage">
       <label (click)="fileInput.click()" class="fileInputLabel">{{fileSelectLabelText}}</label>
     </ion-item>

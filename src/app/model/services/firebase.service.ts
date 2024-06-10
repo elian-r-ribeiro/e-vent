@@ -72,14 +72,14 @@ export class FirebaseService {
     this.alertService.presentAlert("Sucesso", "Evento deletado com sucesso");
   }
 
-  async registerEvent(eventTitle: string, eventDesc: string, maxParticipants: number, image: any): Promise<void> {
+  async registerEvent(eventTitle: string, eventDesc: string, maxParticipants: number, eventLocationDateAndTime: string, image: any): Promise<void> {
     const loading = await this.alertService.presentLoadingAlert("Registrando evento...");
 
     const ownerUid = this.injectAuthService().getLoggedUserThroughLocalStorage().uid;
     if (!this.othersService.checkIfFileTypeIsCorrect(image)) {
       loading.dismiss()
     } else {
-      const eventDocRef = await this.firestore.collection(this.eventsPath).add({ eventTitle, eventDesc, maxParticipants, ownerUid });
+      const eventDocRef = await this.firestore.collection(this.eventsPath).add({ eventTitle, eventDesc, maxParticipants, eventLocationDateAndTime, ownerUid });
       const imageURL = await this.getImageDownloadURL(image, 'eventImages', eventDocRef.id);
       await eventDocRef.update({ imageURL });
       this.alertService.presentAlert('Evento registrado com sucesso', 'Você pode checar mais informações na aba "Meus eventos" e ele já está disponível para outras pessoas');
@@ -112,8 +112,8 @@ export class FirebaseService {
     return this.firestore.collection(this.eventsPath).doc(eventId).get();
   }
 
-  updateEvent(newEventTitle: string, newEventDesc: string, newMaxParticipants: number, eventId: string): Promise<void> {
-    return this.firestore.collection(this.eventsPath).doc(eventId).update({ eventTitle: newEventTitle, eventDesc: newEventDesc, maxParticipants: newMaxParticipants });
+  updateEvent(newEventTitle: string, newEventDesc: string, newMaxParticipants: number, newEventLocationDateAndTime: string, eventId: string): Promise<void> {
+    return this.firestore.collection(this.eventsPath).doc(eventId).update({ eventTitle: newEventTitle, eventDesc: newEventDesc, maxParticipants: newMaxParticipants, eventLocationDateAndTime: newEventLocationDateAndTime });
   }
 
   updateEventImage(newImageURL: string, eventId: string): Promise<void> {
