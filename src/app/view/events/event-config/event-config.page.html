@@ -1,18 +1,20 @@
-<ion-icon (click)="goBackToPreviousPage()" class="backicon" name="chevron-back-outline"></ion-icon>
-<ion-label class="participantsTitle">Participantes confirmados ({{currentParticipantsNumber}} de {{eventInfo?.maxParticipants}}): </ion-label>
-<ion-list class="participants">
-    <ion-item class="participant" *ngFor="let participant of participants; let i = index">
-        <img src="{{participant.participantProfileImage}}">
-        <ion-label>{{participant.participantName}}</ion-label>
-        <div class="icons">
-          <ion-icon (click)="showConfirmRemoveParticipant(i)" name="trash-bin-outline" color="danger"></ion-icon>
-          <ion-icon (click)="showConfirmChangeParticipationStatus(i)" *ngIf="!participant.didParticipantWentToEvent" color="success" name="checkmark-circle-outline"></ion-icon>
-          <ion-icon (click)="showConfirmChangeParticipationStatus(i)" *ngIf="participant.didParticipantWentToEvent" color="warning" name="close-circle-outline"></ion-icon>
-          <ion-icon name="options-outline" (click)="goToParticipantInfoPage(i)"></ion-icon>
-        </div>
-    </ion-item>
-</ion-list>
+<ion-icon (click)="goBackToPreviousPage()" color="primary" class="backicon" name="chevron-back-outline"></ion-icon>
+<ion-content>
+  <ion-label class="participantsTitle">Participantes confirmados ({{currentParticipantsNumber}} de {{eventInfo?.maxParticipants}}): </ion-label>
+  <ion-list class="participants">
+      <ion-item class="participant" *ngFor="let participant of participants; let i = index">
+          <img src="{{participant.participantProfileImage}}">
+          <ion-label>{{participant.participantName}}</ion-label>
+          <div class="icons">
+            <ion-icon (click)="showConfirmRemoveParticipant(i)" name="trash-bin-outline" color="danger"></ion-icon>
+            <ion-icon (click)="showConfirmChangeParticipationStatus(i)" *ngIf="!participant.didParticipantWentToEvent" color="success" name="checkmark-circle-outline"></ion-icon>
+            <ion-icon (click)="showConfirmChangeParticipationStatus(i)" *ngIf="participant.didParticipantWentToEvent" color="warning" name="close-circle-outline"></ion-icon>
+            <ion-icon name="options-outline" (click)="goToParticipantInfoPage(i)"></ion-icon>
+          </div>
+      </ion-item>
+  </ion-list>
 
-<ion-fab class="configEventButton" horizontal="end" vertical="bottom">
-  <ion-button (click)="uploadFileToFirebaseAndGetDownloadURL()" shape="round">Gerar PDF</ion-button>
-</ion-fab>
+  <ion-fab class="configEventButton" horizontal="end" vertical="bottom">
+    <ion-button (click)="uploadFileToFirebaseAndGetDownloadURL()" shape="round">Gerar PDF</ion-button>
+  </ion-fab>
+</ion-content>

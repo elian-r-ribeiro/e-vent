@@ -27,7 +27,7 @@ export class LoginPage implements OnInit {
 
   submitForm(): void {
     if(!this.loginForm.valid){
-      this.alertService.presentAlert('Erro ao cadastrar', 'Cheque todos os campos e tente novamente');
+      this.alertService.presentAlert('Erro ao logar', 'Cheque todos os campos e tente novamente');
     }else{
       this.authService.userLogin(this.loginForm.value['email'], this.loginForm.value['password']);
     }
